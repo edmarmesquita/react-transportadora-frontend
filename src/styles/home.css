@@ -1,0 +1,145 @@
+/* HERO */
+
+.hero {
+    height: 100vh;
+
+    background-image: url("/caminhao_ramos.jpg");
+    background-size: cover;
+    background-position: center;
+
+    position: relative;
+}
+
+.hero-overlay {
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.hero-content {
+    color: white;
+}
+
+.hero-content h1 {
+    font-size: 70px;
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 22px;
+    margin-bottom: 30px;
+}
+
+.btn-hero {
+    background-color: red;
+    color: white;
+
+    padding: 15px 30px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.tracking-section {
+    padding: 80px 0;
+    background-color: #f5f5f5;
+}
+
+.rastreamento-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+
+    align-items: center;
+}
+
+.rastreamento-info h2 {
+    color: #e60000;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.rastreamento-info p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.form-rastreamento {
+    display: flex;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+.form-rastreamento input {
+    flex: 1;
+    padding: 14px;
+
+    border: 1px solid #ccc;
+    border-radius: 8px;
+
+    font-size: 16px;
+}
+
+.status-rastreamento-preview {
+    background-color: white;
+
+    padding: 20px;
+    border-left: 5px solid #e60000;
+    border-radius: 8px;
+}
+
+.mapa-brasil-box iframe {
+    width: 100%;
+    height: 350px;
+
+    border: none;
+    border-radius: 12px;
+}
+
+/* QUOTE SECTION */
+
+.quote-section {
+    padding: 80px 0;
+    background-color: white;
+}
+
+.quote-container {
+    width: 90%;
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    background-color: #f9f9f9;
+
+    padding: 50px;
+
+    border-radius: 16px;
+
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.quote-container h2 {
+    text-align: center;
+
+    color: #e60000;
+
+    margin-bottom: 40px;
+
+    font-size: 36px;
+}
+
+.quote-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

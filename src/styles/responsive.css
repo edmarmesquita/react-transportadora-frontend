@@ -1,0 +1,58 @@
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 900px) {
+    .navbar {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: block;
+
+        background: none;
+        border: none;
+
+        color: white;
+
+        font-size: 32px;
+
+        cursor: pointer;
+    }
+
+    .hero-content h1 {
+        font-size: 42px;
+    }
+
+    .hero-content p {
+        font-size: 18px;
+    }
+
+    .rastreamento-box {
+        grid-template-columns: 1fr;
+    }
+
+    .form-rastreamento {
+        flex-direction: column;
+    }
+
+    .quote-container {
+        padding: 30px;
+    }
+
+    .cards-grid {
+  grid-template-columns: 1fr;
+}
+
+.stats-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.fleet-grid {
+    grid-template-columns: 1fr;
+}
+
+.fleet-info-grid {
+    grid-template-columns: 1fr;
+}
+
+}
