@@ -14,6 +14,7 @@ import AdminDashboard from "./pages/AdminDashboard"
 import CargaDetalhe from "./pages/CargaDetalhe"
 import AdminCargas from "./pages/AdminCargas"
 import NovaCarga from "./pages/NovaCarga"
+import EditarCarga from "./pages/EditarCarga"
 
 
 function App() {
@@ -35,6 +36,8 @@ function App() {
         <Route path="/admin/cargas" element={<AdminCargas />} />
 
         <Route path="/admin/cargas/nova" element={<NovaCarga />} />
+
+        <Route path="/admin/cargas/editar/:id" element={<EditarCarga />} />
 
         <Route
           path="/areas-atendidas"

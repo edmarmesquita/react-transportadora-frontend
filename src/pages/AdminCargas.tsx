@@ -19,6 +19,9 @@ function AdminCargas() {
     const [loading, setLoading] = useState(true)
     const [busca, setBusca] = useState("")
     const [statusFiltro, setStatusFiltro] = useState("Todos")
+    const [paginaAtual, setPaginaAtual] = useState(1)
+
+    const cargasPorPagina = 5  
 
     async function carregarCargas() {
         try {
@@ -52,6 +55,52 @@ function AdminCargas() {
 
         return buscaEncontrada && statusEncontrado
     })
+
+    async function excluirCarga(id: number) {
+        const confirmar = window.confirm(
+            "Tem certeza que deseja excluir esta carga?"
+        )
+
+        if (!confirmar) {
+            return
+        }
+
+        try {
+            const resposta = await fetch(
+                `http://127.0.0.1:5000/api/admin/cargas/${id}`,
+                {
+                    method: "DELETE",
+                }
+            )
+
+            if (!resposta.ok) {
+                alert("Erro ao excluir carga.")
+                return
+            }
+
+            setCargas((prev) =>
+                prev.filter((carga) => carga.id !== id)
+            )
+        } catch {
+            alert("Erro ao conectar com o servidor.")
+        }
+    }
+
+    const indiceInicial =
+        (paginaAtual - 1) * cargasPorPagina
+
+    const indiceFinal =
+        indiceInicial + cargasPorPagina
+
+    const cargasPaginadas =
+        cargasFiltradas.slice(
+            indiceInicial,
+            indiceFinal
+        )
+
+    const totalPaginas = Math.ceil(
+        cargasFiltradas.length / cargasPorPagina
+    )
 
     return (
         <AdminLayout>
@@ -99,54 +148,100 @@ function AdminCargas() {
                 {loading ? (
                     <h2>Carregando...</h2>
                 ) : (
-                    <div className="tabela-cargas">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Cliente</th>
-                                    <th>Status</th>
-                                    <th>Local Atual</th>
-                                    <th>Destino</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                    {cargasFiltradas.map((carga) => (
-                                    <tr key={carga.id}>
-                                        <td>{carga.codigo}</td>
-
-                                        <td>{carga.cliente}</td>
-
-                                        <td>
-                                            <span
-                                                className={`status status-${carga.status
-                                                    .toLowerCase()
-                                                    .replaceAll(" ", "-")}`}
-                                            >
-                                                {carga.status}
-                                            </span>
-                                        </td>
-
-                                        <td>{carga.local_atual}</td>
-
-                                        <td>{carga.destino}</td>
-
-                                        <td>
-                                            <Link to="/admin/cargas/nova" className="btn-nova-carga">
-                                                Nova Carga
-                                            </Link>
-                                        </td>
+                    <>
+                        <div className="tabela-cargas">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Status</th>
+                                        <th>Local Atual</th>
+                                        <th>Destino</th>
+                                        <th>Ações</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+
+                                <tbody>
+                                    {cargasPaginadas.map((carga) => (
+                                        <tr key={carga.id}>
+                                            <td>{carga.codigo}</td>
+                                            <td>{carga.cliente}</td>
+
+                                            <td>
+                                                <span
+                                                    className={`status status-${carga.status
+                                                        .toLowerCase()
+                                                        .replaceAll(" ", "-")}`}
+                                                >
+                                                    {carga.status}
+                                                </span>
+                                            </td>
+
+                                            <td>{carga.local_atual}</td>
+                                            <td>{carga.destino}</td>
+
+                                            <td className="acoes-carga">
+                                                <Link
+                                                    to={`/admin/carga/${carga.id}`}
+                                                    className="btn-detalhes"
+                                                >
+                                                    Detalhes
+                                                </Link>
+
+                                                <Link
+                                                    to={`/admin/cargas/editar/${carga.id}`}
+                                                    className="btn-editar"
+                                                >
+                                                    Editar
+                                                </Link>
+
+                                                <button
+                                                    className="btn-excluir"
+                                                    onClick={() => excluirCarga(carga.id)}
+                                                >
+                                                    Excluir
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {totalPaginas > 1 && (
+                            <div className="paginacao">
+                                <button
+                                    onClick={() =>
+                                        setPaginaAtual((prev) => Math.max(prev - 1, 1))
+                                    }
+                                >
+                                    Anterior
+                                </button>
+
+                                <span>
+                                    Página {paginaAtual} de {totalPaginas}
+                                </span>
+
+                                <button
+                                    onClick={() =>
+                                        setPaginaAtual((prev) =>
+                                            Math.min(prev + 1, totalPaginas)
+                                        )
+                                    }
+                                >
+                                    Próxima
+                                </button>
+                            </div>
+                        )}
+
+                    </>
                 )}
+            
             </div>
+         
         </AdminLayout>
-    )
-}
+    )}
+
 
 export default AdminCargas
