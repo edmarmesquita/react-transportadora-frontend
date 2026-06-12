@@ -1,6 +1,19 @@
+import GraficoStatus from "../components/admin/GraficoStatus"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
+import GraficoViagens from "../components/admin/GraficoViagens"
+import RankingMotoristas from "../components/admin/RankingMotoristas"
+import ResumoFrota from "../components/admin/ResumoFrota"
+import ResumoFinanceiro from "../components/admin/ResumoFinanceiro"
+import CentroAlertas from "../components/admin/CentroAlertas"
+import IndicadoresExecutivos from "../components/admin/IndicadoresExecutivos"
+import {
+  PackageCheck,
+  Route,
+  ClipboardList,
+} from "lucide-react"
+
 
 type ResumoDashboard = {
     total_cargas: number
@@ -65,39 +78,66 @@ function AdminDashboard() {
 
     return (
         <AdminLayout>
-            <div className="admin-dashboard">
-                <h1>Painel Administrativo</h1>
-
-            <div className="dashboard-grid">
-                <div className="dashboard-card">
-                    <h3>Total de Cargas</h3>
-                    <strong>{resumo?.total_cargas}</strong>
+            <div className="admin-page">
+                <div className="page-header">
+                    <div>
+                        <h1>Painel Administrativo</h1>
+                        <p>Visão geral da operação logística</p>
+                    </div>
                 </div>
 
-                <div className="dashboard-card">
-                    <h3>Em Trânsito</h3>
-                    <strong>{resumo?.em_transito}</strong>
+                <div className="cards-dashboard">
+                    <div className="card-dashboard card-transito">
+                        <div className="card-topo">
+                            <h3>Em Trânsito</h3>
+
+                            <Route size={32} />
+                        </div>
+
+                        <strong>{resumo?.em_transito}</strong>
+                    </div>
+
+                    <div className="card-dashboard card-entregues">
+                        <div className="card-topo">
+                            <h3>Entregues</h3>
+
+                            <PackageCheck size={32} />
+                        </div>
+
+                        <strong>{resumo?.entregues}</strong>
+                    </div>
+
+                    <div className="card-dashboard card-cotacoes">
+                        <div className="card-topo">
+                            <h3>Cotações</h3>
+
+                            <ClipboardList size={32} />
+                        </div>
+
+                        <strong>{resumo?.total_cotacoes}</strong>
+                    </div>
                 </div>
 
-                <div className="dashboard-card">
-                    <h3>Entregues</h3>
-                    <strong>{resumo?.entregues}</strong>
-                </div>
+                <ResumoFinanceiro />
 
-                <div className="dashboard-card">
-                    <h3>Atrasadas</h3>
-                    <strong>{resumo?.atrasadas}</strong>
-                </div>
+                <IndicadoresExecutivos />
 
-                <div className="dashboard-card">
-                    <h3>Cotações</h3>
-                    <strong>{resumo?.total_cotacoes}</strong>
-                </div>
-            </div>
+                <CentroAlertas />
 
-            <div className="tabela-cargas">
+                <GraficoStatus
+                    emColeta={resumo?.em_coleta || 0}
+                    emTransito={resumo?.em_transito || 0}
+                    saiuEntrega={resumo?.saiu_entrega || 0}
+                    entregues={resumo?.entregues || 0}
+                />
+
+                <GraficoViagens />
+                <RankingMotoristas />
+                <ResumoFrota />
+            
+             <div className="tabela-cargas">
                 <h2>Últimas Cargas</h2>
-
+                
                 <table>
                     <thead>
                         <tr>
@@ -115,29 +155,31 @@ function AdminDashboard() {
                             <tr key={carga.id}>
                                 <td>{carga.codigo}</td>
 
-                            <td>{carga.cliente}</td>
+                                <td>{carga.cliente}</td>
 
-                            <td>
-                                <span
-                                    className={`status status-${carga.status
-                                        .toLowerCase()
-                                        .replaceAll(" ", "-")}`}
-                                >
-                                    {carga.status}
-                                </span>
-                            </td>
+                                <td>
+                                    <span
+                                        className={`status status-${carga.status
+                                            .toLowerCase()
+                                            .replaceAll(" ", "-")}`}
+                                    >
+                                        {carga.status}
+                                    </span>
+                                </td>
 
-                            <td>{carga.local_atual}</td>
+                                <td>{carga.local_atual}</td>
 
-                            <td>{carga.destino}</td>
+                                <td>{carga.destino}</td>
 
-                                <Link
-                                    to={`/admin/carga/${carga.id}`}
-                                    className="btn-detalhes"
-                                >
-                                    Ver detalhes
-                                </Link>
-                        </tr>
+                                <td>
+                                    <Link
+                                        to={`/admin/carga/${carga.id}`}
+                                        className="btn-detalhes"
+                                    >
+                                        Ver detalhes
+                                    </Link>
+                                </td>
+                            </tr>
                         ))}
                     </tbody>
                 </table>

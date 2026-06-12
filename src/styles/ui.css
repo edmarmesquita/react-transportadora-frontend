@@ -18,21 +18,34 @@
     flex-direction: column;
 }
 
+.linha-input input,
+.linha-input select,
+.linha-input textarea {
+    width: 100%;
+
+    padding: 14px 16px;
+
+    min-height: 50px;
+
+    border: 1px solid #dcdcdc;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+
+    box-sizing: border-box;
+}
+
 .linha-input label {
     margin-bottom: 8px;
     font-weight: bold;
 }
 
-.linha-input input,
-.linha-input select,
-.linha-input textarea {
-    padding: 14px;
-
-    border: 1px solid #ccc;
-    border-radius: 8px;
-
-    font-size: 16px;
+.linha-input label {
+    font-weight: 600;
+    color: #333;
 }
+
 
 /* PAGE BANNER */
 
@@ -439,13 +452,16 @@
 
     color: #e60000;
 }
+
 .tabela-cargas {
-    margin-top: 50px;
+    width: 100%;
+    margin-top: 30px;
     background: white;
     padding: 30px;
     border-radius: 16px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
     overflow-x: auto;
+    box-sizing: border-box;
 }
 
 .tabela-cargas h2 {
@@ -507,6 +523,7 @@
     background: #ffe5b4;
     color: #8a4b00;
 }
+
 .btn-detalhes {
     border: none;
 
@@ -541,7 +558,7 @@
 }
 
 .admin-sidebar {
-    width: 260px;
+    width: 180px;
     min-height: 100vh;
     background: #111;
     color: white;
@@ -577,23 +594,22 @@
 }
 
 .admin-content {
-    margin-left: 260px;
-    width: calc(100% - 260px);
+    margin-left: 180px;
+    width: calc(100% - 180px);
     min-height: 100vh;
 }
 
 /* TOPBAR */
 
 .admin-topbar {
-    height: 90px;
+    min-height: 60px;
+    padding: 12px 20px;
 
     background: white;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 0 40px;
 
     border-bottom: 1px solid #e5e5e5;
 }
@@ -620,7 +636,9 @@
 }
 
 .admin-page {
-    padding: 30px 40px;
+    width: 100%;
+    padding: 30px 50px;
+    box-sizing: border-box;
 }
 
 .page-header {
@@ -631,15 +649,11 @@
     margin-bottom: 30px;
 }
 
-.page-header h1 {
-    font-size: 32px;
-    color: #111;
-}
-
 .page-header p {
     color: #777;
     margin-top: 6px;
 }
+
 /* ADMIN CARGAS PAGE */
 .btn-nova-carga {
     border: none;
@@ -671,13 +685,10 @@
     gap: 20px;
 }
 
-.busca-box {
-    margin-bottom: 25px;
-}
 
 .busca-box input {
     width: 100%;
-    max-width: 420px;
+    max-width: 100%;
 
     padding: 14px 18px;
 
@@ -687,6 +698,7 @@
     font-size: 15px;
 
     background: white;
+    color: #111;
 }
 
 .resultado-busca {
@@ -699,8 +711,10 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top: 18px;
     margin-bottom: 25px;
 }
+
 /* Filtro de status */
 .filtro-status button {
     border: none;
@@ -784,3 +798,659 @@
 .paginacao button:hover {
     background: #e60000;
 }
+
+.btn-whatsapp {
+    background: #25d366;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.status-em-coleta {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-em-trânsito {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.status-saiu-para-entrega {
+    background: #e2d9f3;
+    color: #4b0082;
+}
+
+.status-entregue {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-atrasada,
+.status-atrasadas {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.status-disponível {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-em-viagem {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.status-manutenção {
+    background: #f8d7da;
+    color: #842029;
+}
+
+.cards-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card-dashboard {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+    min-height: 150px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-dashboard h3 {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.card-dashboard strong {
+    font-size: 38px;
+    color: #111;
+}
+
+.card-cargas {
+    border-left: 6px solid #111;
+}
+
+.card-transito {
+    border-left: 6px solid #0d6efd;
+}
+
+.card-entregues {
+    border-left: 6px solid #198754;
+}
+
+.card-cotacoes {
+    border-left: 6px solid #fd7e14;
+}
+
+.timeline-box {
+    background: white;
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.timeline-item {
+    display: flex;
+    gap: 18px;
+    padding-bottom: 25px;
+    border-left: 3px solid #e60000;
+    margin-left: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.timeline-dot {
+    width: 18px;
+    height: 18px;
+    background: #e60000;
+    border-radius: 50%;
+    position: absolute;
+    left: -10px;
+    top: 0;
+}
+
+.timeline-item h3 {
+    color: #111;
+    margin-bottom: 6px;
+}
+
+.timeline-item p {
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.timeline-item span {
+    color: #888;
+    font-size: 14px;
+}
+
+.status-box {
+    display: flex;
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.status-box select {
+    min-width: 250px;
+}
+
+.viagem-info-box {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.viagem-info-box h2 {
+    color: #e60000;
+    margin-bottom: 18px;
+}
+
+.admin-form select {
+    width: 100%;
+
+    padding: 14px 18px;
+
+    min-height: 52px;
+
+    border: 1px solid #ddd;
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    background: rgb(43, 41, 41);
+}
+
+.ocorrencia-box {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.ocorrencia-box {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ocorrencia-box textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    resize: vertical;
+    font-size: 16px;
+}
+
+.ocorrencias-lista {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-top: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.ocorrencias-lista h2 {
+    margin-bottom: 20px;
+}
+
+.ocorrencia-item {
+    padding: 16px;
+    border-left: 4px solid #e60000;
+    background: #f8f8f8;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+.ocorrencia-item p {
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.ocorrencia-item span {
+    color: #777;
+    font-size: 14px;
+}
+
+.grafico-card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 16px;
+
+    margin-top: 25px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.grafico-card h2 {
+    margin-bottom: 20px;
+    color: #111;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.grafico-area {
+    width: 100%;
+    height: 320px;
+}
+
+.grafico-card {
+    width: 100%;
+}
+
+.ranking-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ranking-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 20px;
+
+    background: #f8f9fa;
+
+    border-left: 5px solid #e60000;
+
+    border-radius: 12px;
+
+    transition: all 0.2s ease;
+}
+
+.ranking-item:hover {
+    transform: translateX(4px);
+
+    background: #f1f3f5;
+}
+
+.ranking-item strong {
+    font-size: 20px;
+
+    color: #e60000;
+
+    min-width: 45px;
+}
+
+.ranking-item span {
+    flex: 1;
+
+    margin-left: 15px;
+
+    font-weight: 600;
+
+    color: #222;
+}
+
+.ranking-item small {
+    font-size: 14px;
+
+    color: #666;
+}
+
+@media (max-width: 1200px) {
+    .cards-dashboard {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .cards-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+
+textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: #e60000;
+    color: white;
+    border: none;
+    padding: 14px 22px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+.lista-arquivos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.arquivo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 18px;
+
+    background: #f8f9fa;
+
+    border-radius: 10px;
+}
+
+.arquivo-item small {
+    display: block;
+    margin-top: 4px;
+    color: #666;
+}
+
+.card-financeiro strong {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    word-break: break-word;
+}
+
+.card-indicador strong {
+    font-size: 24px;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.card-indicador h3 {
+    margin-bottom: 12px;
+}
+
+.barra-progresso {
+    width: 100%;
+    height: 10px;
+
+    background: #e5e7eb;
+
+    border-radius: 999px;
+
+    margin-top: 12px;
+
+    overflow: hidden;
+}
+
+.barra-preenchida {
+    height: 100%;
+
+    background: #22c55e;
+
+    transition: 0.3s;
+}
+
+.timeline-rastreamento {
+    margin-top: 25px;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 20px;
+
+    position: relative;
+
+    padding-bottom: 25px;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: "";
+
+    position: absolute;
+
+    left: 10px;
+    top: 20px;
+
+    width: 2px;
+    height: calc(100% - 5px);
+
+    background: #d1d5db;
+}
+
+.timeline-marker {
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #0d6efd;
+
+    flex-shrink: 0;
+
+    margin-top: 4px;
+}
+
+.timeline-content {
+    flex: 1;
+}
+
+.timeline-content strong {
+    display: block;
+
+    color: #111;
+
+    font-size: 16px;
+}
+
+.timeline-content small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #6b7280;
+}
+
+.timeline-content p {
+    margin-top: 8px;
+
+    color: #374151;
+}
+
+.timeline-box {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-top: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.timeline-item {
+    display: flex;
+    gap: 18px;
+    position: relative;
+    padding-bottom: 25px;
+}
+
+.timeline-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 9px;
+    top: 22px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: #d1d5db;
+}
+
+.timeline-dot {
+    width: 20px;
+    height: 20px;
+    background: #e60000;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.timeline-item h3 {
+    margin: 0;
+    color: #111;
+}
+
+.timeline-item p {
+    margin: 6px 0;
+    color: #444;
+}
+
+.timeline-item span {
+    color: #777;
+    font-size: 14px;
+}
+
+.dot-arquivo {
+    background: #6f42c1;
+}
+
+.dot-ocorrencia {
+    background: #dc3545;
+}
+
+.dot-entregue {
+    background: #198754;
+}
+
+.relatorios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.relatorio-card {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 14px;
+    border-left: 5px solid #e60000;
+}
+
+.relatorio-card h3 {
+    margin-bottom: 10px;
+    color: #111;
+}
+
+.relatorio-card p {
+    color: #555;
+    margin-bottom: 18px;
+}
+
+.resultado-link {
+    display: block;
+
+    padding: 12px;
+
+    margin-bottom: 10px;
+
+    background: #f8f9fa;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    color: #111;
+
+    transition: 0.2s;
+}
+
+.resultado-link:hover {
+    background: #ececec;
+}
+
+.tabela-cargas {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    background: white;
+    padding: 0;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.tabela-cargas table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-cargas th,
+.tabela-cargas td {
+    padding: 08px 10px;
+    white-space: nowrap;
+}
+
+.acoes-carga {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.tabela-cargas tr {
+    height: auto;
+}
+
+.tabela-cargas th,
+.tabela-cargas td {
+    height: auto;
+    min-height: 0;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    line-height: 1.2;
+}
+
+.btn-detalhes,
+.btn-editar,
+.btn-excluir {
+    padding: 6px 10px;
+    font-size: 13px;
+    line-height: 1;
+}
+
+.detalhe-viagem-page p,
+.detalhe-viagem-page label,
+.detalhe-viagem-page input,
+.detalhe-viagem-page textarea,
+.detalhe-viagem-page select {
+    font-size: 20px;
+}
+
+.ocorrencias-lista h2 {
+    color: #111;
+    font-size: 26px;
+    font-weight: 800;
+}
+

@@ -13,11 +13,35 @@ function EditarCarga() {
         status: "",
         local_atual: "",
         destino: "",
+        motorista_id: "",
+        veiculo_id: "",
+        valor_frete: "",
+        status_pagamento: "Pendente"
     })
 
     const [erro, setErro] = useState("")
     const [loading, setLoading] = useState(true)
     const [salvando, setSalvando] = useState(false)
+    const [motoristas, setMotoristas] = useState([])
+    const [veiculos, setVeiculos] = useState([])
+
+    async function carregarOpcoes() {
+        const respostaMotoristas = await fetch(
+            "http://127.0.0.1:5000/api/admin/motoristas"
+        )
+
+        const dadosMotoristas = await respostaMotoristas.json()
+
+        const respostaVeiculos = await fetch(
+            "http://127.0.0.1:5000/api/admin/veiculos"
+        )
+
+        const dadosVeiculos = await respostaVeiculos.json()
+
+        setMotoristas(dadosMotoristas)
+        setVeiculos(dadosVeiculos)
+    }
+
 
     async function carregarCarga() {
         try {
@@ -33,6 +57,10 @@ function EditarCarga() {
                 status: dados.status,
                 local_atual: dados.local_atual,
                 destino: dados.destino,
+                motorista_id: dados.motorista_id ? String(dados.motorista_id) : "",
+                veiculo_id: dados.veiculo_id ? String(dados.veiculo_id) : "",
+                valor_frete: dados.valor_frete || "",
+                status_pagamento: dados.status_pagamento || "Pendente",
             })
 
             setLoading(false)
@@ -90,6 +118,7 @@ function EditarCarga() {
 
     useEffect(() => {
         carregarCarga()
+        carregarOpcoes()
     }, [])
 
     if (loading) {
@@ -147,6 +176,34 @@ function EditarCarga() {
                         </select>
                     </div>
 
+                    <select
+                        name="motorista_id"
+                        value={formData.motorista_id}
+                        onChange={handleChange}
+                    >
+                        <option value="">Selecione o motorista</option>
+
+                        {motoristas.map((motorista: any) => (
+                            <option key={motorista.id} value={motorista.id}>
+                                {motorista.nome}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        name="veiculo_id"
+                        value={formData.veiculo_id}
+                        onChange={handleChange}
+                    >
+                        <option value="">Selecione o veículo</option>
+
+                        {veiculos.map((veiculo: any) => (
+                            <option key={veiculo.id} value={veiculo.id}>
+                                {veiculo.placa} - {veiculo.modelo}
+                            </option>
+                        ))}
+                    </select>
+
                     <div className="linha-input">
                         <label>Local atual</label>
                         <input
@@ -165,6 +222,29 @@ function EditarCarga() {
                             onChange={handleChange}
                             required
                         />
+                    </div>
+
+                    <div className="linha-input">
+                        <label>Valor do frete</label>
+
+                        <input
+                            name="valor_frete"
+                            value={formData.valor_frete}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="linha-input">
+                        <label>Status do pagamento</label>
+
+                        <select
+                            name="status_pagamento"
+                            value={formData.status_pagamento}
+                            onChange={handleChange}
+                        >
+                            <option>Pendente</option>
+                            <option>Pago</option>
+                        </select>
                     </div>
 
                     {erro && <p className="mensagem-erro">{erro}</p>}

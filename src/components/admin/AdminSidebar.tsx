@@ -5,6 +5,8 @@ import {
     UserCog,
     FileBarChart,
     Package,
+    ClipboardList,
+    MapPinned,
 } from "lucide-react"
 
 import { Link } from "react-router-dom"
@@ -44,6 +46,17 @@ function AdminSidebar() {
                     <FileBarChart size={20} />
                     Relatórios
                 </Link>
+
+                <Link to="/admin/cotacoes">
+                    <ClipboardList size={20} />
+                    Cotações
+                </Link>
+
+                <Link to="/admin/viagens">
+                    <MapPinned size={20} />
+                    Viagens
+                </Link>
+
             </nav>
         </aside>
     )

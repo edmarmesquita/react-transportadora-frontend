@@ -12,6 +12,8 @@ function NovaCarga() {
         status: "Em coleta",
         local_atual: "",
         destino: "",
+        valor_frete: "",
+        status_pagamento: "Pendente",
     })
 
     const [erro, setErro] = useState("")
@@ -129,6 +131,30 @@ function NovaCarga() {
                     </div>
 
                     {erro && <p className="mensagem-erro">{erro}</p>}
+
+                    <div className="linha-input">
+                        <label>Valor do frete</label>
+
+                        <input
+                            name="valor_frete"
+                            value={formData.valor_frete}
+                            onChange={handleChange}
+                            placeholder="Ex: 3500"
+                        />
+                    </div>
+
+                    <div className="linha-input">
+                        <label>Status do pagamento</label>
+
+                        <select
+                            name="status_pagamento"
+                            value={formData.status_pagamento}
+                            onChange={handleChange}
+                        >
+                            <option>Pendente</option>
+                            <option>Pago</option>
+                        </select>
+                    </div>
 
                     <button className="btn-nova-carga" type="submit">
                         {loading ? "Salvando..." : "Salvar Carga"}

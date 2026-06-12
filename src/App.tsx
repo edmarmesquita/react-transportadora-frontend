@@ -15,7 +15,18 @@ import CargaDetalhe from "./pages/CargaDetalhe"
 import AdminCargas from "./pages/AdminCargas"
 import NovaCarga from "./pages/NovaCarga"
 import EditarCarga from "./pages/EditarCarga"
-
+import AdminCotacoes from "./pages/AdminCotacoes"
+import AdminClientes from "./pages/AdminClientes"
+import NovoCliente from "./pages/NovoCliente"
+import AdminMotoristas from "./pages/AdminMotoristas"
+import NovoMotorista from "./pages/NovoMotorista"
+import AdminVeiculos from "./pages/AdminVeiculos"
+import NovoVeiculo from "./pages/NovoVeiculo"
+import AdminViagens from "./pages/AdminViagens"
+import NovaViagem from "./pages/NovaViagem"
+import DetalheViagem from "./pages/DetalheViagem"
+import AdminRelatorios from "./pages/AdminRelatorios"
+import AdminBusca from "./pages/AdminBusca"
 
 function App() {
   return (
@@ -39,15 +50,7 @@ function App() {
 
         <Route path="/admin/cargas/editar/:id" element={<EditarCarga />} />
 
-        <Route
-          path="/areas-atendidas"
-          element={<AreasAtendidas />}
-        />
-
-        <Route
-          path="/orcamento"
-          element={<Orcamento />}
-        />
+        <Route path="/admin/cotacoes" element={<AdminCotacoes />} />
 
         <Route path="/parceiros" element={<Parceiros />} />
 
@@ -58,7 +61,55 @@ function App() {
         <Route path="/motorista" element={<Motorista />} />
 
         <Route path="/orçamento" element={<Orcamento />} />
+
+        <Route path="/admin/motoristas/novo" element={<NovoMotorista />} />
+
+        <Route path="/admin/veiculos" element={<AdminVeiculos />} />
+
+        <Route path="/admin/viagens" element={<AdminViagens />} />
+
+        <Route path="/admin/viagens/:id" element={<DetalheViagem />} />
+
+        <Route path="/admin/relatorios" element={<AdminRelatorios />} />
+
+        <Route path="/admin/busca" element={<AdminBusca />} />
+
+        <Route
+          path="/areas-atendidas"
+          element={<AreasAtendidas />}
+        />
+
+        <Route
+          path="/orcamento"
+          element={<Orcamento />}
+        />
+
+        <Route
+          path="/admin/clientes"
+          element={<AdminClientes />}
+        />
+
+        <Route
+          path="/admin/clientes/novo"
+          element={<NovoCliente />}
+        />
+
+        <Route
+          path="/admin/motoristas"
+          element={<AdminMotoristas />}
+        />
+
+        <Route
+          path="/admin/veiculos/novo"
+          element={<NovoVeiculo />}
+        />
+
+        <Route
+          path="/admin/viagens/nova"
+          element={<NovaViagem />}
+        />
       </Routes>
+
     </BrowserRouter>
   )
 }

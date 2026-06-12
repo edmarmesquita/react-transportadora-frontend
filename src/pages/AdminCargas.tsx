@@ -11,6 +11,8 @@ type Carga = {
     status: string
     local_atual: string
     destino: string
+    motorista: string
+    veiculo: string
 }
 
 function AdminCargas() {
@@ -114,9 +116,12 @@ function AdminCargas() {
                         </p>
                     </div>
 
-                    <button className="btn-nova-carga">
+                    <Link
+                        to="/admin/cargas/nova"
+                        className="btn-nova-carga"
+                    >
                         Nova Carga
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="busca-box">
@@ -159,6 +164,8 @@ function AdminCargas() {
                                         <th>Local Atual</th>
                                         <th>Destino</th>
                                         <th>Ações</th>
+                                        <th>Motorista</th>
+                                        <th>Veículo</th>
                                     </tr>
                                 </thead>
 
@@ -180,6 +187,8 @@ function AdminCargas() {
 
                                             <td>{carga.local_atual}</td>
                                             <td>{carga.destino}</td>
+                                            <td>{carga.motorista || "Não definido"}</td>
+                                            <td>{carga.veiculo || "Não definido"}</td>
 
                                             <td className="acoes-carga">
                                                 <Link
