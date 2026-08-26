@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
+import { apiFetch } from "../services/api"
 
 function NovoCliente() {
     const navigate = useNavigate()
@@ -34,8 +35,8 @@ function NovoCliente() {
         event.preventDefault()
 
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/admin/clientes",
+            const resposta = await apiFetch(
+                "/api/admin/clientes",
                 {
                     method: "POST",
                     headers: {

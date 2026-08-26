@@ -1,59 +1,56 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+    login,
+    salvarToken,
+    salvarUsuarioLogado,
+} from "../services/authService";
 
 function AdminLogin() {
-    const navigate = useNavigate()
-    const [usuario, setUsuario] = useState("")
-    const [senha, setSenha] = useState("")
-    const [erro, setErro] = useState("")
-    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate();
+
+    const [usuario, setUsuario] = useState("");
+    const [senha, setSenha] = useState("");
+    const [erro, setErro] = useState("");
+    const [loading, setLoading] = useState(false);
 
     async function handleLogin(
         event: React.FormEvent<HTMLFormElement>
     ) {
-        event.preventDefault()
+        event.preventDefault();
 
-        setErro("")
-        setLoading(true)
+        setErro("");
+        setLoading(true);
 
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/login",
-                {
-                    method: "POST",
+            const dados = await login({
+                usuario,
+                senha,
+            });
 
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+            salvarToken(dados.access_token);
+            salvarUsuarioLogado(dados.usuario);
 
-                    body: JSON.stringify({
-                        usuario,
-                        senha,
-                    }),
-                }
-            )
+            const perfil = dados.usuario.perfil.toLowerCase();
 
-            const dados = await resposta.json()
-
-            if (!resposta.ok) {
-                setErro(
-                    dados.erro || "Erro ao fazer login."
-                )
-
-                setLoading(false)
-
-                return
+            if (perfil === "motorista") {
+                navigate("/portal/motorista");
+            } else if (perfil === "cliente") {
+                navigate("/portal/cliente");
+            } else {
+                navigate("/admin");
             }
+            console.log("LOGIN:", dados);
 
-            console.log("LOGIN:", dados)
 
-            navigate("/admin")
-
-            setLoading(false)
-        } catch {
-            setErro("Erro ao conectar com o servidor.")
-
-            setLoading(false)
+        } catch (error) {
+            if (error instanceof Error) {
+                setErro(error.message);
+            } else {
+                setErro("Erro ao conectar com o servidor.");
+            }
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -83,7 +80,7 @@ function AdminLogin() {
                     }
                 />
 
-                <button type="submit">
+                <button type="submit" disabled={loading}>
                     {loading ? "Entrando..." : "Entrar"}
                 </button>
 
@@ -94,7 +91,7 @@ function AdminLogin() {
                 )}
             </form>
         </div>
-    )
+    );
 }
 
-export default AdminLogin
+export default AdminLogin;

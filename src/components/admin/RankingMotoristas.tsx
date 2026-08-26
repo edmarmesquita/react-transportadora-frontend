@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
 
 type MotoristaRanking = {
     nome: string
@@ -9,8 +10,8 @@ function RankingMotoristas() {
     const [ranking, setRanking] = useState<MotoristaRanking[]>([])
 
     async function carregarRanking() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/ranking-motoristas"
+        const resposta = await apiFetch(
+            "/api/admin/ranking-motoristas"
         )
 
         const dados = await resposta.json()

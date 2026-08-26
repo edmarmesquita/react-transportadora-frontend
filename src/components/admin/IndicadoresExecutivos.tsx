@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
 
 type Indicadores = {
     ticket_medio: number
@@ -10,8 +11,8 @@ function IndicadoresExecutivos() {
     const [indicadores, setIndicadores] = useState<Indicadores | null>(null)
 
     async function carregarIndicadores() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/indicadores"
+        const resposta = await apiFetch(
+            "/api/admin/indicadores"
         )
 
         const dados = await resposta.json()
@@ -23,11 +24,16 @@ function IndicadoresExecutivos() {
         carregarIndicadores()
     }, [])
 
-    function formatarMoeda(valor: number) {
-        return valor.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        })
+    function formatar(valor: number) {
+        if (valor >= 1000000) {
+            return `R$ ${(valor / 1000000).toFixed(1).replace(".", ",")} mi`
+        }
+
+        if (valor >= 1000) {
+            return `R$ ${(valor / 1000).toFixed(1).replace(".", ",")} mil`
+        }
+
+        return `R$ ${valor.toFixed(2).replace(".", ",")}`
     }
 
     return (
@@ -48,7 +54,7 @@ function IndicadoresExecutivos() {
 
             <div className="card-dashboard card-indicador card-cotacoes">
                 <h3>Ticket Médio</h3>
-                <strong>{formatarMoeda(indicadores?.ticket_medio || 0)}</strong>
+                <strong>{formatar(indicadores?.ticket_medio || 0)}</strong>
             </div>
 
             <div className="card-dashboard card-indicador card-transito">

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
+import { apiFetch } from "../services/api"
 
 function NovaCarga() {
     const navigate = useNavigate()
@@ -39,8 +40,8 @@ function NovaCarga() {
         setLoading(true)
 
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/admin/cargas",
+            const resposta = await apiFetch(
+                "/api/admin/cargas",
                 {
                     method: "POST",
                     headers: {

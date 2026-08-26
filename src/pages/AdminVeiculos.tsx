@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
+import { apiFetch } from "../services/api"
+import AdminHeader from "../components/layout/AdminHeader"
 
 type Veiculo = {
     id: number
@@ -16,11 +18,10 @@ type Veiculo = {
 
 function AdminVeiculos() {
     const [veiculos, setVeiculos] = useState<Veiculo[]>([])
+    const [filtroStatus, setFiltroStatus] = useState("Todos")
 
     async function carregarVeiculos() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/veiculos"
-        )
+        const resposta = await apiFetch("/api/admin/veiculos")
 
         const dados = await resposta.json()
 
@@ -31,25 +32,52 @@ function AdminVeiculos() {
         carregarVeiculos()
     }, [])
 
+    async function inativarVeiculo(id: number) {
+        const confirmar = window.confirm(
+            "Deseja inativar este veículo?"
+        )
+
+        if (!confirmar) return
+
+        const resposta = await apiFetch(
+            `/api/admin/veiculos/${id}/inativar`,
+            {
+                method: "PUT",
+            }
+        )
+
+        const dados = await resposta.json().catch(() => ({}))
+
+        if (resposta.status === 403) {
+            alert(dados.erro || "Você não possui permissão para inativar veículos.")
+            return
+        }
+
+        if (!resposta.ok) {
+            alert(dados.erro || "Não foi possível inativar o veículo.")
+            return
+        }
+
+        carregarVeiculos()
+    }
+
+    const veiculosFiltrados = veiculos.filter((veiculo) => {
+        if (filtroStatus === "Todos") return true
+
+        return veiculo.status === filtroStatus
+    })
+
     return (
         <AdminLayout>
             <div className="admin-page">
-                <div className="page-header">
-                    <div>
-                        <h1>Veículos</h1>
-
-                        <p>
-                            Gerenciamento da frota da transportadora
-                        </p>
-                    </div>
-
-                    <Link
-                        to="/admin/veiculos/novo"
-                        className="btn-nova-carga"
-                    >
+                <AdminHeader
+                    title="Veículos"
+                    subtitle="Gerencie os veículos da frota."
+                >
+                    <Link to="/admin/veiculos/novo" className="btn-primary">
                         Novo Veículo
                     </Link>
-                </div>
+                </AdminHeader>
 
                 <div className="tabela-cargas">
                     <table>
@@ -61,11 +89,12 @@ function AdminVeiculos() {
                                 <th>Tipo</th>
                                 <th>Ano</th>
                                 <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {veiculos.map((veiculo) => (
+                            {veiculosFiltrados.map((veiculo) => (
                                 <tr key={veiculo.id}>
                                     <td>{veiculo.placa}</td>
                                     <td>{veiculo.modelo}</td>
@@ -77,11 +106,36 @@ function AdminVeiculos() {
                                             {veiculo.status}
                                         </span>
                                     </td>
+
+                                    <td>
+                                        <div className="acoes-carga">
+                                            <Link
+                                                to={`/admin/veiculos/${veiculo.id}/editar`}
+                                                className="btn-editar"
+                                            >
+                                                Editar
+                                            </Link>
+
+                                            <button
+                                                className="btn-excluir"
+                                                onClick={() => inativarVeiculo(veiculo.id)}
+                                            >
+                                                Inativar
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div className="filtro-status">
+                <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
+                <button onClick={() => setFiltroStatus("Disponível")}>Disponíveis</button>
+                <button onClick={() => setFiltroStatus("Em viagem")}>Em viagem</button>
+                <button onClick={() => setFiltroStatus("Manutenção")}>Manutenção</button>
+                <button onClick={() => setFiltroStatus("Inativo")}>Inativos</button>
             </div>
         </AdminLayout>
     )

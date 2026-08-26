@@ -1,10 +1,18 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import AdminLayout from "../components/admin/AdminLayout"
+import AdminLayout from "../components/admin/AdminLayout";
+import { apiFetch } from "../services/api";
+import { buscarUsuarioLogado } from "../services/authService";
 
 function NovoMotorista() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const usuario = buscarUsuarioLogado();
+    const administrador =
+        usuario?.perfil?.trim().toLowerCase() === "administrador";
+
+    const [salvando, setSalvando] = useState(false);
+    const [mensagemErro, setMensagemErro] = useState("");
 
     const [formData, setFormData] = useState({
         nome: "",
@@ -18,7 +26,7 @@ function NovoMotorista() {
         senha: "",
         status: "Ativo",
         observacoes: "",
-    })
+    });
 
     function handleChange(
         event:
@@ -26,37 +34,63 @@ function NovoMotorista() {
             | React.ChangeEvent<HTMLSelectElement>
             | React.ChangeEvent<HTMLTextAreaElement>
     ) {
-        const { name, value } = event.target
+        const { name, value } = event.target;
 
         setFormData((prev) => ({
             ...prev,
             [name]: value,
-        }))
+        }));
     }
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
+    async function handleSubmit(
+        event: React.FormEvent<HTMLFormElement>
+    ) {
+        event.preventDefault();
 
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/admin/motoristas",
+            setSalvando(true);
+            setMensagemErro("");
+
+            const resposta = await apiFetch(
+                "/api/admin/motoristas",
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        ...formData,
+                        ...(administrador ? {} : { status: undefined }),
+                    }),
                 }
-            )
+            );
+
+            const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                alert("Erro ao cadastrar motorista.")
-                return
+                throw new Error(
+                    dados?.erro ||
+                    dados?.msg ||
+                    "Erro ao cadastrar motorista."
+                );
             }
 
-            navigate("/admin/motoristas")
-        } catch {
-            alert("Erro ao conectar com o servidor.")
+            alert(
+                dados?.mensagem ||
+                "Motorista cadastrado com sucesso!"
+            );
+
+            navigate("/admin/motoristas");
+        } catch (erro) {
+            if (erro instanceof Error) {
+                setMensagemErro(erro.message);
+            } else {
+                setMensagemErro(
+                    "Erro ao conectar com o servidor."
+                );
+            }
+        } finally {
+            setSalvando(false);
         }
     }
 
@@ -70,10 +104,21 @@ function NovoMotorista() {
                     </div>
                 </div>
 
-                <form className="admin-form" onSubmit={handleSubmit}>
+                {mensagemErro && (
+                    <p className="mensagem-erro">
+                        {mensagemErro}
+                    </p>
+                )}
+
+                <form
+                    className="admin-form"
+                    onSubmit={handleSubmit}
+                >
                     <div className="linha-input">
-                        <label>Nome</label>
+                        <label htmlFor="nome">Nome</label>
+
                         <input
+                            id="nome"
                             name="nome"
                             value={formData.nome}
                             onChange={handleChange}
@@ -82,8 +127,10 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>CPF</label>
+                        <label htmlFor="cpf">CPF</label>
+
                         <input
+                            id="cpf"
                             name="cpf"
                             value={formData.cpf}
                             onChange={handleChange}
@@ -91,8 +138,10 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>CNH</label>
+                        <label htmlFor="cnh">CNH</label>
+
                         <input
+                            id="cnh"
                             name="cnh"
                             value={formData.cnh}
                             onChange={handleChange}
@@ -100,17 +149,39 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Categoria CNH</label>
-                        <input
+                        <label htmlFor="categoria_cnh">
+                            Categoria CNH
+                        </label>
+
+                        <select
+                            id="categoria_cnh"
                             name="categoria_cnh"
                             value={formData.categoria_cnh}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">
+                                Selecione
+                            </option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                            <option value="AB">AB</option>
+                            <option value="AC">AC</option>
+                            <option value="AD">AD</option>
+                            <option value="AE">AE</option>
+                        </select>
                     </div>
 
                     <div className="linha-input">
-                        <label>Validade CNH</label>
+                        <label htmlFor="validade_cnh">
+                            Validade CNH
+                        </label>
+
                         <input
+                            id="validade_cnh"
+                            type="date"
                             name="validade_cnh"
                             value={formData.validade_cnh}
                             onChange={handleChange}
@@ -118,8 +189,13 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Telefone</label>
+                        <label htmlFor="telefone">
+                            Telefone
+                        </label>
+
                         <input
+                            id="telefone"
+                            type="tel"
                             name="telefone"
                             value={formData.telefone}
                             onChange={handleChange}
@@ -127,8 +203,11 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>E-mail</label>
+                        <label htmlFor="email">E-mail</label>
+
                         <input
+                            id="email"
+                            type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
@@ -136,46 +215,82 @@ function NovoMotorista() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Usuário de acesso</label>
+                        <label htmlFor="usuario">
+                            Usuário de acesso
+                        </label>
+
                         <input
+                            id="usuario"
                             name="usuario"
                             value={formData.usuario}
                             onChange={handleChange}
+                            autoComplete="username"
                         />
                     </div>
 
                     <div className="linha-input">
-                        <label>Senha de acesso</label>
+                        <label htmlFor="senha">
+                            Senha de acesso
+                        </label>
+
                         <input
+                            id="senha"
+                            type="password"
                             name="senha"
                             value={formData.senha}
                             onChange={handleChange}
+                            autoComplete="new-password"
                         />
                     </div>
 
-                    <div className="linha-input">
-                        <label>Status</label>
+                    {administrador && (
+                        <div className="linha-input">
+                            <label htmlFor="status">Status</label>
 
-                        <select
-                            name="status"
-                            value={formData.status}
+                            <select
+                                id="status"
+                                name="status"
+                                value={formData.status}
+                                onChange={handleChange}
+                            >
+                                <option value="Ativo">
+                                    Ativo
+                                </option>
+
+                                <option value="Inativo">
+                                    Inativo
+                                </option>
+                            </select>
+                        </div>
+                    )}
+
+                    <div className="linha-input">
+                        <label htmlFor="observacoes">
+                            Observações
+                        </label>
+
+                        <textarea
+                            id="observacoes"
+                            name="observacoes"
+                            value={formData.observacoes}
                             onChange={handleChange}
-                        >
-                            <option>Ativo</option>
-                            <option>Inativo</option>
-                        </select>
+                            rows={4}
+                        />
                     </div>
 
                     <button
                         className="btn-nova-carga"
                         type="submit"
+                        disabled={salvando}
                     >
-                        Salvar Motorista
+                        {salvando
+                            ? "Salvando..."
+                            : "Salvar Motorista"}
                     </button>
                 </form>
             </div>
         </AdminLayout>
-    )
+    );
 }
 
-export default NovoMotorista
+export default NovoMotorista;

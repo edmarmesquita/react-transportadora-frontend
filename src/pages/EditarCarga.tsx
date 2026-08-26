@@ -2,70 +2,78 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
+import { useNotification } from "../components/ui/NotificationProvider"
+import { apiFetch } from "../services/api"
+
+type FormCarga = {
+    codigo: string
+    cliente: string
+    local_atual: string
+    destino: string
+    valor_frete: string
+    status_pagamento: string
+}
 
 function EditarCarga() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { notificar } = useNotification()
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormCarga>({
         codigo: "",
         cliente: "",
-        status: "",
         local_atual: "",
         destino: "",
-        motorista_id: "",
-        veiculo_id: "",
         valor_frete: "",
-        status_pagamento: "Pendente"
+        status_pagamento: "Pendente",
     })
 
-    const [erro, setErro] = useState("")
     const [loading, setLoading] = useState(true)
     const [salvando, setSalvando] = useState(false)
-    const [motoristas, setMotoristas] = useState([])
-    const [veiculos, setVeiculos] = useState([])
-
-    async function carregarOpcoes() {
-        const respostaMotoristas = await fetch(
-            "http://127.0.0.1:5000/api/admin/motoristas"
-        )
-
-        const dadosMotoristas = await respostaMotoristas.json()
-
-        const respostaVeiculos = await fetch(
-            "http://127.0.0.1:5000/api/admin/veiculos"
-        )
-
-        const dadosVeiculos = await respostaVeiculos.json()
-
-        setMotoristas(dadosMotoristas)
-        setVeiculos(dadosVeiculos)
-    }
-
 
     async function carregarCarga() {
-        try {
-            const resposta = await fetch(
-                `http://127.0.0.1:5000/api/carga/${id}`
+        const resposta = await apiFetch(
+            `/api/admin/cargas/${id}`
+        )
+
+        const dados = await resposta.json()
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados.erro ||
+                dados.msg ||
+                "Erro ao carregar carga."
             )
+        }
 
-            const dados = await resposta.json()
+        setFormData({
+            codigo: dados.codigo || "",
+            cliente: dados.cliente || "",
+            local_atual: dados.local_atual || "",
+            destino: dados.destino || "",
+            valor_frete: dados.valor_frete !== null &&
+                dados.valor_frete !== undefined
+                ? String(dados.valor_frete)
+                : "",
+            status_pagamento:
+                dados.status_pagamento || "Pendente",
+        })
+    }
 
-            setFormData({
-                codigo: dados.codigo,
-                cliente: dados.cliente,
-                status: dados.status,
-                local_atual: dados.local_atual,
-                destino: dados.destino,
-                motorista_id: dados.motorista_id ? String(dados.motorista_id) : "",
-                veiculo_id: dados.veiculo_id ? String(dados.veiculo_id) : "",
-                valor_frete: dados.valor_frete || "",
-                status_pagamento: dados.status_pagamento || "Pendente",
-            })
-
-            setLoading(false)
-        } catch {
-            setErro("Erro ao carregar carga.")
+    async function carregarPagina() {
+        try {
+            setLoading(true)
+            await carregarCarga()
+        } catch (error) {
+            if (error instanceof Error) {
+                notificar("erro", error.message)
+            } else {
+                notificar(
+                    "erro",
+                    "Não foi possível carregar os dados."
+                )
+            }
+        } finally {
             setLoading(false)
         }
     }
@@ -83,15 +91,16 @@ function EditarCarga() {
         }))
     }
 
-    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(
+        event: React.FormEvent<HTMLFormElement>
+    ) {
         event.preventDefault()
 
-        setErro("")
-        setSalvando(true)
-
         try {
-            const resposta = await fetch(
-                `http://127.0.0.1:5000/api/admin/cargas/${id}`,
+            setSalvando(true)
+
+            const resposta = await apiFetch(
+                `/api/admin/cargas/${id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -104,22 +113,37 @@ function EditarCarga() {
             const dados = await resposta.json()
 
             if (!resposta.ok) {
-                setErro(dados.erro || "Erro ao atualizar carga.")
-                setSalvando(false)
-                return
+                throw new Error(
+                    dados.erro ||
+                    dados.msg ||
+                    "Erro ao atualizar carga."
+                )
             }
 
+            notificar(
+                "sucesso",
+                dados.mensagem ||
+                "Carga atualizada com sucesso!"
+            )
+
             navigate("/admin/cargas")
-        } catch {
-            setErro("Erro ao conectar com o servidor.")
+        } catch (error) {
+            if (error instanceof Error) {
+                notificar("erro", error.message)
+            } else {
+                notificar(
+                    "erro",
+                    "Erro ao conectar com o servidor."
+                )
+            }
+        } finally {
             setSalvando(false)
         }
     }
 
     useEffect(() => {
-        carregarCarga()
-        carregarOpcoes()
-    }, [])
+        carregarPagina()
+    }, [id])
 
     if (loading) {
         return (
@@ -137,14 +161,25 @@ function EditarCarga() {
                 <div className="page-header">
                     <div>
                         <h1>Editar Carga</h1>
-                        <p>Atualize os dados operacionais da carga</p>
+
+                        <p>
+                            Atualize os dados cadastrais e
+                            comerciais da carga.
+                        </p>
                     </div>
                 </div>
 
-                <form className="admin-form" onSubmit={handleSubmit}>
+                <form
+                    className="admin-form"
+                    onSubmit={handleSubmit}
+                >
                     <div className="linha-input">
-                        <label>Código</label>
+                        <label htmlFor="codigo">
+                            Código
+                        </label>
+
                         <input
+                            id="codigo"
                             name="codigo"
                             value={formData.codigo}
                             onChange={handleChange}
@@ -153,8 +188,12 @@ function EditarCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Cliente</label>
+                        <label htmlFor="cliente">
+                            Cliente
+                        </label>
+
                         <input
+                            id="cliente"
                             name="cliente"
                             value={formData.cliente}
                             onChange={handleChange}
@@ -163,50 +202,12 @@ function EditarCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Status</label>
-                        <select
-                            name="status"
-                            value={formData.status}
-                            onChange={handleChange}
-                        >
-                            <option>Em coleta</option>
-                            <option>Em trânsito</option>
-                            <option>Saiu para entrega</option>
-                            <option>Entregue</option>
-                        </select>
-                    </div>
+                        <label htmlFor="local_atual">
+                            Local atual
+                        </label>
 
-                    <select
-                        name="motorista_id"
-                        value={formData.motorista_id}
-                        onChange={handleChange}
-                    >
-                        <option value="">Selecione o motorista</option>
-
-                        {motoristas.map((motorista: any) => (
-                            <option key={motorista.id} value={motorista.id}>
-                                {motorista.nome}
-                            </option>
-                        ))}
-                    </select>
-
-                    <select
-                        name="veiculo_id"
-                        value={formData.veiculo_id}
-                        onChange={handleChange}
-                    >
-                        <option value="">Selecione o veículo</option>
-
-                        {veiculos.map((veiculo: any) => (
-                            <option key={veiculo.id} value={veiculo.id}>
-                                {veiculo.placa} - {veiculo.modelo}
-                            </option>
-                        ))}
-                    </select>
-
-                    <div className="linha-input">
-                        <label>Local atual</label>
                         <input
+                            id="local_atual"
                             name="local_atual"
                             value={formData.local_atual}
                             onChange={handleChange}
@@ -215,8 +216,12 @@ function EditarCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Destino</label>
+                        <label htmlFor="destino">
+                            Destino
+                        </label>
+
                         <input
+                            id="destino"
                             name="destino"
                             value={formData.destino}
                             onChange={handleChange}
@@ -225,32 +230,50 @@ function EditarCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Valor do frete</label>
+                        <label htmlFor="valor_frete">
+                            Valor do frete
+                        </label>
 
                         <input
+                            id="valor_frete"
                             name="valor_frete"
+                            type="number"
+                            min="0"
+                            step="0.01"
                             value={formData.valor_frete}
                             onChange={handleChange}
                         />
                     </div>
 
                     <div className="linha-input">
-                        <label>Status do pagamento</label>
+                        <label htmlFor="status_pagamento">
+                            Status do pagamento
+                        </label>
 
                         <select
+                            id="status_pagamento"
                             name="status_pagamento"
                             value={formData.status_pagamento}
                             onChange={handleChange}
                         >
-                            <option>Pendente</option>
-                            <option>Pago</option>
+                            <option value="Pendente">
+                                Pendente
+                            </option>
+
+                            <option value="Pago">
+                                Pago
+                            </option>
                         </select>
                     </div>
 
-                    {erro && <p className="mensagem-erro">{erro}</p>}
-
-                    <button className="btn-nova-carga" type="submit">
-                        {salvando ? "Salvando..." : "Salvar Alterações"}
+                    <button
+                        className="btn-nova-carga"
+                        type="submit"
+                        disabled={salvando}
+                    >
+                        {salvando
+                            ? "Salvando..."
+                            : "Salvar Alterações"}
                     </button>
                 </form>
             </div>

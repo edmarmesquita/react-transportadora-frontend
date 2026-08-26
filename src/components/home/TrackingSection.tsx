@@ -2,6 +2,7 @@ import { useState } from "react"
 
 import BrazilMap from "./BrazilMap"
 import TrackingForm from "./TrackingForm"
+import { apiFetch } from "../../services/api"
 
 type TrackingData = {
     id: number
@@ -24,8 +25,8 @@ function TrackingSection() {
         setResultado(null)
 
         try {
-            const resposta = await fetch(
-                `http://127.0.0.1:5000/api/rastreamento/${codigo}`
+            const resposta = await apiFetch(
+                `/api/rastreamento/${codigo}`
             )
 
             const dados = await resposta.json()

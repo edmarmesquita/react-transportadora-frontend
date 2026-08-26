@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react"
+import { CartesianGrid } from "recharts"
+
 import {
     LineChart,
     Line,
@@ -6,32 +9,51 @@ import {
     Tooltip,
     ResponsiveContainer,
 } from "recharts"
+import { apiFetch } from "../../services/api"
 
-const dados = [
-    { mes: "Jan", viagens: 12 },
-    { mes: "Fev", viagens: 19 },
-    { mes: "Mar", viagens: 15 },
-    { mes: "Abr", viagens: 24 },
-    { mes: "Mai", viagens: 30 },
-]
+type EvolucaoViagem = {
+    mes: string
+    total: number
+}
 
 function GraficoViagens() {
+    const [dados, setDados] = useState<EvolucaoViagem[]>([])
+
+    async function carregarDados() {
+        const resposta = await apiFetch(
+            "/api/admin/viagens/evolucao"
+        )
+
+        const dadosApi = await resposta.json()
+
+        setDados(dadosApi)
+    }
+
+    useEffect(() => {
+        carregarDados()
+    }, [])
+
     return (
         <div className="grafico-card">
             <h2>Evolução das Viagens</h2>
 
             <div className="grafico-area">
+                <CartesianGrid strokeDasharray="3 3" />
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={dados}>
                         <XAxis dataKey="mes" />
                         <YAxis />
-                        <Tooltip />
+                        <Tooltip
+                            formatter={(value) => [`${value} viagem(ns)`, "Total"]}
+                        />
 
                         <Line
                             type="monotone"
-                            dataKey="viagens"
+                            dataKey="total"
                             stroke="#e60000"
-                            strokeWidth={3}
+                            strokeWidth={4}
+                            dot={{ r: 6 }}
+                            activeDot={{ r: 8 }}
                         />
                     </LineChart>
                 </ResponsiveContainer>

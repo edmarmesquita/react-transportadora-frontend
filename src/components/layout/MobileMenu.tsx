@@ -10,6 +10,13 @@ function MobileMenu({ fecharMenu }: MobileMenuProps) {
                 Home
             </a>
 
+            <NavLink
+                to="/sobre"
+                onClick={fecharMenu}
+            >
+                Sobre Nós
+            </NavLink>
+
             <a href="#" onClick={fecharMenu}>
                 Nossa Frota
             </a>

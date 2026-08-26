@@ -1,65 +1,38 @@
-import {
-    LayoutDashboard,
-    Truck,
-    Users,
-    UserCog,
-    FileBarChart,
-    Package,
-    ClipboardList,
-    MapPinned,
-} from "lucide-react"
-
-import { Link } from "react-router-dom"
+import { NavLink } from "react-router-dom";
+import { adminMenu } from "../../data/adminMenu";
+import { buscarUsuarioLogado } from "../../services/authService";
 
 function AdminSidebar() {
+    const usuarioLogado = buscarUsuarioLogado();
+
+    const perfil = usuarioLogado?.perfil?.toLowerCase() ?? "";
+
+    const menuPermitido = adminMenu.filter((item) =>
+        item.perfis.includes(perfil)
+    );
+
     return (
         <aside className="admin-sidebar">
             <h2>Ramos</h2>
 
             <nav>
-                <Link to="/admin">
-                    <LayoutDashboard size={20} />
-                    Dashboard
-                </Link>
+                {menuPermitido.map((item) => {
+                    const Icone = item.icone;
 
-                <Link to="/admin/cargas">
-                    <Truck size={20} />
-                    Cargas
-                </Link>
-
-                <Link to="/admin/clientes">
-                    <Users size={20} />
-                    Clientes
-                </Link>
-
-                <Link to="/admin/motoristas">
-                    <UserCog size={20} />
-                    Motoristas
-                </Link>
-
-                <Link to="/admin/veiculos">
-                    <Package size={20} />
-                    Veículos
-                </Link>
-
-                <Link to="/admin/relatorios">
-                    <FileBarChart size={20} />
-                    Relatórios
-                </Link>
-
-                <Link to="/admin/cotacoes">
-                    <ClipboardList size={20} />
-                    Cotações
-                </Link>
-
-                <Link to="/admin/viagens">
-                    <MapPinned size={20} />
-                    Viagens
-                </Link>
-
+                    return (
+                        <NavLink
+                            key={item.rota}
+                            to={item.rota}
+                            end={item.end}
+                        >
+                            <Icone size={20} />
+                            {item.titulo}
+                        </NavLink>
+                    );
+                })}
             </nav>
         </aside>
-    )
+    );
 }
 
-export default AdminSidebar
+export default AdminSidebar;

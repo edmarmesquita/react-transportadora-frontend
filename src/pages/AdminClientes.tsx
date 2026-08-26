@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
+import AdminHeader from "../components/layout/AdminHeader"
+import { apiFetch } from "../services/api"
 
 type Cliente = {
     id: number
@@ -18,10 +20,11 @@ type Cliente = {
 
 function AdminClientes() {
     const [clientes, setClientes] = useState<Cliente[]>([])
+    const [filtroStatus, setFiltroStatus] = useState("Todos")
 
     async function carregarClientes() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/clientes"
+        const resposta = await apiFetch(
+            "/api/admin/clientes"
         )
 
         const dados = await resposta.json()
@@ -29,28 +32,60 @@ function AdminClientes() {
         setClientes(dados)
     }
 
+    async function inativarCliente(id: number) {
+        const confirmar = window.confirm("Deseja inativar este cliente?")
+
+        if (!confirmar) return
+
+        const resposta = await apiFetch(`/api/admin/clientes/${id}/inativar`, {
+            method: "PUT",
+        })
+
+        const dados = await resposta.json().catch(() => null)
+
+        if (resposta.status === 403) {
+            alert(
+                dados?.erro ||
+                "Você não possui permissão para inativar clientes."
+            )
+            return
+        }
+
+        if (!resposta.ok) {
+            alert(
+                dados?.erro ||
+                dados?.msg ||
+                "Não foi possível inativar o cliente."
+            )
+            return
+        }
+
+        carregarClientes()
+    }
+
     useEffect(() => {
         carregarClientes()
     }, [])
 
+    const clientesFiltrados = clientes.filter((cliente) => {
+        if (filtroStatus === "Todos") return true
+        if (filtroStatus === "Ativos") return cliente.ativo
+        if (filtroStatus === "Inativos") return !cliente.ativo
+
+        return true
+    })
+
     return (
         <AdminLayout>
             <div className="admin-page">
-                <div className="page-header">
-                    <div>
-                        <h1>Clientes</h1>
-
-                        <p>
-                            Gerenciamento de clientes da transportadora
-                        </p>
-                    </div>
-                    <Link
-                        to="/admin/clientes/novo"
-                        className="btn-nova-carga"
-                    >
+                <AdminHeader
+                    title="Clientes"
+                    subtitle="Gerencie os clientes cadastrados."
+                >
+                    <Link to="/admin/clientes/novo" className="btn-primary">
                         Novo Cliente
                     </Link>
-                </div>
+                </AdminHeader>
 
                 <div className="tabela-cargas">
                     <table>
@@ -65,7 +100,7 @@ function AdminClientes() {
                         </thead>
 
                         <tbody>
-                            {clientes.map((cliente) => (
+                            {clientesFiltrados.map((cliente) => (
                                 <tr key={cliente.id}>
                                     <td>{cliente.razao_social}</td>
 
@@ -90,10 +125,34 @@ function AdminClientes() {
                                                 : "Inativo"}
                                         </span>
                                     </td>
+
+                                    <td>
+                                        <div className="acoes-tabela">
+                                            <Link
+                                                to={`/admin/clientes/${cliente.id}/editar`}
+                                                className="btn-editar"
+                                            >
+                                                Editar
+                                            </Link>
+
+                                            <button
+                                                className="btn-excluir"
+                                                onClick={() => inativarCliente(cliente.id)}
+                                            >
+                                                Inativar
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                </div>
+
+                <div className="filtro-status">
+                    <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
+                    <button onClick={() => setFiltroStatus("Ativos")}>Ativos</button>
+                    <button onClick={() => setFiltroStatus("Inativos")}>Inativos</button>
                 </div>
             </div>
         </AdminLayout>

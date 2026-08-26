@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
+import { buscarUsuarioLogado } from "../../services/authService";
 
 type Props = {
     viagemId: number
+    atualizacao?: number
 }
 
 type ArquivoComprovante = {
@@ -11,22 +14,39 @@ type ArquivoComprovante = {
     url: string
 }
 
-function ListaComprovantes({ viagemId }: Props) {
+function ListaComprovantes({
+    viagemId,
+    atualizacao = 0,
+}: Props) {
+    const usuario = buscarUsuarioLogado();
     const [arquivos, setArquivos] = useState<ArquivoComprovante[]>([])
 
     async function carregarArquivos() {
-        const resposta = await fetch(
-            `http://127.0.0.1:5000/api/admin/viagens/${viagemId}/comprovantes/arquivos`
-        )
+        const endpoint =
+            usuario?.perfil?.toLowerCase() === "motorista"
+                ? `/api/motorista/minhas-viagens/${viagemId}/comprovantes/arquivos`
+                : `/api/admin/viagens/${viagemId}/comprovantes/arquivos`;
 
-        const dados = await resposta.json()
+        const resposta = await apiFetch(endpoint);
 
-        setArquivos(dados)
+        const dados = await resposta.json().catch(() => null);
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados?.erro ||
+                dados?.msg ||
+                "Não foi possível carregar os comprovantes."
+            );
+        }
+
+        setArquivos(
+            Array.isArray(dados) ? dados : []
+        );
     }
 
     useEffect(() => {
         carregarArquivos()
-    }, [])
+    }, [viagemId, atualizacao])
 
     return (
         <div className="grafico-card">

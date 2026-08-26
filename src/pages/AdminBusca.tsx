@@ -1,14 +1,15 @@
 import { useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
+import { apiFetch } from "../services/api"
 
 function AdminBusca() {
     const [termo, setTermo] = useState("")
     const [resultado, setResultado] = useState<any>(null)
 
     async function buscar() {
-        const resposta = await fetch(
-            `http://127.0.0.1:5000/api/admin/busca?q=${termo}`
+        const resposta = await apiFetch(
+            `/api/admin/busca?q=${termo}`
         )
 
         const dados = await resposta.json()
@@ -45,7 +46,7 @@ function AdminBusca() {
                         {resultado.cargas.map((carga: any) => (
                             <Link
                                 key={carga.id}
-                                to={`/admin/carga/${carga.id}`}
+                                to={`/admin/cargas/${carga.id}`}
                                 className="resultado-link"
                             >
                                 📦 {carga.codigo} - {carga.cliente} - {carga.status}

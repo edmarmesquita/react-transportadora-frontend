@@ -1,5 +1,8 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
+import AdminHeader from "../components/layout/AdminHeader"
+import { apiFetch } from "../services/api";
 
 type Cotacao = {
     id: number
@@ -16,9 +19,81 @@ function AdminCotacoes() {
     const [cotacoes, setCotacoes] = useState<Cotacao[]>([])
 
     async function carregarCotacoes() {
-        const resposta = await fetch("http://127.0.0.1:5000/api/admin/cotacoes")
-        const dados = await resposta.json()
-        setCotacoes(dados)
+        try {
+            const resposta = await apiFetch(
+                "/api/admin/cotacoes"
+            )
+
+            const dados =
+                await resposta.json().catch(() => null)
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados?.erro ||
+                    dados?.msg ||
+                    "Não foi possível carregar as cotações."
+                )
+            }
+
+            setCotacoes(
+                Array.isArray(dados) ? dados : []
+            )
+        } catch (erro) {
+            console.error(
+                "Erro ao carregar cotações:",
+                erro
+            )
+
+            setCotacoes([])
+        }
+    }
+
+    async function aprovarCotacao(id: number) {
+        const confirmar = window.confirm(
+            "Deseja aprovar esta cotação e criar a carga?"
+        );
+
+        if (!confirmar) {
+            return;
+        }
+
+        try {
+            const resposta = await apiFetch(
+                `/api/admin/cotacoes/${id}/aprovar`,
+                {
+                    method: "POST",
+                }
+            );
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados?.erro ||
+                    dados?.mensagem ||
+                    "Não foi possível aprovar a cotação."
+                );
+            }
+
+            alert(
+                dados?.mensagem ||
+                "Cotação aprovada e carga criada com sucesso!"
+            );
+
+            setCotacoes((cotacoesAtuais) =>
+                cotacoesAtuais.filter(
+                    (cotacao) => cotacao.id !== id
+                )
+            );
+        } catch (erro) {
+            console.error("Erro ao aprovar cotação:", erro);
+
+            if (erro instanceof Error) {
+                alert(erro.message);
+            } else {
+                alert("Não foi possível aprovar a cotação.");
+            }
+        }
     }
 
     useEffect(() => {
@@ -28,12 +103,17 @@ function AdminCotacoes() {
     return (
         <AdminLayout>
             <div className="admin-page">
-                <div className="page-header">
-                    <div>
-                        <h1>Cotações</h1>
-                        <p>Solicitações recebidas pelo site</p>
-                    </div>
-                </div>
+                <AdminHeader
+                    title="Cotações"
+                    subtitle="Gerencie as cotações recebidas."
+                >
+                    <Link
+                        to="/admin/cotacoes/nova"
+                        className="btn-primary"
+                    >
+                        Nova Cotação
+                    </Link>
+                </AdminHeader>
 
                 <div className="tabela-cargas">
                     <table>
@@ -60,13 +140,26 @@ function AdminCotacoes() {
                                     <td>{cotacao.data_criacao}</td>
 
                                     <td>
-                                        <a
-                                            className="btn-whatsapp"
-                                            href={`https://wa.me/55${cotacao.whatsapp}`}
-                                            target="_blank"
-                                        >
-                                            Chamar
-                                        </a>
+                                        <div className="cotacao-acoes">
+                                            <a
+                                                className="btn-whatsapp"
+                                                href={`https://wa.me/55${cotacao.whatsapp}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                            >
+                                                Chamar
+                                            </a>
+
+                                            <button
+                                                type="button"
+                                                className="btn-aprovar-cotacao"
+                                                onClick={() =>
+                                                    aprovarCotacao(cotacao.id)
+                                                }
+                                            >
+                                                Aprovar
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
+import AdminHeader from "../components/layout/AdminHeader"
+import { apiFetch } from "../services/api"
 
 type Carga = {
     id: number
@@ -27,8 +29,8 @@ function AdminCargas() {
 
     async function carregarCargas() {
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/admin/cargas"
+            const resposta = await apiFetch(
+                "/api/admin/cargas"
             )
 
             const dados = await resposta.json()
@@ -61,30 +63,41 @@ function AdminCargas() {
     async function excluirCarga(id: number) {
         const confirmar = window.confirm(
             "Tem certeza que deseja excluir esta carga?"
-        )
+        );
 
         if (!confirmar) {
-            return
+            return;
         }
 
         try {
-            const resposta = await fetch(
-                `http://127.0.0.1:5000/api/admin/cargas/${id}`,
+            const resposta = await apiFetch(
+                `/api/admin/cargas/${id}`,
                 {
                     method: "DELETE",
                 }
-            )
+            );
+
+            const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                alert("Erro ao excluir carga.")
-                return
+                alert(
+                    dados?.erro ||
+                    dados?.msg ||
+                    "Não foi possível excluir a carga."
+                );
+                return;
             }
+
+            alert(
+                dados?.mensagem ||
+                "Carga excluída com sucesso!"
+            );
 
             setCargas((prev) =>
                 prev.filter((carga) => carga.id !== id)
-            )
+            );
         } catch {
-            alert("Erro ao conectar com o servidor.")
+            alert("Erro ao conectar com o servidor.");
         }
     }
 
@@ -107,22 +120,14 @@ function AdminCargas() {
     return (
         <AdminLayout>
             <div className="admin-page">
-                <div className="page-header">
-                    <div>
-                        <h1>Cargas</h1>
-
-                        <p>
-                            Gerenciamento operacional de cargas
-                        </p>
-                    </div>
-
-                    <Link
-                        to="/admin/cargas/nova"
-                        className="btn-nova-carga"
-                    >
+                <AdminHeader
+                    title="Cargas"
+                    subtitle="Gerencie as cargas da transportadora."
+                >
+                    <Link to="/admin/cargas/nova" className="btn-primary">
                         Nova Carga
                     </Link>
-                </div>
+                </AdminHeader>
 
                 <div className="busca-box">
                     <input
@@ -156,65 +161,74 @@ function AdminCargas() {
                     <>
                         <div className="tabela-cargas">
                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>Código</th>
-                                        <th>Cliente</th>
-                                        <th>Status</th>
-                                        <th>Local Atual</th>
-                                        <th>Destino</th>
-                                        <th>Ações</th>
-                                        <th>Motorista</th>
-                                        <th>Veículo</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {cargasPaginadas.map((carga) => (
-                                        <tr key={carga.id}>
-                                            <td>{carga.codigo}</td>
-                                            <td>{carga.cliente}</td>
-
-                                            <td>
-                                                <span
-                                                    className={`status status-${carga.status
-                                                        .toLowerCase()
-                                                        .replaceAll(" ", "-")}`}
-                                                >
-                                                    {carga.status}
-                                                </span>
-                                            </td>
-
-                                            <td>{carga.local_atual}</td>
-                                            <td>{carga.destino}</td>
-                                            <td>{carga.motorista || "Não definido"}</td>
-                                            <td>{carga.veiculo || "Não definido"}</td>
-
-                                            <td className="acoes-carga">
-                                                <Link
-                                                    to={`/admin/carga/${carga.id}`}
-                                                    className="btn-detalhes"
-                                                >
-                                                    Detalhes
-                                                </Link>
-
-                                                <Link
-                                                    to={`/admin/cargas/editar/${carga.id}`}
-                                                    className="btn-editar"
-                                                >
-                                                    Editar
-                                                </Link>
-
-                                                <button
-                                                    className="btn-excluir"
-                                                    onClick={() => excluirCarga(carga.id)}
-                                                >
-                                                    Excluir
-                                                </button>
-                                            </td>
+                                    <thead>
+                                        <tr>
+                                            <th>Código</th>
+                                            <th>Cliente</th>
+                                            <th>Status</th>
+                                            <th>Local Atual</th>
+                                            <th>Destino</th>
+                                            <th>Motorista</th>
+                                            <th>Veículo</th>
+                                            <th>Ações</th>
                                         </tr>
-                                    ))}
-                                </tbody>
+                                    </thead>
+
+                                    <tbody>
+                                        {cargasPaginadas.map((carga) => (
+                                            <tr key={carga.id}>
+                                                <td>{carga.codigo}</td>
+
+                                                <td>{carga.cliente}</td>
+
+                                                <td>
+                                                    <span className={`status-badge status-${carga.status}`}>
+                                                        {carga.status}
+                                                    </span>
+                                                </td>
+
+                                                <td>{carga.local_atual}</td>
+
+                                                <td>{carga.destino}</td>
+
+                                                <td>
+                                                    {carga.motorista || "Não atribuído"}
+                                                </td>
+
+                                                <td>
+                                                    {carga.veiculo || "Não atribuído"}
+                                                </td>
+
+                                                <td>
+                                                    <div className="acoes-carga">
+                                                        <Link
+                                                            to={`/admin/cargas/${carga.id}`}
+                                                            className="btn-detalhes"
+                                                        >
+                                                            Detalhes
+                                                        </Link>
+
+                                                        <Link
+                                                            to={`/admin/cargas/editar/${carga.id}`}
+                                                            className="btn-editar"
+                                                        >
+                                                            Editar
+                                                        </Link>
+
+                                                        <button
+                                                            type="button"
+                                                            className="btn-excluir"
+                                                            onClick={() => excluirCarga(carga.id)}
+                                                        >
+                                                            Excluir
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>   
+                                    
+                            
                             </table>
                         </div>
 

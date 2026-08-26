@@ -8,11 +8,15 @@ import ResumoFrota from "../components/admin/ResumoFrota"
 import ResumoFinanceiro from "../components/admin/ResumoFinanceiro"
 import CentroAlertas from "../components/admin/CentroAlertas"
 import IndicadoresExecutivos from "../components/admin/IndicadoresExecutivos"
+import TopClientes from "../components/admin/TopClientes"
+import TopRotas from "../components/admin/TopRotas"
 import {
   PackageCheck,
   Route,
   ClipboardList,
+  AlertTriangle
 } from "lucide-react"
+import { apiFetch } from "../services/api"
 
 
 type ResumoDashboard = {
@@ -44,16 +48,16 @@ function AdminDashboard() {
 
     async function carregarResumo() {
         try {
-            const resposta = await fetch(
-                "http://127.0.0.1:5000/api/admin/resumo"
+            const resposta = await apiFetch(
+                "/api/admin/resumo"
             )
 
             const dados = await resposta.json()
 
             setResumo(dados)
 
-            const respostaCargas = await fetch(
-                "http://127.0.0.1:5000/api/admin/cargas"
+            const respostaCargas = await apiFetch(
+                "/api/admin/cargas"
             )
 
             const dadosCargas = await respostaCargas.json()
@@ -81,8 +85,12 @@ function AdminDashboard() {
             <div className="admin-page">
                 <div className="page-header">
                     <div>
-                        <h1>Painel Administrativo</h1>
-                        <p>Visão geral da operação logística</p>
+                        <h1>🚚 Central de Operações</h1>
+
+                        <p>
+                            Controle e monitoramento em tempo real da
+                            Transportadora Ramos.
+                        </p>
                     </div>
                 </div>
 
@@ -116,13 +124,27 @@ function AdminDashboard() {
 
                         <strong>{resumo?.total_cotacoes}</strong>
                     </div>
+
+                    <div className="card-dashboard card-atrasadas">
+                        <div className="card-topo">
+                            <h3>Cargas Atrasadas</h3>
+
+                            <AlertTriangle size={32} />
+                        </div>
+
+                        <strong>{resumo?.atrasadas || 0}</strong>
+                    </div>
                 </div>
 
                 <ResumoFinanceiro />
 
                 <IndicadoresExecutivos />
 
+                <TopClientes />
+
                 <CentroAlertas />
+
+                <TopRotas />
 
                 <GraficoStatus
                     emColeta={resumo?.em_coleta || 0}
@@ -173,7 +195,7 @@ function AdminDashboard() {
 
                                 <td>
                                     <Link
-                                        to={`/admin/carga/${carga.id}`}
+                                        to={`/admin/cargas/${carga.id}`}
                                         className="btn-detalhes"
                                     >
                                         Ver detalhes

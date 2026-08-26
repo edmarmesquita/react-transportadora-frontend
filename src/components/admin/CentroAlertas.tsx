@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
 
 type Alerta = {
     tipo: string
@@ -10,8 +11,8 @@ function CentroAlertas() {
     const [alertas, setAlertas] = useState<Alerta[]>([])
 
     async function carregarAlertas() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/alertas"
+        const resposta = await apiFetch(
+            "/api/admin/alertas"
         )
 
         const dados = await resposta.json()
@@ -24,7 +25,7 @@ function CentroAlertas() {
     }, [])
 
     return (
-        <div className="grafico-card">
+        <div className="dashboard-bloco">
             <h2>Centro de Alertas</h2>
 
             {alertas.length === 0 ? (
@@ -38,7 +39,8 @@ function CentroAlertas() {
                             key={index}
                             className={`alerta-item alerta-${alerta.nivel}`}
                         >
-                            <strong>{alerta.tipo}</strong>
+                            <strong>{alerta.tipo}:</strong>
+
                             <span>{alerta.mensagem}</span>
                         </div>
                     ))}

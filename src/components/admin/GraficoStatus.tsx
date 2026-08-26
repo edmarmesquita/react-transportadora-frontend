@@ -36,7 +36,10 @@ function GraficoStatus({
                     <BarChart data={dados}>
                         <XAxis dataKey="name" />
                         <YAxis allowDecimals={false} />
-                        <Tooltip />
+                        <Tooltip
+                            formatter={(value) => [`${value} carga(s)`, "Total"]}
+                            labelFormatter={(label) => `Status: ${label}`}
+                        />
 
                         <Bar
                             dataKey="value"

@@ -5,12 +5,16 @@ function Navbar() {
         <nav className="navbar">
             <NavLink to="/">Home</NavLink>
 
+            <NavLink to="/sobre">
+                Sobre Nós
+            </NavLink>
+
             <NavLink to="/frota">
                 Nossa Frota
             </NavLink>
 
             <NavLink to="/servicos">
-                Serviços
+                Serviços 
             </NavLink>
 
             <NavLink to="/areas-atendidas">

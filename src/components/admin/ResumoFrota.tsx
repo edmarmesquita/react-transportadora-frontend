@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
 
 type FrotaResumo = {
     disponiveis: number
@@ -10,8 +11,8 @@ function ResumoFrota() {
     const [resumo, setResumo] = useState<FrotaResumo | null>(null)
 
     async function carregarResumo() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/frota/resumo"
+        const resposta = await apiFetch(
+            "/api/admin/frota/resumo"
         )
 
         const dados = await resposta.json()
@@ -24,7 +25,7 @@ function ResumoFrota() {
     }, [])
 
     return (
-        <div className="grafico-card">
+        <div className="dashboard-bloco">
             <h2>Utilização da Frota</h2>
 
             <div className="frota-resumo">

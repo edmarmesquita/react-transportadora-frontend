@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { apiFetch } from "../../services/api"
 
 type Financeiro = {
     faturamento_total: number
@@ -10,8 +11,8 @@ function ResumoFinanceiro() {
     const [financeiro, setFinanceiro] = useState<Financeiro | null>(null)
 
     async function carregarFinanceiro() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/financeiro/resumo"
+        const resposta = await apiFetch(
+            "/api/admin/financeiro/resumo"
         )
 
         const dados = await resposta.json()
@@ -24,12 +25,17 @@ function ResumoFinanceiro() {
     }, [])
 
     function formatar(valor: number) {
-        return valor.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        })
-    }
+        if (valor >= 1000000) {
+            return `R$ ${(valor / 1000000).toFixed(1).replace(".", ",")} mi`
+        }
 
+        if (valor >= 1000) {
+            return `R$ ${(valor / 1000).toFixed(1).replace(".", ",")} mil`
+        }
+
+        return `R$ ${valor.toFixed(2).replace(".", ",")}`
+    }
+    
     return (
         <div className="cards-dashboard">
             <div className="card-dashboard card-financeiro card-cotacoes">
