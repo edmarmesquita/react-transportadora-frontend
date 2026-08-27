@@ -141,14 +141,16 @@ function FormComprovanteEntrega({
             );
 
             const dados =
-                await resposta.json();
+                await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                throw new Error(
-                    dados.erro ||
-                    dados.msg ||
+                notificar(
+                    "erro",
+                    dados?.erro ||
+                    dados?.msg ||
                     "Não foi possível enviar o arquivo."
                 );
+                return;
             }
 
             alert(
