@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
+import { apiFetch } from "../services/api"
 
 type RelatorioResumo = {
     clientes: {
@@ -30,8 +31,8 @@ function AdminRelatorios() {
     const [resumo, setResumo] = useState<RelatorioResumo | null>(null)
 
     async function carregarResumo() {
-        const resposta = await fetch(
-            "http://127.0.0.1:5000/api/admin/relatorios/resumo"
+        const resposta = await apiFetch(
+            "/api/admin/relatorios/resumo"
         )
 
         const dados = await resposta.json()

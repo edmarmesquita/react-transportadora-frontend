@@ -17,6 +17,7 @@ import {
   AlertTriangle
 } from "lucide-react"
 import { apiFetch } from "../services/api"
+import { buscarUsuarioLogado } from "../services/authService"
 
 
 type ResumoDashboard = {
@@ -39,6 +40,10 @@ type Carga = {
 }
 
 function AdminDashboard() {
+    const usuario = buscarUsuarioLogado()
+    const ehAdministrador =
+        usuario?.perfil?.trim().toLowerCase() === "administrador"
+
     const [resumo, setResumo] =
         useState<ResumoDashboard | null>(null)
 
@@ -136,9 +141,12 @@ function AdminDashboard() {
                     </div>
                 </div>
 
-                <ResumoFinanceiro />
-
-                <IndicadoresExecutivos />
+                {ehAdministrador && (
+                    <>
+                        <ResumoFinanceiro />
+                        <IndicadoresExecutivos />
+                    </>
+                )}
 
                 <TopClientes />
 
