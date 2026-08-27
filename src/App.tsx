@@ -72,7 +72,6 @@ function App() {
               perfisPermitidos={[
                 "administrador",
                 "operador",
-                "motorista",
               ]}
             >
               <AdminDashboard />
