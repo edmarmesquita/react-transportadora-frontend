@@ -7,11 +7,18 @@ import { apiFetch } from "../services/api"
 
 type FormCarga = {
     codigo: string
-    cliente: string
+    cliente_id: string
     local_atual: string
     destino: string
     valor_frete: string
     status_pagamento: string
+}
+
+type ClienteOpcao = {
+    id: number
+    razao_social: string
+    nome_fantasia: string | null
+    ativo: boolean
 }
 
 function EditarCarga() {
@@ -21,7 +28,7 @@ function EditarCarga() {
 
     const [formData, setFormData] = useState<FormCarga>({
         codigo: "",
-        cliente: "",
+        cliente_id: "",
         local_atual: "",
         destino: "",
         valor_frete: "",
@@ -30,6 +37,24 @@ function EditarCarga() {
 
     const [loading, setLoading] = useState(true)
     const [salvando, setSalvando] = useState(false)
+    const [clientes, setClientes] = useState<ClienteOpcao[]>([])
+
+    async function carregarClientes() {
+        const resposta = await apiFetch("/api/admin/clientes")
+        const dados = await resposta.json()
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados.erro || "Erro ao carregar clientes."
+            )
+        }
+
+        setClientes(
+            (dados as ClienteOpcao[]).filter(
+                (cliente) => cliente.ativo
+            )
+        )
+    }
 
     async function carregarCarga() {
         const resposta = await apiFetch(
@@ -48,7 +73,9 @@ function EditarCarga() {
 
         setFormData({
             codigo: dados.codigo || "",
-            cliente: dados.cliente || "",
+            cliente_id: dados.cliente_id
+                ? String(dados.cliente_id)
+                : "",
             local_atual: dados.local_atual || "",
             destino: dados.destino || "",
             valor_frete: dados.valor_frete !== null &&
@@ -63,7 +90,10 @@ function EditarCarga() {
     async function carregarPagina() {
         try {
             setLoading(true)
-            await carregarCarga()
+            await Promise.all([
+                carregarClientes(),
+                carregarCarga(),
+            ])
         } catch (error) {
             if (error instanceof Error) {
                 notificar("erro", error.message)
@@ -192,13 +222,26 @@ function EditarCarga() {
                             Cliente
                         </label>
 
-                        <input
+                        <select
                             id="cliente"
-                            name="cliente"
-                            value={formData.cliente}
+                            name="cliente_id"
+                            value={formData.cliente_id}
                             onChange={handleChange}
                             required
-                        />
+                        >
+                            <option value="">
+                                Selecione um cliente
+                            </option>
+
+                            {clientes.map((cliente) => (
+                                <option
+                                    key={cliente.id}
+                                    value={cliente.id}
+                                >
+                                    {cliente.razao_social}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="linha-input">

@@ -1,15 +1,22 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+
+type ClienteOpcao = {
+    id: number
+    razao_social: string
+    nome_fantasia: string | null
+    ativo: boolean
+}
 
 function NovaCarga() {
     const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
         codigo: "",
-        cliente: "",
+        cliente_id: "",
         status: "Em coleta",
         local_atual: "",
         destino: "",
@@ -19,6 +26,39 @@ function NovaCarga() {
 
     const [erro, setErro] = useState("")
     const [loading, setLoading] = useState(false)
+    const [clientes, setClientes] = useState<ClienteOpcao[]>([])
+    const [carregandoClientes, setCarregandoClientes] = useState(true)
+
+    useEffect(() => {
+        async function carregarClientes() {
+            try {
+                const resposta = await apiFetch("/api/admin/clientes")
+                const dados = await resposta.json()
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        dados.erro || "Erro ao carregar clientes."
+                    )
+                }
+
+                setClientes(
+                    (dados as ClienteOpcao[]).filter(
+                        (cliente) => cliente.ativo
+                    )
+                )
+            } catch (error) {
+                setErro(
+                    error instanceof Error
+                        ? error.message
+                        : "Erro ao carregar clientes."
+                )
+            } finally {
+                setCarregandoClientes(false)
+            }
+        }
+
+        carregarClientes()
+    }, [])
 
     function handleChange(
         event:
@@ -89,12 +129,29 @@ function NovaCarga() {
 
                     <div className="linha-input">
                         <label>Cliente</label>
-                        <input
-                            name="cliente"
-                            value={formData.cliente}
+
+                        <select
+                            name="cliente_id"
+                            value={formData.cliente_id}
                             onChange={handleChange}
+                            disabled={carregandoClientes}
                             required
-                        />
+                        >
+                            <option value="">
+                                {carregandoClientes
+                                    ? "Carregando clientes..."
+                                    : "Selecione um cliente"}
+                            </option>
+
+                            {clientes.map((cliente) => (
+                                <option
+                                    key={cliente.id}
+                                    value={cliente.id}
+                                >
+                                    {cliente.razao_social}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div className="linha-input">
