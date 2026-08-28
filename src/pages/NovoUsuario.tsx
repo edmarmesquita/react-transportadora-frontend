@@ -1,6 +1,13 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+
+type ClienteOpcao = {
+    id: number;
+    razao_social: string;
+    nome_fantasia?: string;
+    ativo: boolean;
+};
 
 function NovoUsuario() {
 
@@ -9,6 +16,33 @@ function NovoUsuario() {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("")
     const [perfil, setPerfil] = useState("operador")
+    const [clientes, setClientes] = useState<ClienteOpcao[]>([])
+    const [clienteId, setClienteId] = useState("")
+
+    useEffect(() => {
+        async function carregarClientes() {
+            try {
+                const resposta = await apiFetch("/api/admin/clientes");
+                const dados = await resposta.json().catch(() => null);
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        dados?.erro || "Erro ao carregar clientes."
+                    );
+                }
+
+                setClientes(
+                    (Array.isArray(dados) ? dados : []).filter(
+                        (cliente: ClienteOpcao) => cliente.ativo
+                    )
+                );
+            } catch (erro) {
+                console.error("Erro ao carregar clientes:", erro);
+            }
+        }
+
+        carregarClientes();
+    }, []);
 
     async function salvarUsuario(event: React.FormEvent) {
         event.preventDefault();
@@ -27,6 +61,10 @@ function NovoUsuario() {
                         email: email.trim(),
                         senha: senha.trim(),
                         perfil,
+                        cliente_id:
+                            perfil === "cliente"
+                                ? Number(clienteId)
+                                : undefined,
                     }),
                 }
             );
@@ -86,6 +124,7 @@ function NovoUsuario() {
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required={perfil === "cliente"}
                         />
                     </div>
 
@@ -107,6 +146,24 @@ function NovoUsuario() {
                             <option value="cliente">Cliente</option>
                         </select>
                     </div>
+
+                    {perfil === "cliente" && (
+                        <div className="linha-input">
+                            <label>Cliente comercial</label>
+                            <select
+                                value={clienteId}
+                                onChange={(e) => setClienteId(e.target.value)}
+                                required
+                            >
+                                <option value="">Selecione um cliente</option>
+                                {clientes.map((cliente) => (
+                                    <option key={cliente.id} value={cliente.id}>
+                                        {cliente.razao_social}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <button type="submit" className="btn-primary">
                         Salvar Usuário

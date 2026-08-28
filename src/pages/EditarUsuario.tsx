@@ -3,6 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
 import { apiFetch } from "../services/api";
 
+type ClienteOpcao = {
+    id: number;
+    razao_social: string;
+    nome_fantasia?: string;
+    ativo: boolean;
+};
+
 function EditarUsuario() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -12,6 +19,8 @@ function EditarUsuario() {
     const [email, setEmail] = useState("");
     const [perfil, setPerfil] = useState("");
     const [ativo, setAtivo] = useState(true);
+    const [clientes, setClientes] = useState<ClienteOpcao[]>([]);
+    const [clienteId, setClienteId] = useState("");
 
     const [redefinirSenha, setRedefinirSenha] = useState(false);
     const [novaSenha, setNovaSenha] = useState("");
@@ -19,7 +28,25 @@ function EditarUsuario() {
 
     useEffect(() => {
         carregarUsuario();
+        carregarClientes();
     }, [id]);
+
+    async function carregarClientes() {
+        try {
+            const resposta = await apiFetch("/api/admin/clientes");
+            const dados = await resposta.json().catch(() => null);
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados?.erro || "Erro ao carregar clientes."
+                );
+            }
+
+            setClientes(Array.isArray(dados) ? dados : []);
+        } catch (erro) {
+            console.error("Erro ao carregar clientes:", erro);
+        }
+    }
 
     async function carregarUsuario() {
         try {
@@ -38,6 +65,11 @@ function EditarUsuario() {
             setEmail(dados.email || "");
             setPerfil(dados.perfil);
             setAtivo(dados.ativo);
+            setClienteId(
+                dados.cliente_id != null
+                    ? String(dados.cliente_id)
+                    : ""
+            );
         } catch (erro) {
             console.error("Erro ao carregar usuário:", erro);
             alert("Não foi possível carregar o usuário.");
@@ -67,6 +99,10 @@ function EditarUsuario() {
             ativo,
             redefinir_senha: redefinirSenha,
             nova_senha: redefinirSenha ? novaSenha : undefined,
+            cliente_id:
+                perfil === "cliente"
+                    ? Number(clienteId)
+                    : undefined,
         };
 
         try {
@@ -144,6 +180,7 @@ function EditarUsuario() {
                             onChange={(event) =>
                                 setEmail(event.target.value)
                             }
+                            required={perfil === "cliente"}
                         />
                     </div>
 
@@ -173,6 +210,37 @@ function EditarUsuario() {
                             </option>
                         </select>
                     </div>
+
+                    {perfil === "cliente" && (
+                        <div className="linha-input">
+                            <label>Cliente comercial</label>
+
+                            <select
+                                value={clienteId}
+                                onChange={(event) =>
+                                    setClienteId(event.target.value)
+                                }
+                                required
+                            >
+                                <option value="">Selecione um cliente</option>
+
+                                {clientes
+                                    .filter(
+                                        (cliente) =>
+                                            cliente.ativo ||
+                                            String(cliente.id) === clienteId
+                                    )
+                                    .map((cliente) => (
+                                        <option
+                                            key={cliente.id}
+                                            value={cliente.id}
+                                        >
+                                            {cliente.razao_social}
+                                        </option>
+                                    ))}
+                            </select>
+                        </div>
+                    )}
 
                     <div className="linha-input">
                         <label>Status</label>
