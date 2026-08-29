@@ -5,10 +5,14 @@ type MobileMenuProps = {
 
 function MobileMenu({ fecharMenu }: MobileMenuProps) {
     return (
-        <nav className="mobile-menu">
-            <a href="#" onClick={fecharMenu}>
+        <nav
+            id="menu-publico-mobile"
+            className="mobile-menu"
+            aria-label="Navegação principal"
+        >
+            <NavLink to="/" onClick={fecharMenu}>
                 Home
-            </a>
+            </NavLink>
 
             <NavLink
                 to="/sobre"
@@ -17,33 +21,33 @@ function MobileMenu({ fecharMenu }: MobileMenuProps) {
                 Sobre Nós
             </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/frota" onClick={fecharMenu}>
                 Nossa Frota
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/servicos" onClick={fecharMenu}>
                 Serviços
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/areas-atendidas" onClick={fecharMenu}>
                 Áreas Atendidas
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/parceiros" onClick={fecharMenu}>
                 Parceiros
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/contato" onClick={fecharMenu}>
                 Contato
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/cliente" onClick={fecharMenu}>
                 Área do Cliente
-            </a>
+            </NavLink>
 
-            <a href="#" onClick={fecharMenu}>
+            <NavLink to="/motorista" onClick={fecharMenu}>
                 Área do Motorista
-            </a>
+            </NavLink>
 
             <NavLink
                 to="/orcamento"

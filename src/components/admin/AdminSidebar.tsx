@@ -2,7 +2,12 @@ import { NavLink } from "react-router-dom";
 import { adminMenu } from "../../data/adminMenu";
 import { buscarUsuarioLogado } from "../../services/authService";
 
-function AdminSidebar() {
+type AdminSidebarProps = {
+    aberto: boolean;
+    fecharMenu: () => void;
+};
+
+function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
     const usuarioLogado = buscarUsuarioLogado();
 
     const perfil = usuarioLogado?.perfil?.toLowerCase() ?? "";
@@ -12,7 +17,10 @@ function AdminSidebar() {
     );
 
     return (
-        <aside className="admin-sidebar">
+        <aside
+            id="admin-sidebar-navigation"
+            className={`admin-sidebar${aberto ? " aberta" : ""}`}
+        >
             <h2>Ramos</h2>
 
             <nav>
@@ -24,6 +32,7 @@ function AdminSidebar() {
                             key={item.rota}
                             to={item.rota}
                             end={item.end}
+                            onClick={fecharMenu}
                         >
                             <Icone size={20} />
                             {item.titulo}

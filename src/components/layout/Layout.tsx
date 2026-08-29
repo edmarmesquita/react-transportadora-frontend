@@ -12,7 +12,7 @@ function Layout({ children }: LayoutProps) {
         <>
             <Header />
 
-            <main>{children}</main>
+            <main className="public-main">{children}</main>
 
             <Footer />
         </>

@@ -7,7 +7,7 @@ function Header() {
     const [menuAberto, setMenuAberto] = useState(false)
 
     function toggleMenu() {
-        setMenuAberto(!menuAberto)
+        setMenuAberto((aberto) => !aberto)
     }
 
     return (
@@ -16,7 +16,14 @@ function Header() {
                 <img src={logo} alt="Logo Transportadora Ramos" />
             </div>
 
-            <button className="menu-toggle" onClick={toggleMenu}>
+            <button
+                type="button"
+                className="menu-toggle"
+                onClick={toggleMenu}
+                aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+                aria-expanded={menuAberto}
+                aria-controls="menu-publico-mobile"
+            >
                 ☰
             </button>
 

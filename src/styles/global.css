@@ -6,10 +6,31 @@
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    min-width: 0;
 }
 
-main {
+.public-main {
     padding-top: 90px;
+    min-width: 0;
+}
+
+img,
+video,
+svg {
+    max-width: 100%;
+}
+
+img,
+video {
+    height: auto;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+    font: inherit;
 }
 
 
