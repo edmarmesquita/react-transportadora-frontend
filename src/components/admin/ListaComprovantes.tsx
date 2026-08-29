@@ -49,7 +49,7 @@ function ListaComprovantes({
     }, [viagemId, atualizacao])
 
     return (
-        <div className="grafico-card">
+        <div className="grafico-card detalhe-viagem-card comprovantes-arquivos-card">
             <h2>Arquivos do Comprovante</h2>
 
             {arquivos.length === 0 ? (

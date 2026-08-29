@@ -100,10 +100,10 @@ function RastreamentoViagem({ viagemId }: Props) {
     }, [viagemId]);
 
     return (
-        <div className="grafico-card">
+        <div className="grafico-card detalhe-viagem-card rastreamento-viagem-card">
             <h2>Rastreamento da Viagem</h2>
 
-            <div className="admin-form">
+            <div className="admin-form detalhe-viagem-form">
                 <input
                     placeholder="Localização atual. Ex: Uberaba/MG"
                     value={localizacao}

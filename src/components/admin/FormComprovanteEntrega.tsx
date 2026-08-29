@@ -174,7 +174,7 @@ function FormComprovanteEntrega({
     }
 
     return (
-        <div className="grafico-card">
+        <div className="grafico-card detalhe-viagem-card finalizar-entrega-card">
             <h2>Finalizar Entrega</h2>
 
             <p>
@@ -188,7 +188,7 @@ function FormComprovanteEntrega({
                 </div>
             )}
 
-            <div className="admin-form">
+            <div className="admin-form detalhe-viagem-form">
                 <label htmlFor="recebedor">
                     Nome do recebedor
                 </label>

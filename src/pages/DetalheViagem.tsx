@@ -202,29 +202,120 @@ function DetalheViagem() {
     return (
         <AdminLayout>
             <div className="admin-page detalhe-viagem-page">
-                <div className="page-header">
-                    <div>
-                        <h1>Detalhes da Viagem</h1>
-                        <p>Timeline operacional da viagem</p>
-                    </div>
-                </div>
-
                 {viagem && (
-                    <>
-                        <FormComprovanteEntrega
-                            viagemId={Number(id)}
-                            onFinalizada={() => {
-                                carregarViagem();
-                                carregarHistorico();
-                                carregarComprovante();
-                            }}
-                            onArquivoEnviado={() =>
-                                setAtualizacaoArquivos((valor) => valor + 1)
-                            }
-                        />
+                    <div className="detalhe-viagem-container">
+                        <div className="carga-detalhe-header detalhe-viagem-header">
+                            <div>
+                                <span className="carga-detalhe-subtitulo">
+                                    Operação de transporte
+                                </span>
+
+                                <h1>Detalhes da Viagem</h1>
+                                <p>Timeline operacional da viagem</p>
+                            </div>
+
+                            <div className="carga-codigo-badge">
+                                {viagem.codigo_carga}
+                            </div>
+                        </div>
+
+                        <section className="resumo-carga-card viagem-resumo-card">
+                            <div className="resumo-carga-topo">
+                                <div>
+                                    <span className="operacao-label">
+                                        Informações da operação
+                                    </span>
+                                    <h2>Resumo da viagem</h2>
+                                </div>
+
+                                <span
+                                    className={`status status-${viagem.status
+                                        .toLowerCase()
+                                        .replaceAll(" ", "-")}`}
+                                >
+                                    {viagem.status}
+                                </span>
+                            </div>
+
+                            <div className="resumo-carga-grid">
+                                <div className="resumo-item">
+                                    <span>Código</span>
+                                    <strong>{viagem.codigo_carga}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Cliente</span>
+                                    <strong>{viagem.cliente}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Status</span>
+                                    <strong>{viagem.status}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Motorista</span>
+                                    <strong>{viagem.motorista || "Não definido"}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Veículo</span>
+                                    <strong>{viagem.veiculo || "Não definido"}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Criada em</span>
+                                    <strong>{viagem.data_criacao}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Origem</span>
+                                    <strong>{viagem.origem}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Destino</span>
+                                    <strong>{viagem.destino}</strong>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="detalhe-viagem-card status-viagem-card">
+                            <div>
+                                <span className="operacao-label">Situação operacional</span>
+                                <h2>Atualizar status</h2>
+                            </div>
+
+                            <div className="status-box">
+                                <select
+                                    value={novoStatus}
+                                    onChange={(e) =>
+                                        setNovoStatus(e.target.value)
+                                    }
+                                >
+                                    <option value="">Alterar status</option>
+                                    <option value="Em coleta">Em coleta</option>
+                                    <option value="Carregando">Carregando</option>
+                                    <option value="Em trânsito">Em trânsito</option>
+                                    <option value="Parada operacional">Parada operacional</option>
+                                    <option value="Saiu para entrega">Saiu para entrega</option>
+
+                                    {usuario?.perfil?.toLowerCase() !== "motorista" && (
+                                        <option value="Cancelada">Cancelada</option>
+                                    )}
+                                </select>
+
+                                <button
+                                    className="btn-nova-carga"
+                                    onClick={atualizarStatus}
+                                >
+                                    Atualizar
+                                </button>
+                            </div>
+                        </section>
 
                         {comprovante && (
-                            <div className="grafico-card">
+                            <div className="grafico-card detalhe-viagem-card comprovante-resumo-card">
                                 <h2>Comprovante de Entrega</h2>
 
                                 <p>
@@ -253,88 +344,12 @@ function DetalheViagem() {
                             viagemId={Number(id)}
                         />
 
-                        <div className="viagem-info-box">
-                            <h2>{viagem.codigo_carga}</h2>
+                        <div className="ocorrencia-box detalhe-viagem-card">
+                            <div>
+                                <span className="operacao-label">Registro operacional</span>
+                                <h2>Adicionar ocorrência</h2>
+                            </div>
 
-                            <p>
-                                <strong>Cliente:</strong>{" "}
-                                {viagem.cliente}
-                            </p>
-
-                            <p>
-                                <strong>Motorista:</strong>{" "}
-                                {viagem.motorista || "Não definido"}
-                            </p>
-
-                            <p>
-                                <strong>Veículo:</strong>{" "}
-                                {viagem.veiculo || "Não definido"}
-                            </p>
-
-                            <p>
-                                <strong>Origem:</strong>{" "}
-                                {viagem.origem}
-                            </p>
-
-                            <p>
-                                <strong>Destino:</strong>{" "}
-                                {viagem.destino}
-                            </p>
-
-                            <p>
-                                <strong>Status:</strong>{" "}
-                                {viagem.status}
-                            </p>
-                        </div>
-
-                        <div className="status-box">
-                            <select
-                                value={novoStatus}
-                                onChange={(e) =>
-                                    setNovoStatus(e.target.value)
-                                }
-                            >
-                                <option value="">
-                                    Alterar status
-                                </option>
-
-                                <option value="Em coleta">
-                                    Em coleta
-                                </option>
-
-                                <option value="Carregando">
-                                    Carregando
-                                </option>
-
-                                <option value="Em trânsito">
-                                    Em trânsito
-                                </option>
-
-                                <option value="Parada operacional">
-                                    Parada operacional
-                                </option>
-
-                                <option value="Saiu para entrega">
-                                    Saiu para entrega
-                                </option>
-
-                                {usuario?.perfil?.toLowerCase() !==
-                                    "motorista" && (
-                                        <option value="Cancelada">
-                                            Cancelada
-                                        </option>
-                                    )}
-                            </select>
-
-                            <button
-                                className="btn-nova-carga"
-                                onClick={atualizarStatus}
-                            >
-                                Atualizar
-                            </button>
-                        </div>
-
-                        <div className="ocorrencia-box">
                             <textarea
                                 placeholder="Registrar ocorrência..."
                                 value={novaOcorrencia}
@@ -353,7 +368,24 @@ function DetalheViagem() {
                             </button>
                         </div>
 
-                        <div className="timeline-box">
+                        <FormComprovanteEntrega
+                            viagemId={Number(id)}
+                            onFinalizada={() => {
+                                carregarViagem();
+                                carregarHistorico();
+                                carregarComprovante();
+                            }}
+                            onArquivoEnviado={() =>
+                                setAtualizacaoArquivos((valor) => valor + 1)
+                            }
+                        />
+
+                        <div className="timeline-box detalhe-viagem-card">
+                            <div className="timeline-titulo">
+                                <span className="operacao-label">Histórico operacional</span>
+                                <h2>Timeline da viagem</h2>
+                            </div>
+
                             {historico.length === 0 ? (
                                 <p>
                                     Nenhum evento registrado nesta viagem.
@@ -412,7 +444,7 @@ function DetalheViagem() {
                                 ))
                             )}
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
         </AdminLayout>
