@@ -15,8 +15,19 @@ type Cotacao = {
     data_criacao: string
 }
 
+type ClienteOpcao = {
+    id: number
+    razao_social: string
+    nome_fantasia: string | null
+    ativo: boolean
+}
+
 function AdminCotacoes() {
     const [cotacoes, setCotacoes] = useState<Cotacao[]>([])
+    const [clientes, setClientes] = useState<ClienteOpcao[]>([])
+    const [clientesSelecionados, setClientesSelecionados] = useState<
+        Record<number, string>
+    >({})
 
     async function carregarCotacoes() {
         try {
@@ -48,7 +59,39 @@ function AdminCotacoes() {
         }
     }
 
+    async function carregarClientes() {
+        try {
+            const resposta = await apiFetch("/api/admin/clientes")
+            const dados = await resposta.json().catch(() => null)
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados?.erro ||
+                    "Não foi possível carregar os clientes."
+                )
+            }
+
+            setClientes(
+                Array.isArray(dados)
+                    ? dados.filter(
+                        (cliente: ClienteOpcao) => cliente.ativo
+                    )
+                    : []
+            )
+        } catch (erro) {
+            console.error("Erro ao carregar clientes:", erro)
+            setClientes([])
+        }
+    }
+
     async function aprovarCotacao(id: number) {
+        const clienteId = Number(clientesSelecionados[id])
+
+        if (!Number.isInteger(clienteId) || clienteId <= 0) {
+            alert("Selecione o cliente comercial.")
+            return
+        }
+
         const confirmar = window.confirm(
             "Deseja aprovar esta cotação e criar a carga?"
         );
@@ -62,6 +105,12 @@ function AdminCotacoes() {
                 `/api/admin/cotacoes/${id}/aprovar`,
                 {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        cliente_id: clienteId,
+                    }),
                 }
             );
 
@@ -98,6 +147,7 @@ function AdminCotacoes() {
 
     useEffect(() => {
         carregarCotacoes()
+        carregarClientes()
     }, [])
 
     return (
@@ -141,6 +191,29 @@ function AdminCotacoes() {
 
                                     <td>
                                         <div className="cotacao-acoes">
+                                            <select
+                                                aria-label={`Cliente comercial da cotação ${cotacao.id}`}
+                                                value={clientesSelecionados[cotacao.id] ?? ""}
+                                                onChange={(event) =>
+                                                    setClientesSelecionados((atuais) => ({
+                                                        ...atuais,
+                                                        [cotacao.id]: event.target.value,
+                                                    }))
+                                                }
+                                            >
+                                                <option value="">
+                                                    Selecione o cliente
+                                                </option>
+                                                {clientes.map((cliente) => (
+                                                    <option
+                                                        key={cliente.id}
+                                                        value={cliente.id}
+                                                    >
+                                                        {cliente.nome_fantasia || cliente.razao_social}
+                                                    </option>
+                                                ))}
+                                            </select>
+
                                             <a
                                                 className="btn-whatsapp"
                                                 href={`https://wa.me/55${cotacao.whatsapp}`}
