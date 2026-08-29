@@ -87,7 +87,7 @@ function AdminDashboard() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-dashboard-page">
                 <div className="page-header">
                     <div>
                         <h1>🚚 Central de Operações</h1>
@@ -165,10 +165,10 @@ function AdminDashboard() {
                 <RankingMotoristas />
                 <ResumoFrota />
             
-             <div className="tabela-cargas">
+             <div className="tabela-cargas admin-table-wrapper">
                 <h2>Últimas Cargas</h2>
                 
-                <table>
+                <table className="admin-table">
                     <thead>
                         <tr>
                             <th>Código</th>

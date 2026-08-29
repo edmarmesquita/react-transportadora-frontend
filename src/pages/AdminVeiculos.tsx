@@ -69,7 +69,7 @@ function AdminVeiculos() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-veiculos-page">
                 <AdminHeader
                     title="Veículos"
                     subtitle="Gerencie os veículos da frota."
@@ -79,8 +79,8 @@ function AdminVeiculos() {
                     </Link>
                 </AdminHeader>
 
-                <div className="tabela-cargas">
-                    <table>
+                <div className="tabela-cargas admin-table-wrapper">
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Placa</th>
@@ -108,7 +108,7 @@ function AdminVeiculos() {
                                     </td>
 
                                     <td>
-                                        <div className="acoes-carga">
+                                        <div className="acoes-carga admin-table-actions">
                                             <Link
                                                 to={`/admin/veiculos/${veiculo.id}/editar`}
                                                 className="btn-editar"
@@ -129,13 +129,14 @@ function AdminVeiculos() {
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div className="filtro-status">
-                <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
-                <button onClick={() => setFiltroStatus("Disponível")}>Disponíveis</button>
-                <button onClick={() => setFiltroStatus("Em viagem")}>Em viagem</button>
-                <button onClick={() => setFiltroStatus("Manutenção")}>Manutenção</button>
-                <button onClick={() => setFiltroStatus("Inativo")}>Inativos</button>
+
+                <div className="filtro-status">
+                    <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
+                    <button onClick={() => setFiltroStatus("Disponível")}>Disponíveis</button>
+                    <button onClick={() => setFiltroStatus("Em viagem")}>Em viagem</button>
+                    <button onClick={() => setFiltroStatus("Manutenção")}>Manutenção</button>
+                    <button onClick={() => setFiltroStatus("Inativo")}>Inativos</button>
+                </div>
             </div>
         </AdminLayout>
     )

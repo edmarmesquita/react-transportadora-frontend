@@ -163,7 +163,7 @@ function AdminMotoristas() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-motoristas-page">
                 <AdminHeader
                     title="Motoristas"
                     subtitle="Gerencie os motoristas cadastrados."
@@ -225,8 +225,8 @@ function AdminMotoristas() {
                 )}
 
                 {!carregando && (
-                    <div className="tabela-cargas">
-                        <table>
+                    <div className="tabela-cargas admin-table-wrapper">
+                        <table className="admin-table">
                             <thead>
                                 <tr>
                                     <th>Nome</th>
@@ -318,7 +318,7 @@ function AdminMotoristas() {
                                                     </td>
 
                                                     <td>
-                                                        <div className="acoes-tabela">
+                                                        <div className="acoes-tabela admin-table-actions">
                                                             <Link
                                                                 to={`/admin/motoristas/${motorista.id}/editar`}
                                                                 className="btn-editar"

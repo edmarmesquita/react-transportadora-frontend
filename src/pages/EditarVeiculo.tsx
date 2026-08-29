@@ -79,7 +79,7 @@ function EditarVeiculo() {
                 <h1>Editar Veículo</h1>
 
                 <form
-                    className="admin-form"
+                    className="admin-form admin-form-card admin-form-grid"
                     onSubmit={(e) => {
                         e.preventDefault()
                         salvarVeiculo()

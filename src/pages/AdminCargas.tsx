@@ -119,7 +119,7 @@ function AdminCargas() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-cargas-page">
                 <AdminHeader
                     title="Cargas"
                     subtitle="Gerencie as cargas da transportadora."
@@ -159,8 +159,8 @@ function AdminCargas() {
                     <h2>Carregando...</h2>
                 ) : (
                     <>
-                        <div className="tabela-cargas">
-                            <table>
+                        <div className="tabela-cargas admin-table-wrapper">
+                            <table className="admin-table">
                                     <thead>
                                         <tr>
                                             <th>Código</th>
@@ -200,7 +200,7 @@ function AdminCargas() {
                                                 </td>
 
                                                 <td>
-                                                    <div className="acoes-carga">
+                                                    <div className="acoes-carga admin-table-actions">
                                                         <Link
                                                             to={`/admin/cargas/${carga.id}`}
                                                             className="btn-detalhes"

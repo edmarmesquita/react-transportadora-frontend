@@ -152,7 +152,7 @@ function AdminCotacoes() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-cotacoes-page">
                 <AdminHeader
                     title="Cotações"
                     subtitle="Gerencie as cotações recebidas."
@@ -165,8 +165,8 @@ function AdminCotacoes() {
                     </Link>
                 </AdminHeader>
 
-                <div className="tabela-cargas">
-                    <table>
+                <div className="tabela-cargas admin-table-wrapper">
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Cliente</th>
@@ -190,7 +190,7 @@ function AdminCotacoes() {
                                     <td>{cotacao.data_criacao}</td>
 
                                     <td>
-                                        <div className="cotacao-acoes">
+                                        <div className="cotacao-acoes admin-table-actions">
                                             <select
                                                 aria-label={`Cliente comercial da cotação ${cotacao.id}`}
                                                 value={clientesSelecionados[cotacao.id] ?? ""}

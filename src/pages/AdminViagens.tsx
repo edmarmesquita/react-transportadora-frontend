@@ -136,7 +136,7 @@ function AdminViagens() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-viagens-page">
                 <AdminHeader
                     title="Viagens"
                     subtitle="Gerencie e acompanhe as viagens da transportadora."
@@ -149,8 +149,8 @@ function AdminViagens() {
                     </Link>
                 </AdminHeader>
 
-                <div className="tabela-cargas">
-                    <table>
+                <div className="tabela-cargas admin-table-wrapper">
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Carga</th>
@@ -201,34 +201,36 @@ function AdminViagens() {
                                     <td>{viagem.data_criacao}</td>
 
                                     <td>
-                                        <Link
-                                            to={`/admin/viagens/${viagem.id}`}
-                                            className="btn-detalhes btn-icone"
-                                        >
-                                            <Eye size={16} />
-                                            Detalhes
-                                        </Link>
+                                        <div className="acoes-viagem admin-table-actions">
+                                            <Link
+                                                to={`/admin/viagens/${viagem.id}`}
+                                                className="btn-detalhes btn-icone"
+                                            >
+                                                <Eye size={16} />
+                                                Detalhes
+                                            </Link>
+
+                                            {viagem.status === "Planejada" && (
+                                                <button
+                                                    className="btn-editar btn-icone"
+                                                    onClick={() =>
+                                                        atualizarStatusViagem(viagem.id, "Em trânsito")
+                                                    }
+                                                >
+                                                    Iniciar
+                                                </button>
+                                            )}
+
+                                            {viagem.status === "Em trânsito" && (
+                                                <Link
+                                                    to={`/admin/viagens/${viagem.id}`}
+                                                    className="btn-whatsapp btn-icone"
+                                                >
+                                                    Finalizar
+                                                </Link>
+                                            )}
+                                        </div>
                                     </td>
-
-                                    {viagem.status === "Planejada" && (
-                                        <button
-                                            className="btn-editar btn-icone"
-                                            onClick={() =>
-                                                atualizarStatusViagem(viagem.id, "Em trânsito")
-                                            }
-                                        >
-                                            Iniciar
-                                        </button>
-                                    )}
-
-                                    {viagem.status === "Em trânsito" && (
-                                        <Link
-                                            to={`/admin/viagens/${viagem.id}`}
-                                            className="btn-whatsapp btn-icone"
-                                        >
-                                            Finalizar
-                                        </Link>
-                                    )}
 
                                     <td>
                                         <span className={`tempo-badge ${classeTempo(viagem.data_criacao_iso)}`}>
@@ -242,27 +244,28 @@ function AdminViagens() {
                         </tbody>
                     </table>
                 </div>
-            </div>
-            <div className="busca-box">
-                <input
-                    type="text"
-                    placeholder="Buscar por carga, cliente, motorista ou veículo..."
-                    value={busca}
-                    onChange={(event) => setBusca(event.target.value)}
-                />
-            </div>
 
-            <div className="filtro-status">
-                <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
-                <button onClick={() => setFiltroStatus("Planejada")}>Planejadas</button>
-                <button onClick={() => setFiltroStatus("Em trânsito")}>Em trânsito</button>
-                <button onClick={() => setFiltroStatus("Saiu para entrega")}>Entrega</button>
-                <button onClick={() => setFiltroStatus("Entregue")}>Entregues</button>
-            </div>
+                <div className="busca-box">
+                    <input
+                        type="text"
+                        placeholder="Buscar por carga, cliente, motorista ou veículo..."
+                        value={busca}
+                        onChange={(event) => setBusca(event.target.value)}
+                    />
+                </div>
 
-            <p className="resultado-busca">
-                {viagensFiltradas.length} viagem(ns) encontrada(s)
-            </p>
+                <div className="filtro-status">
+                    <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
+                    <button onClick={() => setFiltroStatus("Planejada")}>Planejadas</button>
+                    <button onClick={() => setFiltroStatus("Em trânsito")}>Em trânsito</button>
+                    <button onClick={() => setFiltroStatus("Saiu para entrega")}>Entrega</button>
+                    <button onClick={() => setFiltroStatus("Entregue")}>Entregues</button>
+                </div>
+
+                <p className="resultado-busca">
+                    {viagensFiltradas.length} viagem(ns) encontrada(s)
+                </p>
+            </div>
         </AdminLayout>
     )
 }

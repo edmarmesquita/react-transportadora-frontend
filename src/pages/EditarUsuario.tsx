@@ -144,7 +144,7 @@ function EditarUsuario() {
                 <h1>Editar Usuário</h1>
 
                 <form
-                    className="admin-form"
+                    className="admin-form admin-form-card admin-form-grid"
                     onSubmit={salvarAlteracoes}
                 >
                     <div className="linha-input">

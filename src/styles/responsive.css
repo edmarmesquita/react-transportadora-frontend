@@ -45,22 +45,24 @@
         padding: 30px;
     }
 
-    .cards-grid {
-  grid-template-columns: 1fr;
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
 }
 
-.stats-grid {
-    grid-template-columns: 1fr 1fr;
-}
+@media (max-width: 480px) {
+    .stats-grid {
+        gap: 24px 14px;
+    }
 
-.fleet-grid {
-    grid-template-columns: 1fr;
-}
+    .stat-card h2 {
+        font-size: clamp(38px, 13vw, 52px);
+    }
 
-.fleet-info-grid {
-    grid-template-columns: 1fr;
-}
-
+    .stat-card p {
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 700px) {

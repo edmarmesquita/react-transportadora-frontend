@@ -56,7 +56,7 @@ function AdminUsuarios() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-usuarios-page">
                 <AdminHeader
                     title="Usuários do Sistema"
                     subtitle="Gerencie administradores, operadores, motoristas e clientes."
@@ -96,7 +96,7 @@ function AdminUsuarios() {
                                     <td>{usuario.data_criacao}</td>
 
                                     <td>
-                                        <div className="admin-actions">
+                                        <div className="admin-actions admin-table-actions">
                                             <Link
                                                 to={`/admin/usuarios/editar/${usuario.id}`}
                                                 className="btn-small btn-edit"

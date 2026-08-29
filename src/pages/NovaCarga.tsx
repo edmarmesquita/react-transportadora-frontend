@@ -116,7 +116,7 @@ function NovaCarga() {
                     </div>
                 </div>
 
-                <form className="admin-form" onSubmit={handleSubmit}>
+                <form className="admin-form admin-form-card admin-form-grid" onSubmit={handleSubmit}>
                     <div className="linha-input">
                         <label>Código</label>
                         <input

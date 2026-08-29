@@ -70,15 +70,21 @@
 .page-banner-content {
     text-align: center;
     color: white;
+    width: 100%;
+    max-width: 900px;
+    padding: 24px;
 }
 
 .page-banner-content h1 {
-    font-size: 60px;
+    font-size: clamp(40px, 6vw, 60px);
+    line-height: 1.1;
     margin-bottom: 20px;
+    overflow-wrap: anywhere;
 }
 
 .page-banner-content p {
     font-size: 22px;
+    line-height: 1.5;
 }
 
 .info-card {
@@ -136,6 +142,7 @@
     font-size: 17px;
 
     line-height: 1.7;
+    overflow-wrap: anywhere;
 }
 
 .cards-section {
@@ -192,8 +199,10 @@
 }
 
 .cta-section h2 {
-    font-size: 42px;
+    font-size: clamp(32px, 5vw, 42px);
+    line-height: 1.15;
     margin-bottom: 20px;
+    overflow-wrap: anywhere;
 }
 
 .cta-section p {
@@ -220,7 +229,8 @@
 
 .section-title h2 {
     color: #e60000;
-    font-size: 42px;
+    font-size: clamp(32px, 5vw, 42px);
+    line-height: 1.15;
     margin-bottom: 12px;
 }
 
@@ -241,6 +251,7 @@
     overflow: hidden;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
     transition: 0.3s ease;
+    min-width: 0;
 }
 
 .fleet-card:hover {
@@ -269,6 +280,7 @@
     color: #555;
     font-size: 17px;
     line-height: 1.6;
+    overflow-wrap: anywhere;
 }
 
 .fleet-card:hover img {
@@ -299,6 +311,7 @@
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
 
     transition: 0.3s ease;
+    min-width: 0;
 }
 
 .fleet-info-card:hover {
@@ -332,6 +345,74 @@
     color: #555;
 
     line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1100px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fleet-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .page-banner {
+        height: clamp(240px, 65vw, 300px);
+    }
+
+    .page-banner-content {
+        padding-inline: 16px;
+    }
+
+    .page-banner-content h1 {
+        font-size: clamp(34px, 11vw, 46px);
+    }
+
+    .page-banner-content p,
+    .section-title p,
+    .cta-section p {
+        font-size: 17px;
+    }
+
+    .cards-section,
+    .stats-section,
+    .cta-section,
+    .fleet-section,
+    .fleet-info-section {
+        padding-block: 52px;
+    }
+
+    .cards-grid,
+    .fleet-grid,
+    .fleet-info-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .info-card {
+        padding: 26px 22px;
+    }
+
+    .info-icon {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 20px;
+    }
+
+    .fleet-card-content,
+    .fleet-info-content {
+        padding: 22px;
+    }
+
+    .fleet-info-card img {
+        height: auto;
+    }
+
+    .cta-section .btn-hero {
+        max-width: 100%;
+    }
 }
 
 .mensagem-erro {
@@ -3282,5 +3363,832 @@ textarea {
     .notificacao {
         padding: 14px 16px;
         font-size: 14px;
+    }
+}
+
+/* RESPONSIVIDADE ADMINISTRATIVA */
+
+.admin-page,
+.admin-page > *,
+.dashboard-bloco,
+.grafico-card,
+.grafico-area,
+.relatorio-card {
+    min-width: 0;
+}
+
+.admin-layout {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-page .admin-header h1,
+.admin-page .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
+}
+
+.admin-page > h1 {
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: 0;
+}
+
+.admin-page .admin-header p,
+.admin-page .page-header p {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0;
+}
+
+.admin-page .tabela-cargas table,
+.admin-page .usuarios-table {
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-page .tabela-cargas th,
+.admin-page .usuarios-table th {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.01em;
+}
+
+.admin-page .tabela-cargas td,
+.admin-page .usuarios-table td {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-page .admin-form label,
+.admin-page .form-group label,
+.admin-page .linha-input label {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-page .admin-form input,
+.admin-page .admin-form select,
+.admin-page .admin-form textarea,
+.admin-page .form-group input,
+.admin-page .form-group select,
+.admin-page .form-group textarea {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0;
+}
+
+.admin-page button,
+.admin-page .btn-primary,
+.admin-page .btn-nova-carga,
+.admin-page .btn-detalhes,
+.admin-page .btn-editar,
+.admin-page .btn-excluir,
+.admin-page .btn-whatsapp,
+.admin-page .btn-aprovar-cotacao,
+.admin-page .btn-ativar,
+.admin-page .btn-small {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+}
+
+.admin-page .filtro-status button,
+.admin-page .resultado-busca,
+.admin-page .data-table-search,
+.admin-page .datatable-footer,
+.admin-page .paginacao {
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-dashboard-page .card-dashboard h3 {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0;
+}
+
+.admin-dashboard-page .card-dashboard strong {
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+.admin-dashboard-page .dashboard-bloco h2,
+.admin-dashboard-page .grafico-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0;
+}
+
+.admin-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+    box-sizing: border-box;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: transparent;
+    color: #263247;
+}
+
+.admin-table thead {
+    background: #111111;
+    color: #ffffff;
+}
+
+.admin-table th {
+    height: 40px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #111111;
+    background: #111111;
+    color: #ffffff;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.admin-table th:first-child { border-top-left-radius: 13px; }
+.admin-table th:last-child { border-top-right-radius: 13px; }
+
+.admin-table td {
+    min-height: 38px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5eaf1;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:last-child td { border-bottom: 0; }
+
+.admin-page:not(.admin-viagens-page) .admin-table tbody tr:hover {
+    background: #f7f9fc;
+}
+
+.admin-table .status,
+.admin-table .status-badge,
+.admin-table .badge {
+    display: inline-flex;
+    min-height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: normal;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.admin-table-actions {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.admin-table-actions > a,
+.admin-table-actions > button,
+.admin-table-actions .btn-icone {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.admin-form {
+    width: min(700px, 100%);
+    box-sizing: border-box;
+}
+
+.admin-form-card {
+    width: min(920px, 100%);
+    max-width: 920px;
+    margin-inline: auto;
+    padding: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 22px 24px;
+}
+
+.admin-form-grid > .linha-input:has(textarea),
+.admin-form-grid > .form-actions,
+.admin-form-grid > .mensagem-erro,
+.admin-form-grid > .mensagem-sucesso,
+.admin-form-grid > p,
+.admin-form-grid > button[type="submit"] {
+    grid-column: 1 / -1;
+}
+
+.admin-form-grid > button[type="submit"] {
+    justify-self: end;
+}
+
+.admin-form-card .linha-input,
+.admin-form-card .form-group {
+    min-width: 0;
+}
+
+.admin-form-card .linha-input label,
+.admin-form-card .form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #334155;
+}
+
+.admin-form-card .linha-input input,
+.admin-form-card .linha-input select,
+.admin-form-card .linha-input textarea,
+.admin-form-card .form-group input,
+.admin-form-card .form-group select,
+.admin-form-card .form-group textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #1e293b;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.admin-form-card .linha-input textarea,
+.admin-form-card .form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.admin-form-card .linha-input input::placeholder,
+.admin-form-card .linha-input textarea::placeholder,
+.admin-form-card .form-group input::placeholder,
+.admin-form-card .form-group textarea::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.admin-form-card .linha-input input:focus,
+.admin-form-card .linha-input select:focus,
+.admin-form-card .linha-input textarea:focus,
+.admin-form-card .form-group input:focus,
+.admin-form-card .form-group select:focus,
+.admin-form-card .form-group textarea:focus {
+    border-color: #e50914;
+    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.12);
+}
+
+.admin-form-card input:disabled,
+.admin-form-card select:disabled,
+.admin-form-card textarea:disabled,
+.admin-form-card input[readonly],
+.admin-form-card textarea[readonly] {
+    border-color: #d8dee8;
+    background: #eef2f7;
+    color: #64748b;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.admin-form-card .form-actions {
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.admin-form-card > button[type="submit"],
+.admin-form-card .form-actions button,
+.admin-form-card .form-actions a {
+    min-height: 44px;
+    padding: 11px 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea,
+.form-group,
+.form-group input,
+.form-group select,
+.form-group textarea {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.timeline-item,
+.timeline-content,
+.arquivo-item,
+.lista-arquivos {
+    min-width: 0;
+}
+
+.timeline-content,
+.arquivo-item {
+    overflow-wrap: anywhere;
+}
+
+.acoes-viagem {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+}
+
+.acoes-viagem .btn-icone {
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.admin-dashboard-page .tabela-cargas table,
+.admin-cargas-page .tabela-cargas table,
+.admin-clientes-page .tabela-cargas table,
+.admin-motoristas-page .tabela-cargas table,
+.admin-veiculos-page .tabela-cargas table,
+.admin-cotacoes-page .tabela-cargas table,
+.admin-viagens-page .tabela-cargas table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.admin-dashboard-page .tabela-cargas,
+.admin-cargas-page .tabela-cargas,
+.admin-clientes-page .tabela-cargas,
+.admin-motoristas-page .tabela-cargas,
+.admin-veiculos-page .tabela-cargas,
+.admin-cotacoes-page .tabela-cargas,
+.admin-viagens-page .tabela-cargas {
+    overflow-x: visible;
+}
+
+.admin-dashboard-page .tabela-cargas th,
+.admin-dashboard-page .tabela-cargas td,
+.admin-cargas-page .tabela-cargas th,
+.admin-cargas-page .tabela-cargas td,
+.admin-clientes-page .tabela-cargas th,
+.admin-clientes-page .tabela-cargas td,
+.admin-motoristas-page .tabela-cargas th,
+.admin-motoristas-page .tabela-cargas td,
+.admin-veiculos-page .tabela-cargas th,
+.admin-veiculos-page .tabela-cargas td,
+.admin-cotacoes-page .tabela-cargas th,
+.admin-cotacoes-page .tabela-cargas td,
+.admin-viagens-page .tabela-cargas th,
+.admin-viagens-page .tabela-cargas td {
+    padding: 8px 10px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    vertical-align: middle;
+}
+
+.admin-cargas-page .tabela-cargas th:last-child,
+.admin-cargas-page .tabela-cargas td:last-child { width: 25%; }
+.admin-clientes-page .tabela-cargas th:last-child,
+.admin-clientes-page .tabela-cargas td:last-child { width: 21%; }
+.admin-motoristas-page .tabela-cargas th:last-child,
+.admin-motoristas-page .tabela-cargas td:last-child { width: 18%; }
+.admin-cotacoes-page .tabela-cargas th:last-child,
+.admin-cotacoes-page .tabela-cargas td:last-child { width: 31%; }
+.admin-viagens-page .tabela-cargas th:nth-child(5),
+.admin-viagens-page .tabela-cargas td:nth-child(5) { width: 18%; }
+.admin-viagens-page .tabela-cargas th:nth-child(8),
+.admin-viagens-page .tabela-cargas td:nth-child(8) { width: 14%; }
+
+.admin-viagens-page .rota-viagem {
+    min-width: 0;
+    white-space: normal;
+}
+
+.admin-viagens-page .rota-viagem span { overflow-wrap: anywhere; }
+
+.admin-cargas-page .acoes-carga,
+.admin-clientes-page .acoes-tabela,
+.admin-motoristas-page .acoes-tabela,
+.admin-veiculos-page .acoes-carga {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+}
+
+.admin-cotacoes-page .cotacao-acoes {
+    min-width: 0;
+    flex-wrap: wrap;
+    white-space: normal;
+}
+
+.admin-cotacoes-page .cotacao-acoes select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.grafico-area,
+.grafico-area .recharts-responsive-container {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+@media (max-width: 1366px) {
+    .admin-page { padding-inline: 24px; }
+
+    .admin-dashboard-page .cards-dashboard,
+    .admin-dashboard-page .relatorios-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-motoristas-page .tabela-cargas,
+    .admin-viagens-page .tabela-cargas { font-size: 13px; }
+
+    .admin-page .admin-table th,
+    .admin-page .admin-table td { padding-inline: 6px; }
+}
+
+@media (max-width: 900px) {
+    .cards-dashboard,
+    .relatorios-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-row { grid-template-columns: minmax(0, 1fr); }
+    .status-box { flex-wrap: wrap; }
+    .status-box select {
+        min-width: 0;
+        flex: 1 1 240px;
+    }
+}
+
+@media (max-width: 800px) {
+    .admin-form-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-form-card {
+        padding: 26px 22px;
+    }
+}
+
+@media (min-width: 701px) and (max-width: 800px) {
+    .admin-motoristas-page .tabela-cargas th:nth-child(2),
+    .admin-motoristas-page .tabela-cargas td:nth-child(2),
+    .admin-motoristas-page .tabela-cargas th:nth-child(3),
+    .admin-motoristas-page .tabela-cargas td:nth-child(3),
+    .admin-motoristas-page .tabela-cargas th:nth-child(6),
+    .admin-motoristas-page .tabela-cargas td:nth-child(6),
+    .admin-viagens-page .tabela-cargas th:nth-child(2),
+    .admin-viagens-page .tabela-cargas td:nth-child(2),
+    .admin-viagens-page .tabela-cargas th:nth-child(4),
+    .admin-viagens-page .tabela-cargas td:nth-child(4),
+    .admin-viagens-page .tabela-cargas th:nth-child(7),
+    .admin-viagens-page .tabela-cargas td:nth-child(7) { display: none; }
+}
+
+@media (max-width: 700px) {
+    .admin-page { padding: 20px 14px; }
+
+    .admin-header,
+    .page-header { width: 100%; }
+
+    .admin-header .btn-primary,
+    .page-header .btn-primary,
+    .page-header .btn-nova-carga {
+        width: 100%;
+        min-height: 46px;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .filtro-status { width: 100%; }
+    .filtro-status button {
+        flex: 1 1 132px;
+        min-width: 0;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .form-actions > * {
+        width: 100%;
+        min-height: 46px;
+        box-sizing: border-box;
+    }
+
+    .admin-form-card {
+        padding: 22px 16px;
+    }
+
+    .admin-form-card > button[type="submit"] {
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    .cards-dashboard,
+    .relatorios-grid { grid-template-columns: minmax(0, 1fr); }
+
+    .grafico-card,
+    .dashboard-bloco,
+    .viagem-info-box,
+    .timeline-box,
+    .ocorrencia-box,
+    .admin-card { padding: 20px 16px; }
+
+    .detalhe-viagem-page p,
+    .detalhe-viagem-page label,
+    .detalhe-viagem-page input,
+    .detalhe-viagem-page textarea,
+    .detalhe-viagem-page select {
+        font-size: 16px;
+    }
+
+    .timeline-item {
+        gap: 12px;
+        padding-left: 18px;
+    }
+
+    .status-box {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .status-box select,
+    .status-box button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .admin-dashboard-page .tabela-cargas,
+    .admin-cargas-page .tabela-cargas,
+    .admin-clientes-page .tabela-cargas,
+    .admin-motoristas-page .tabela-cargas,
+    .admin-veiculos-page .tabela-cargas,
+    .admin-cotacoes-page .tabela-cargas,
+    .admin-viagens-page .tabela-cargas,
+    .admin-usuarios-page .usuarios-card {
+        overflow: visible;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .admin-dashboard-page .tabela-cargas table,
+    .admin-cargas-page .tabela-cargas table,
+    .admin-clientes-page .tabela-cargas table,
+    .admin-motoristas-page .tabela-cargas table,
+    .admin-veiculos-page .tabela-cargas table,
+    .admin-cotacoes-page .tabela-cargas table,
+    .admin-viagens-page .tabela-cargas table,
+    .admin-usuarios-page .usuarios-table,
+    .admin-dashboard-page .tabela-cargas tbody,
+    .admin-cargas-page .tabela-cargas tbody,
+    .admin-clientes-page .tabela-cargas tbody,
+    .admin-motoristas-page .tabela-cargas tbody,
+    .admin-veiculos-page .tabela-cargas tbody,
+    .admin-cotacoes-page .tabela-cargas tbody,
+    .admin-viagens-page .tabela-cargas tbody,
+    .admin-usuarios-page .usuarios-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-dashboard-page .tabela-cargas thead,
+    .admin-cargas-page .tabela-cargas thead,
+    .admin-clientes-page .tabela-cargas thead,
+    .admin-motoristas-page .tabela-cargas thead,
+    .admin-veiculos-page .tabela-cargas thead,
+    .admin-cotacoes-page .tabela-cargas thead,
+    .admin-viagens-page .tabela-cargas thead,
+    .admin-usuarios-page .usuarios-table thead { display: none; }
+
+    .admin-dashboard-page .tabela-cargas tr,
+    .admin-cargas-page .tabela-cargas tr,
+    .admin-clientes-page .tabela-cargas tr,
+    .admin-motoristas-page .tabela-cargas tr,
+    .admin-veiculos-page .tabela-cargas tr,
+    .admin-cotacoes-page .tabela-cargas tr,
+    .admin-viagens-page .tabela-cargas tr,
+    .admin-usuarios-page .usuarios-table tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
+        box-sizing: border-box;
+    }
+
+    .admin-dashboard-page .tabela-cargas td,
+    .admin-cargas-page .tabela-cargas td,
+    .admin-clientes-page .tabela-cargas td,
+    .admin-motoristas-page .tabela-cargas td,
+    .admin-veiculos-page .tabela-cargas td,
+    .admin-cotacoes-page .tabela-cargas td,
+    .admin-viagens-page .tabela-cargas td,
+    .admin-usuarios-page .usuarios-table td {
+        display: flex;
+        width: 100% !important;
+        min-height: 40px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 9px 0;
+        border-bottom: 1px solid #edf2f7;
+        white-space: normal;
+        text-align: right;
+        overflow-wrap: anywhere;
+        box-sizing: border-box;
+    }
+
+    .admin-dashboard-page .tabela-cargas td:last-child,
+    .admin-cargas-page .tabela-cargas td:last-child,
+    .admin-clientes-page .tabela-cargas td:last-child,
+    .admin-motoristas-page .tabela-cargas td:last-child,
+    .admin-veiculos-page .tabela-cargas td:last-child,
+    .admin-cotacoes-page .tabela-cargas td:last-child,
+    .admin-viagens-page .tabela-cargas td:last-child,
+    .admin-usuarios-page .usuarios-table td:last-child { border-bottom: 0; }
+
+    .admin-dashboard-page .tabela-cargas td::before,
+    .admin-cargas-page .tabela-cargas td::before,
+    .admin-clientes-page .tabela-cargas td::before,
+    .admin-motoristas-page .tabela-cargas td::before,
+    .admin-veiculos-page .tabela-cargas td::before,
+    .admin-cotacoes-page .tabela-cargas td::before,
+    .admin-viagens-page .tabela-cargas td::before,
+    .admin-usuarios-page .usuarios-table td::before {
+        flex: 0 0 38%;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .admin-dashboard-page td:nth-child(1)::before,
+    .admin-cargas-page td:nth-child(1)::before { content: "Código"; }
+    .admin-dashboard-page td:nth-child(2)::before,
+    .admin-cargas-page td:nth-child(2)::before { content: "Cliente"; }
+    .admin-dashboard-page td:nth-child(3)::before,
+    .admin-cargas-page td:nth-child(3)::before { content: "Status"; }
+    .admin-dashboard-page td:nth-child(4)::before,
+    .admin-cargas-page td:nth-child(4)::before { content: "Local atual"; }
+    .admin-dashboard-page td:nth-child(5)::before,
+    .admin-cargas-page td:nth-child(5)::before { content: "Destino"; }
+    .admin-dashboard-page td:nth-child(6)::before { content: "Ações"; }
+    .admin-cargas-page td:nth-child(6)::before { content: "Motorista"; }
+    .admin-cargas-page td:nth-child(7)::before { content: "Veículo"; }
+    .admin-cargas-page td:nth-child(8)::before { content: "Ações"; }
+
+    .admin-clientes-page td:nth-child(1)::before { content: "Razão social"; }
+    .admin-clientes-page td:nth-child(2)::before { content: "Responsável"; }
+    .admin-clientes-page td:nth-child(3)::before { content: "Telefone"; }
+    .admin-clientes-page td:nth-child(4)::before { content: "Cidade"; }
+    .admin-clientes-page td:nth-child(5)::before { content: "Status"; }
+    .admin-clientes-page td:nth-child(6)::before { content: "Ações"; }
+
+    .admin-motoristas-page td:nth-child(1)::before { content: "Nome"; }
+    .admin-motoristas-page td:nth-child(2)::before { content: "CPF"; }
+    .admin-motoristas-page td:nth-child(3)::before { content: "CNH"; }
+    .admin-motoristas-page td:nth-child(4)::before { content: "Categoria"; }
+    .admin-motoristas-page td:nth-child(5)::before { content: "Validade"; }
+    .admin-motoristas-page td:nth-child(6)::before { content: "Telefone"; }
+    .admin-motoristas-page td:nth-child(7)::before { content: "Status"; }
+    .admin-motoristas-page td:nth-child(8)::before { content: "Disponibilidade"; }
+    .admin-motoristas-page td:nth-child(9)::before { content: "Ações"; }
+
+    .admin-veiculos-page td:nth-child(1)::before { content: "Placa"; }
+    .admin-veiculos-page td:nth-child(2)::before { content: "Modelo"; }
+    .admin-veiculos-page td:nth-child(3)::before { content: "Marca"; }
+    .admin-veiculos-page td:nth-child(4)::before { content: "Tipo"; }
+    .admin-veiculos-page td:nth-child(5)::before { content: "Ano"; }
+    .admin-veiculos-page td:nth-child(6)::before { content: "Status"; }
+    .admin-veiculos-page td:nth-child(7)::before { content: "Ações"; }
+
+    .admin-cotacoes-page td:nth-child(1)::before { content: "Cliente"; }
+    .admin-cotacoes-page td:nth-child(2)::before { content: "WhatsApp"; }
+    .admin-cotacoes-page td:nth-child(3)::before { content: "Origem"; }
+    .admin-cotacoes-page td:nth-child(4)::before { content: "Destino"; }
+    .admin-cotacoes-page td:nth-child(5)::before { content: "Carga"; }
+    .admin-cotacoes-page td:nth-child(6)::before { content: "Data"; }
+    .admin-cotacoes-page td:nth-child(7)::before { content: "Ações"; }
+
+    .admin-viagens-page td:nth-child(1)::before { content: "Carga"; }
+    .admin-viagens-page td:nth-child(2)::before { content: "Cliente"; }
+    .admin-viagens-page td:nth-child(3)::before { content: "Motorista"; }
+    .admin-viagens-page td:nth-child(4)::before { content: "Veículo"; }
+    .admin-viagens-page td:nth-child(5)::before { content: "Rota"; }
+    .admin-viagens-page td:nth-child(6)::before { content: "Status"; }
+    .admin-viagens-page td:nth-child(7)::before { content: "Criada em"; }
+    .admin-viagens-page td:nth-child(8)::before { content: "Ações"; }
+    .admin-viagens-page td:nth-child(9)::before { content: "Tempo"; }
+
+    .admin-usuarios-page td:nth-child(1)::before { content: "Nome"; }
+    .admin-usuarios-page td:nth-child(2)::before { content: "Usuário"; }
+    .admin-usuarios-page td:nth-child(3)::before { content: "E-mail"; }
+    .admin-usuarios-page td:nth-child(4)::before { content: "Perfil"; }
+    .admin-usuarios-page td:nth-child(5)::before { content: "Status"; }
+    .admin-usuarios-page td:nth-child(6)::before { content: "Criado em"; }
+    .admin-usuarios-page td:nth-child(7)::before { content: "Ações"; }
+
+    .admin-cargas-page .acoes-carga,
+    .admin-clientes-page .acoes-tabela,
+    .admin-motoristas-page .acoes-tabela,
+    .admin-veiculos-page .acoes-carga,
+    .admin-cotacoes-page .cotacao-acoes,
+    .admin-viagens-page .acoes-viagem,
+    .admin-usuarios-page .admin-actions {
+        width: 100%;
+        min-width: 0;
+        justify-content: flex-end;
+    }
+
+    .admin-table-actions > a,
+    .admin-table-actions > button,
+    .admin-table-actions .btn-icone {
+        min-height: 42px;
+    }
+
+    .admin-cotacoes-page .cotacao-acoes select { flex-basis: 100%; }
+
+    .admin-motoristas-page .tabela-vazia,
+    .admin-usuarios-page .usuarios-table td[colspan] {
+        display: block;
+        text-align: center;
+    }
+
+    .admin-motoristas-page .tabela-vazia::before,
+    .admin-usuarios-page .usuarios-table td[colspan]::before { content: none; }
+
+    .datatable-footer,
+    .paginacao {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
     }
 }

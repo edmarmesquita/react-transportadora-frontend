@@ -72,7 +72,7 @@ function NovoVeiculo() {
                 </div>
 
                 <form
-                    className="admin-form"
+                    className="admin-form admin-form-card admin-form-grid"
                     onSubmit={handleSubmit}
                 >
                     <div className="linha-input">

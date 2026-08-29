@@ -298,7 +298,7 @@ function NovaViagem() {
 
                 {!carregando && (
                     <form
-                        className="admin-form"
+                        className="admin-form admin-form-card admin-form-layout-viagem"
                         onSubmit={handleSubmit}
                     >
                         <div className="form-group">

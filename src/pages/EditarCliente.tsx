@@ -78,7 +78,7 @@ function EditarCliente() {
                 <h1>Editar Cliente</h1>
 
                 <form
-                    className="admin-form"
+                    className="admin-form admin-form-card admin-form-grid"
                     onSubmit={(e) => {
                         e.preventDefault()
                         salvarCliente()

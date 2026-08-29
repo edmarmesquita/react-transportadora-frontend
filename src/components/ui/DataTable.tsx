@@ -57,7 +57,7 @@ function DataTable<T>({
     );
 
     return (
-        <div className="usuarios-card">
+        <div className="usuarios-card admin-table-wrapper">
             {searchable && (
                 <div className="data-table-toolbar">
                     <input
@@ -70,7 +70,7 @@ function DataTable<T>({
                 </div>
             )}
 
-            <table className="usuarios-table">
+            <table className="usuarios-table admin-table">
                 <thead>
                     <tr>
                         {columns.map((column) => (

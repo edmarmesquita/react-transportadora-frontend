@@ -77,7 +77,7 @@ function AdminClientes() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page admin-clientes-page">
                 <AdminHeader
                     title="Clientes"
                     subtitle="Gerencie os clientes cadastrados."
@@ -87,8 +87,8 @@ function AdminClientes() {
                     </Link>
                 </AdminHeader>
 
-                <div className="tabela-cargas">
-                    <table>
+                <div className="tabela-cargas admin-table-wrapper">
+                    <table className="admin-table">
                         <thead>
                             <tr>
                                 <th>Razão Social</th>
@@ -96,6 +96,7 @@ function AdminClientes() {
                                 <th>Telefone</th>
                                 <th>Cidade</th>
                                 <th>Status</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
 
@@ -127,7 +128,7 @@ function AdminClientes() {
                                     </td>
 
                                     <td>
-                                        <div className="acoes-tabela">
+                                        <div className="acoes-tabela admin-table-actions">
                                             <Link
                                                 to={`/admin/clientes/${cliente.id}/editar`}
                                                 className="btn-editar"

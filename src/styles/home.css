@@ -1,7 +1,7 @@
 /* HERO */
 
 .hero {
-    height: 100vh;
+    min-height: calc(100svh - 90px);
 
     background-image: url("/caminhao_ramos.jpg");
     background-size: cover;
@@ -25,15 +25,21 @@
 
 .hero-content {
     color: white;
+    width: 100%;
+    max-width: 900px;
+    padding: 32px 24px;
 }
 
 .hero-content h1 {
-    font-size: 70px;
+    font-size: clamp(42px, 6vw, 70px);
+    line-height: 1.08;
     margin-bottom: 20px;
+    overflow-wrap: anywhere;
 }
 
 .hero-content p {
     font-size: 22px;
+    line-height: 1.5;
     margin-bottom: 30px;
 }
 
@@ -47,6 +53,12 @@
 
     text-decoration: none;
     font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    text-align: center;
+    line-height: 1.3;
 }
 
 .tracking-section {
@@ -60,6 +72,11 @@
     gap: 40px;
 
     align-items: center;
+}
+
+.rastreamento-info,
+.mapa-brasil-box {
+    min-width: 0;
 }
 
 .rastreamento-info h2 {
@@ -98,6 +115,10 @@
     border-radius: 8px;
 }
 
+.status-rastreamento-preview p {
+    overflow-wrap: anywhere;
+}
+
 .mapa-brasil-box iframe {
     width: 100%;
     height: 350px;
@@ -114,7 +135,7 @@
 }
 
 .quote-container {
-    width: 90%;
+    width: min(900px, calc(100% - 48px));
     max-width: 900px;
 
     margin: 0 auto;
@@ -142,4 +163,63 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+@media (max-width: 900px) {
+    .tracking-section,
+    .quote-section {
+        padding-block: 64px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        min-height: 520px;
+    }
+
+    .hero-content {
+        padding-inline: 16px;
+    }
+
+    .hero-content p {
+        font-size: 17px;
+    }
+
+    .btn-hero {
+        padding: 13px 20px;
+    }
+
+    .tracking-section,
+    .quote-section {
+        padding-block: 48px;
+    }
+
+    .rastreamento-info h2,
+    .quote-container h2 {
+        font-size: clamp(28px, 9vw, 34px);
+    }
+
+    .rastreamento-info p {
+        font-size: 16px;
+    }
+
+    .mapa-brasil-box iframe {
+        height: 280px;
+    }
+
+    .quote-container {
+        width: calc(100% - 32px);
+        padding: 24px 18px;
+        border-radius: 12px;
+    }
+
+    .quote-container h2 {
+        margin-bottom: 28px;
+        overflow-wrap: anywhere;
+    }
+
+    .quote-form .btn-vermelho-grande {
+        width: 100%;
+        min-height: 48px;
+    }
 }
