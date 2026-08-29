@@ -1,4 +1,18 @@
-const API_URL = "http://127.0.0.1:5000";
+const apiUrlConfigurada = import.meta.env.VITE_API_URL?.trim();
+
+function obterApiUrl(): string {
+    if (apiUrlConfigurada) {
+        return apiUrlConfigurada.replace(/\/+$/, "");
+    }
+
+    if (import.meta.env.DEV) {
+        return "http://127.0.0.1:5000";
+    }
+
+    throw new Error("VITE_API_URL não configurada para produção.");
+}
+
+const API_URL = obterApiUrl();
 
 export async function apiFetch(
     endpoint: string,
