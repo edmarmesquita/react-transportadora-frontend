@@ -57,7 +57,7 @@ function PortalClienteHome() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page portal-page portal-cliente-page">
 
                 <AdminHeader
                     title="Portal do Cliente"

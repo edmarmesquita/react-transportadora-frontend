@@ -114,11 +114,6 @@ function TimelineRastreamento({
                                         )}
                                     </div> 
 
-                                    {ultimoEvento && (
-                                        <span className="timeline-badge-atual">
-                                            Atual
-                                        </span>
-                                    )}
                                 </div>
 
                                 <small>

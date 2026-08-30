@@ -6,6 +6,7 @@ export type LoginRequest = {
 export type UsuarioLogado = {
     id: number;
     nome: string;
+    usuario?: string;
     perfil: string;
 };
 

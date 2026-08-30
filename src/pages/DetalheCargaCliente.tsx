@@ -177,7 +177,7 @@ function DetalheCargaCliente() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page portal-page portal-cliente-page portal-cliente-detalhe-page">
                 <AdminHeader
                     title={
                         carga

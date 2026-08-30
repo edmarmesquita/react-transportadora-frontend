@@ -37,7 +37,7 @@ function PainelMotorista() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page portal-page portal-motorista-page portal-motorista-viagens-page">
                 <AdminHeader
                     title="Minhas Viagens"
                     subtitle="Acompanhe somente as viagens vinculadas ao seu cadastro."
@@ -77,12 +77,12 @@ function PainelMotorista() {
                                 <td>{viagem.carga_codigo || "-"}</td>
                                 <td>{viagem.origem}</td>
                                 <td>{viagem.destino}</td>
-                                <td>{viagem.status}</td>
+                                <td><span className="status-badge">{viagem.status}</span></td>
                                 <td>{viagem.veiculo || "-"}</td>
                                 <td>{viagem.data_saida || "-"}</td>
                                 <td>{viagem.previsao_entrega || "-"}</td>
 
-                                <td>
+                                <td className="admin-table-actions">
                                     <Link
                                         to={`/portal/motorista/minhas-viagens/${viagem.id}`}
                                         className="btn-small btn-edit"

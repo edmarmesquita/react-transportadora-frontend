@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "../components/admin/AdminLayout";
 import AdminHeader from "../components/layout/AdminHeader";
-import {
-    alterarSenha,
-    buscarUsuarioLogado,
-} from "../services/authService";
+import { alterarSenha, buscarUsuarioLogado } from "../services/authService";
 import {
     buscarPerfilCliente,
     type PerfilCliente,
@@ -13,44 +10,54 @@ import {
 function MeuPerfil() {
     const usuario = buscarUsuarioLogado();
     const [perfilCliente, setPerfilCliente] = useState<PerfilCliente | null>(null);
-
+    const [erroPerfil, setErroPerfil] = useState("");
     const [senhaAtual, setSenhaAtual] = useState("");
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
     const [mensagem, setMensagem] = useState("");
-    const [carregandoPerfil, setCarregandoPerfil] =
-        useState(true);
+    const [carregandoPerfil, setCarregandoPerfil] = useState(true);
+
+    const perfilNormalizado = usuario?.perfil.trim().toLowerCase();
+    const cliente = perfilNormalizado === "cliente";
 
     useEffect(() => {
-        carregarPerfil();
-    }, []);
+        let ativo = true;
 
-    async function carregarPerfil() {
-        try {
-            const dados = await buscarPerfilCliente();
-            setPerfilCliente(dados);
-        } catch (error) {
-            console.error(
-                "Erro ao carregar perfil:",
-                error
-            );
-        } finally {
-            setCarregandoPerfil(false);
-        }
-    }
+        async function carregarPerfilCliente() {
+            if (!cliente) {
+                setCarregandoPerfil(false);
+                return;
+            }
 
-    useEffect(() => {
-        async function carregarPerfil() {
             try {
                 const perfil = await buscarPerfilCliente();
-                setPerfilCliente(perfil);
+
+                if (ativo) {
+                    setPerfilCliente(perfil);
+                }
             } catch (error) {
                 console.error("Erro ao carregar o perfil:", error);
+
+                if (ativo) {
+                    setErroPerfil(
+                        error instanceof Error
+                            ? error.message
+                            : "Não foi possível carregar o perfil."
+                    );
+                }
+            } finally {
+                if (ativo) {
+                    setCarregandoPerfil(false);
+                }
             }
         }
 
-        carregarPerfil();
-    }, []);
+        carregarPerfilCliente();
+
+        return () => {
+            ativo = false;
+        };
+    }, [cliente]);
 
     async function handleAlterarSenha(event: React.FormEvent) {
         event.preventDefault();
@@ -92,107 +99,120 @@ function MeuPerfil() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page meu-perfil-page">
                 <AdminHeader
                     title="Meu Perfil"
                     subtitle="Consulte seus dados e altere sua senha."
                 />
 
-                <div className="admin-card">
-                    <div className="perfil-dados">
-                        <h2>Dados do Cliente</h2>
+                <div className="meu-perfil-conteudo">
+                    <section className="admin-card meu-perfil-card perfil-dados">
+                        <div className="meu-perfil-card-cabecalho">
+                            <span>Perfil</span>
+                            <h2>Informações da conta</h2>
+                            <p>Dados associados ao seu acesso no sistema.</p>
+                        </div>
 
                         {carregandoPerfil ? (
                             <p>Carregando dados...</p>
-                        ) : perfilCliente ? (
-                            <div className="perfil-dados-grid">
-                                <p>
-                                    <strong>Empresa:</strong>{" "}
-                                    {perfilCliente.empresa || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Nome fantasia:</strong>{" "}
-                                    {perfilCliente.nome_fantasia || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Responsável:</strong>{" "}
-                                    {perfilCliente.responsavel || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>E-mail:</strong>{" "}
-                                    {perfilCliente.email || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Telefone:</strong>{" "}
-                                    {perfilCliente.telefone || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Documento:</strong>{" "}
-                                    {perfilCliente.documento || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Endereço:</strong>{" "}
-                                    {perfilCliente.endereco || "-"}
-                                </p>
-
-                                <p>
-                                    <strong>Cidade/UF:</strong>{" "}
-                                    {perfilCliente.cidade || "-"}
-                                    {perfilCliente.estado
-                                        ? `/${perfilCliente.estado}`
-                                        : ""}
-                                </p>
-                            </div>
+                        ) : erroPerfil ? (
+                            <p className="mensagem-erro">{erroPerfil}</p>
                         ) : (
-                            <p>
-                                Não foi possível carregar os dados do cliente.
-                            </p>
+                            <div className="perfil-dados-grid">
+                                <div className="perfil-dado-item">
+                                    <span>Nome</span>
+                                    <strong>{perfilCliente?.nome || usuario?.nome || "-"}</strong>
+                                </div>
+
+                                <div className="perfil-dado-item">
+                                    <span>Usuário</span>
+                                    <strong>{usuario?.usuario || "-"}</strong>
+                                </div>
+
+                                <div className="perfil-dado-item">
+                                    <span>Perfil</span>
+                                    <strong>{usuario?.perfil || "-"}</strong>
+                                </div>
+
+                                {cliente && perfilCliente && (
+                                    <>
+                                        <div className="perfil-dado-item">
+                                            <span>Empresa</span>
+                                            <strong>{perfilCliente.empresa || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Nome fantasia</span>
+                                            <strong>{perfilCliente.nome_fantasia || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Responsável</span>
+                                            <strong>{perfilCliente.responsavel || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>E-mail</span>
+                                            <strong>{perfilCliente.email || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Telefone</span>
+                                            <strong>{perfilCliente.telefone || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Documento</span>
+                                            <strong>{perfilCliente.documento || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Endereço</span>
+                                            <strong>{perfilCliente.endereco || "-"}</strong>
+                                        </div>
+                                        <div className="perfil-dado-item">
+                                            <span>Cidade/UF</span>
+                                            <strong>
+                                                {perfilCliente.cidade || "-"}
+                                                {perfilCliente.estado ? `/${perfilCliente.estado}` : ""}
+                                            </strong>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         )}
-                    </div>
+                    </section>
 
                     <form
-                        className="admin-form"
+                        className="admin-card admin-form meu-perfil-card meu-perfil-senha-card"
                         onSubmit={handleAlterarSenha}
                     >
-                        <h2>Alterar senha</h2>
+                        <div className="meu-perfil-card-cabecalho">
+                            <span>Segurança</span>
+                            <h2>Alterar senha</h2>
+                            <p>Informe sua senha atual para definir uma nova senha.</p>
+                        </div>
 
                         <div className="linha-input">
                             <label>Senha atual</label>
-
                             <input
                                 type="password"
                                 value={senhaAtual}
-                                onChange={(e) => setSenhaAtual(e.target.value)}
+                                onChange={(event) => setSenhaAtual(event.target.value)}
                                 required
                             />
                         </div>
 
                         <div className="linha-input">
                             <label>Nova senha</label>
-
                             <input
                                 type="password"
                                 value={novaSenha}
-                                onChange={(e) => setNovaSenha(e.target.value)}
+                                onChange={(event) => setNovaSenha(event.target.value)}
                                 required
                             />
                         </div>
 
                         <div className="linha-input">
                             <label>Confirmar nova senha</label>
-
                             <input
                                 type="password"
                                 value={confirmarSenha}
-                                onChange={(e) =>
-                                    setConfirmarSenha(e.target.value)
-                                }
+                                onChange={(event) => setConfirmarSenha(event.target.value)}
                                 required
                             />
                         </div>
@@ -201,7 +221,7 @@ function MeuPerfil() {
                             Alterar Senha
                         </button>
 
-                        {mensagem && <p>{mensagem}</p>}
+                        {mensagem && <p className="meu-perfil-mensagem">{mensagem}</p>}
                     </form>
                 </div>
             </div>

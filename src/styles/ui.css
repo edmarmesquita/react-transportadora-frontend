@@ -3523,6 +3523,432 @@ textarea {
     box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.15);
 }
 
+/* Portais Cliente e Motorista */
+.portal-page {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    overflow-wrap: anywhere;
+}
+
+.portal-page .admin-table-wrapper,
+.portal-page .admin-table,
+.portal-page .admin-table td,
+.portal-page .admin-table th,
+.portal-page .cliente-resumo-card,
+.portal-page .cliente-ultima-carga,
+.portal-page .detalhe-carga-secao,
+.portal-page .carga-resumo {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.portal-page .status-badge {
+    background: #eef2f7;
+    color: #334155;
+}
+
+.portal-cliente-detalhe-page .detalhe-carga-cliente {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.portal-cliente-detalhe-page .arquivo-item > div,
+.portal-cliente-detalhe-page .arquivo-item strong,
+.portal-cliente-detalhe-page .arquivo-item small,
+.portal-cliente-detalhe-page .comprovante-card-conteudo,
+.portal-cliente-detalhe-page .timeline-conteudo {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form .linha-input {
+    gap: 7px;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form .linha-input + .linha-input {
+    margin-top: 18px;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form label {
+    margin: 0;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form select,
+.portal-cliente-detalhe-page .ocorrencia-form textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #263247;
+    color-scheme: light;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.5;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form textarea::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form select:focus,
+.portal-cliente-detalhe-page .ocorrencia-form textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.portal-cliente-detalhe-page .ocorrencia-form .btn-primary {
+    min-height: 44px;
+    margin-top: 18px;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Meu Perfil */
+.meu-perfil-page {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+}
+
+.meu-perfil-conteudo {
+    display: grid;
+    width: min(980px, 100%);
+    margin-inline: auto;
+    gap: 22px;
+}
+
+.meu-perfil-card {
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+    box-sizing: border-box;
+}
+
+.meu-perfil-card-cabecalho {
+    margin-bottom: 22px;
+}
+
+.meu-perfil-card-cabecalho > span {
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.meu-perfil-card-cabecalho h2 {
+    margin: 5px 0 7px;
+    color: #172033;
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.meu-perfil-card-cabecalho p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.perfil-dados-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.perfil-dado-item {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid #e5eaf1;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.perfil-dado-item span {
+    display: block;
+    margin-bottom: 5px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.perfil-dado-item strong {
+    display: block;
+    color: #263247;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.meu-perfil-senha-card {
+    display: grid;
+    width: 100%;
+    max-width: none;
+    gap: 18px;
+}
+
+.meu-perfil-senha-card .meu-perfil-card-cabecalho {
+    margin-bottom: 0;
+}
+
+.meu-perfil-senha-card .linha-input {
+    gap: 7px;
+}
+
+.meu-perfil-senha-card .linha-input label {
+    margin: 0;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.meu-perfil-senha-card .linha-input input {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #263247;
+    color-scheme: light;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 400;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meu-perfil-senha-card .linha-input input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.meu-perfil-senha-card .btn-primary {
+    min-height: 44px;
+    justify-self: start;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.meu-perfil-mensagem {
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+@media (max-width: 800px) {
+    .perfil-dados-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .meu-perfil-card {
+        padding: 20px 16px;
+    }
+
+    .perfil-dados-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .meu-perfil-senha-card .linha-input input {
+        font-size: 16px;
+    }
+
+    .meu-perfil-senha-card .btn-primary {
+        width: 100%;
+        justify-self: stretch;
+    }
+}
+
+@media (max-width: 800px) {
+    .portal-cliente-cargas-page .admin-table-wrapper,
+    .portal-motorista-viagens-page .admin-table-wrapper {
+        overflow: visible;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .portal-cliente-cargas-page .admin-table,
+    .portal-motorista-viagens-page .admin-table,
+    .portal-cliente-cargas-page .admin-table tbody,
+    .portal-motorista-viagens-page .admin-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .portal-cliente-cargas-page .admin-table thead,
+    .portal-motorista-viagens-page .admin-table thead {
+        display: none;
+    }
+
+    .portal-cliente-cargas-page .admin-table tr,
+    .portal-motorista-viagens-page .admin-table tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
+        box-sizing: border-box;
+    }
+
+    .portal-cliente-cargas-page .admin-table td,
+    .portal-motorista-viagens-page .admin-table td {
+        display: flex;
+        width: 100%;
+        min-height: 40px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 9px 0;
+        border-bottom: 1px solid #edf2f7;
+        white-space: normal;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .portal-cliente-cargas-page .admin-table td:last-child,
+    .portal-motorista-viagens-page .admin-table td:last-child {
+        border-bottom: 0;
+    }
+
+    .portal-cliente-cargas-page .admin-table td::before,
+    .portal-motorista-viagens-page .admin-table td::before {
+        flex: 0 0 38%;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+    }
+
+    .portal-cliente-cargas-page td:nth-child(1)::before { content: "Código"; }
+    .portal-cliente-cargas-page td:nth-child(2)::before { content: "Status"; }
+    .portal-cliente-cargas-page td:nth-child(3)::before { content: "Local atual"; }
+    .portal-cliente-cargas-page td:nth-child(4)::before { content: "Destino"; }
+    .portal-cliente-cargas-page td:nth-child(5)::before { content: "Atualização"; }
+    .portal-cliente-cargas-page td:nth-child(6)::before { content: "Ações"; }
+
+    .portal-motorista-viagens-page td:nth-child(1)::before { content: "Carga"; }
+    .portal-motorista-viagens-page td:nth-child(2)::before { content: "Origem"; }
+    .portal-motorista-viagens-page td:nth-child(3)::before { content: "Destino"; }
+    .portal-motorista-viagens-page td:nth-child(4)::before { content: "Status"; }
+    .portal-motorista-viagens-page td:nth-child(5)::before { content: "Veículo"; }
+    .portal-motorista-viagens-page td:nth-child(6)::before { content: "Saída"; }
+    .portal-motorista-viagens-page td:nth-child(7)::before { content: "Previsão"; }
+    .portal-motorista-viagens-page td:nth-child(8)::before { content: "Ações"; }
+
+    .portal-page .admin-table td[colspan] {
+        display: block;
+        text-align: center;
+    }
+
+    .portal-page .admin-table td[colspan]::before {
+        content: none;
+    }
+
+    .portal-page .admin-table-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 600px) {
+    .portal-page .cliente-boas-vindas h2 {
+        font-size: 24px;
+    }
+
+    .portal-page .cliente-resumo-card,
+    .portal-page .cliente-ultima-carga,
+    .portal-cliente-detalhe-page .carga-resumo,
+    .portal-cliente-detalhe-page .detalhe-carga-secao {
+        padding: 18px 16px;
+    }
+
+    .portal-page .cliente-ultima-carga .btn-primary,
+    .portal-cliente-detalhe-page .ocorrencia-form .btn-primary,
+    .portal-cliente-detalhe-page .arquivo-item .btn-detalhes {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .portal-cliente-detalhe-page .comprovantes-titulo,
+    .portal-cliente-detalhe-page .ocorrencias-titulo,
+    .portal-cliente-detalhe-page .arquivo-item {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .portal-cliente-detalhe-page .comprovante-card {
+        flex-direction: column;
+    }
+
+    .portal-cliente-detalhe-page .ocorrencia-form {
+        padding: 16px;
+    }
+
+    .portal-cliente-detalhe-page input,
+    .portal-cliente-detalhe-page select,
+    .portal-cliente-detalhe-page textarea {
+        width: 100%;
+        min-width: 0;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .portal-cliente-detalhe-page .timeline-evento {
+        grid-template-columns: 36px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .portal-cliente-detalhe-page .timeline-marcador {
+        width: 36px;
+        height: 36px;
+    }
+
+    .portal-cliente-detalhe-page .timeline-evento:not(:last-child)::before {
+        top: 36px;
+        left: 17px;
+    }
+}
+
 @media (max-width: 900px) {
     .cliente-progresso-carga {
         grid-template-columns: repeat(3, 1fr);

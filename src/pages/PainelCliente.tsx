@@ -51,7 +51,7 @@ function PainelCliente() {
 
     return (
         <AdminLayout>
-            <div className="admin-page">
+            <div className="admin-page portal-page portal-cliente-page portal-cliente-cargas-page">
 
                 <section className="cliente-resumo">
                     <div className="cliente-boas-vindas">
@@ -201,11 +201,11 @@ function PainelCliente() {
                         renderRow={(carga) => (
                             <>
                                 <td>{carga.codigo}</td>
-                                <td>{carga.status}</td>
+                                <td><span className="status-badge">{carga.status}</span></td>
                                 <td>{carga.local_atual || "-"}</td>
                                 <td>{carga.destino || "-"}</td>
                                 <td>{carga.ultima_atualizacao || "-"}</td>
-                                <td>
+                                <td className="admin-table-actions">
                                     <Link
                                         to={`/portal/cliente/minhas-cargas/${carga.id}`}
                                         className="btn-small btn-edit"
