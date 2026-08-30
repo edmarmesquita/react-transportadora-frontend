@@ -129,17 +129,6 @@ function AdminCargas() {
                     </Link>
                 </AdminHeader>
 
-                <div className="busca-box">
-                    <input
-                        type="text"
-                        placeholder="Buscar carga ou cliente..."
-                        value={busca}
-                        onChange={(event) =>
-                            setBusca(event.target.value)
-                        }
-                    />
-                </div>
-
                 <div className="filtro-status">
                     <button onClick={() => setStatusFiltro("Todos")}>Todos</button>
                     <button onClick={() => setStatusFiltro("Em coleta")}>Em coleta</button>
@@ -160,6 +149,18 @@ function AdminCargas() {
                 ) : (
                     <>
                         <div className="tabela-cargas admin-table-wrapper">
+                            <div className="data-table-toolbar">
+                                <input
+                                    className="data-table-search"
+                                    type="text"
+                                    placeholder="Buscar carga ou cliente..."
+                                    value={busca}
+                                    onChange={(event) =>
+                                        setBusca(event.target.value)
+                                    }
+                                />
+                            </div>
+
                             <table className="admin-table">
                                     <thead>
                                         <tr>

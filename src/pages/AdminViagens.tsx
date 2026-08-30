@@ -149,7 +149,29 @@ function AdminViagens() {
                     </Link>
                 </AdminHeader>
 
+                <div className="filtro-status">
+                    <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
+                    <button onClick={() => setFiltroStatus("Planejada")}>Planejadas</button>
+                    <button onClick={() => setFiltroStatus("Em trânsito")}>Em trânsito</button>
+                    <button onClick={() => setFiltroStatus("Saiu para entrega")}>Entrega</button>
+                    <button onClick={() => setFiltroStatus("Entregue")}>Entregues</button>
+                </div>
+
+                <p className="resultado-busca">
+                    {viagensFiltradas.length} viagem(ns) encontrada(s)
+                </p>
+
                 <div className="tabela-cargas admin-table-wrapper">
+                    <div className="data-table-toolbar">
+                        <input
+                            className="data-table-search"
+                            type="text"
+                            placeholder="Buscar por carga, cliente, motorista ou veículo..."
+                            value={busca}
+                            onChange={(event) => setBusca(event.target.value)}
+                        />
+                    </div>
+
                     <table className="admin-table">
                         <thead>
                             <tr>
@@ -245,26 +267,6 @@ function AdminViagens() {
                     </table>
                 </div>
 
-                <div className="busca-box">
-                    <input
-                        type="text"
-                        placeholder="Buscar por carga, cliente, motorista ou veículo..."
-                        value={busca}
-                        onChange={(event) => setBusca(event.target.value)}
-                    />
-                </div>
-
-                <div className="filtro-status">
-                    <button onClick={() => setFiltroStatus("Todos")}>Todos</button>
-                    <button onClick={() => setFiltroStatus("Planejada")}>Planejadas</button>
-                    <button onClick={() => setFiltroStatus("Em trânsito")}>Em trânsito</button>
-                    <button onClick={() => setFiltroStatus("Saiu para entrega")}>Entrega</button>
-                    <button onClick={() => setFiltroStatus("Entregue")}>Entregues</button>
-                </div>
-
-                <p className="resultado-busca">
-                    {viagensFiltradas.length} viagem(ns) encontrada(s)
-                </p>
             </div>
         </AdminLayout>
     )
