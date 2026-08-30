@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
+import { useNotification } from "../components/ui/NotificationProvider";
 import { apiFetch } from "../services/api";
 
 type ClienteOpcao = {
@@ -13,6 +14,7 @@ type ClienteOpcao = {
 function EditarUsuario() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { notificar } = useNotification();
 
     const [nome, setNome] = useState("");
     const [usuario, setUsuario] = useState("");
@@ -81,12 +83,18 @@ function EditarUsuario() {
 
         if (redefinirSenha) {
             if (novaSenha.length < 6) {
-                alert("A nova senha deve ter pelo menos 6 caracteres.");
+                notificar(
+                    "erro",
+                    "A nova senha deve ter pelo menos 6 caracteres."
+                );
                 return;
             }
 
             if (novaSenha !== confirmarSenha) {
-                alert("A confirmação da senha não confere.");
+                notificar(
+                    "erro",
+                    "Nova senha e confirmação não conferem."
+                );
                 return;
             }
         }
@@ -125,15 +133,23 @@ function EditarUsuario() {
                 );
             }
 
-            alert("Usuário atualizado com sucesso!");
+            if (redefinirSenha) {
+                setNovaSenha("");
+                setConfirmarSenha("");
+                setRedefinirSenha(false);
+                notificar("sucesso", "Senha redefinida com sucesso.");
+            } else {
+                notificar("sucesso", "Usuário atualizado com sucesso!");
+            }
+
             navigate("/admin/usuarios");
         } catch (erro) {
             console.error("Erro ao atualizar usuário:", erro);
 
             if (erro instanceof Error) {
-                alert(erro.message);
+                notificar("erro", erro.message);
             } else {
-                alert("Erro ao atualizar usuário.");
+                notificar("erro", "Erro ao atualizar usuário.");
             }
         }
     }
@@ -256,7 +272,7 @@ function EditarUsuario() {
                         </select>
                     </div>
 
-                    <div className="linha-input">
+                    <div className="linha-input" id="redefinir-senha">
                         <label className="checkbox-label">
                             <input
                                 type="checkbox"

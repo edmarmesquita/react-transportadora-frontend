@@ -18,6 +18,7 @@ type Veiculo = {
 
 function AdminVeiculos() {
     const [veiculos, setVeiculos] = useState<Veiculo[]>([])
+    const [busca, setBusca] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("Todos")
 
     async function carregarVeiculos() {
@@ -62,6 +63,20 @@ function AdminVeiculos() {
     }
 
     const veiculosFiltrados = veiculos.filter((veiculo) => {
+        const termoBusca = busca.trim().toLowerCase()
+        const atendeBusca = !termoBusca || [
+            veiculo.placa,
+            veiculo.modelo,
+            veiculo.marca,
+            veiculo.tipo,
+            veiculo.ano,
+            veiculo.capacidade,
+            veiculo.status,
+        ].some((valor) =>
+            String(valor ?? "").toLowerCase().includes(termoBusca)
+        )
+
+        if (!atendeBusca) return false
         if (filtroStatus === "Todos") return true
 
         return veiculo.status === filtroStatus
@@ -80,6 +95,16 @@ function AdminVeiculos() {
                 </AdminHeader>
 
                 <div className="tabela-cargas admin-table-wrapper">
+                    <div className="data-table-toolbar">
+                        <input
+                            className="data-table-search"
+                            type="text"
+                            placeholder="Pesquisar veículos..."
+                            value={busca}
+                            onChange={(event) => setBusca(event.target.value)}
+                        />
+                    </div>
+
                     <table className="admin-table">
                         <thead>
                             <tr>
@@ -94,7 +119,13 @@ function AdminVeiculos() {
                         </thead>
 
                         <tbody>
-                            {veiculosFiltrados.map((veiculo) => (
+                            {veiculosFiltrados.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="tabela-vazia">
+                                        Nenhum veículo encontrado.
+                                    </td>
+                                </tr>
+                            ) : veiculosFiltrados.map((veiculo) => (
                                 <tr key={veiculo.id}>
                                     <td>{veiculo.placa}</td>
                                     <td>{veiculo.modelo}</td>

@@ -4895,13 +4895,17 @@ textarea {
 
     .admin-cotacoes-page .cotacao-acoes select { flex-basis: 100%; }
 
+    .admin-clientes-page .tabela-vazia,
     .admin-motoristas-page .tabela-vazia,
+    .admin-veiculos-page .tabela-vazia,
     .admin-usuarios-page .usuarios-table td[colspan] {
         display: block;
         text-align: center;
     }
 
+    .admin-clientes-page .tabela-vazia::before,
     .admin-motoristas-page .tabela-vazia::before,
+    .admin-veiculos-page .tabela-vazia::before,
     .admin-usuarios-page .usuarios-table td[colspan]::before { content: none; }
 
     .datatable-footer,

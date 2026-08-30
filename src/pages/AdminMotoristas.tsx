@@ -29,6 +29,7 @@ function AdminMotoristas() {
     const administrador =
         usuario?.perfil?.trim().toLowerCase() === "administrador";
     const [motoristas, setMotoristas] = useState<Motorista[]>([]);
+    const [busca, setBusca] = useState("");
     const [filtroStatus, setFiltroStatus] =
         useState<FiltroStatus>("Todos");
 
@@ -140,8 +141,25 @@ function AdminMotoristas() {
     }
 
     const motoristasFiltrados = useMemo(() => {
+        const termoBusca = busca.trim().toLowerCase();
+
         return motoristas.filter((motorista) => {
             const status = motorista.status.toLowerCase();
+            const atendeBusca = !termoBusca || [
+                motorista.nome,
+                motorista.cpf,
+                motorista.cnh,
+                motorista.categoria_cnh,
+                motorista.validade_cnh,
+                motorista.telefone,
+                motorista.email,
+                motorista.status,
+                motorista.disponibilidade,
+            ].some((valor) =>
+                String(valor ?? "").toLowerCase().includes(termoBusca)
+            );
+
+            if (!atendeBusca) return false;
 
             if (filtroStatus === "Ativos") {
                 return status === "ativo";
@@ -153,7 +171,7 @@ function AdminMotoristas() {
 
             return true;
         });
-    }, [motoristas, filtroStatus]);
+    }, [motoristas, filtroStatus, busca]);
 
     function classeStatus(disponibilidade: string) {
         return disponibilidade.toLowerCase() === "disponível"
@@ -226,6 +244,16 @@ function AdminMotoristas() {
 
                 {!carregando && (
                     <div className="tabela-cargas admin-table-wrapper">
+                        <div className="data-table-toolbar">
+                            <input
+                                className="data-table-search"
+                                type="text"
+                                placeholder="Pesquisar motoristas..."
+                                value={busca}
+                                onChange={(event) => setBusca(event.target.value)}
+                            />
+                        </div>
+
                         <table className="admin-table">
                             <thead>
                                 <tr>

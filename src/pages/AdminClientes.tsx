@@ -20,6 +20,7 @@ type Cliente = {
 
 function AdminClientes() {
     const [clientes, setClientes] = useState<Cliente[]>([])
+    const [busca, setBusca] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("Todos")
 
     async function carregarClientes() {
@@ -68,6 +69,23 @@ function AdminClientes() {
     }, [])
 
     const clientesFiltrados = clientes.filter((cliente) => {
+        const termoBusca = busca.trim().toLowerCase()
+        const status = cliente.ativo ? "ativo" : "inativo"
+        const atendeBusca = !termoBusca || [
+            cliente.razao_social,
+            cliente.nome_fantasia,
+            cliente.documento,
+            cliente.responsavel,
+            cliente.email,
+            cliente.telefone,
+            cliente.cidade,
+            cliente.estado,
+            status,
+        ].some((valor) =>
+            String(valor ?? "").toLowerCase().includes(termoBusca)
+        )
+
+        if (!atendeBusca) return false
         if (filtroStatus === "Todos") return true
         if (filtroStatus === "Ativos") return cliente.ativo
         if (filtroStatus === "Inativos") return !cliente.ativo
@@ -88,6 +106,16 @@ function AdminClientes() {
                 </AdminHeader>
 
                 <div className="tabela-cargas admin-table-wrapper">
+                    <div className="data-table-toolbar">
+                        <input
+                            className="data-table-search"
+                            type="text"
+                            placeholder="Pesquisar clientes..."
+                            value={busca}
+                            onChange={(event) => setBusca(event.target.value)}
+                        />
+                    </div>
+
                     <table className="admin-table">
                         <thead>
                             <tr>
@@ -101,7 +129,13 @@ function AdminClientes() {
                         </thead>
 
                         <tbody>
-                            {clientesFiltrados.map((cliente) => (
+                            {clientesFiltrados.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="tabela-vazia">
+                                        Nenhum cliente encontrado.
+                                    </td>
+                                </tr>
+                            ) : clientesFiltrados.map((cliente) => (
                                 <tr key={cliente.id}>
                                     <td>{cliente.razao_social}</td>
 
