@@ -30,19 +30,19 @@ function FleetSection() {
                     }}
                 >
                     <FleetCard
-                        imagem="/caminhao_ramos.png"
+                        imagem="/caminhao_ramos.jpg"
                         titulo="Caminhões Rastreados"
                         descricao="Mais segurança e controle em cada etapa do transporte."
                     />
 
                     <FleetCard
-                        imagem="/caminhao_ramos.png"
+                        imagem="/caminhao_ramos.jpg"
                         titulo="Carga Fracionada"
                         descricao="Soluções econômicas para volumes menores e entregas ágeis."
                     />
 
                     <FleetCard
-                        imagem="/caminhao_ramos.png"
+                        imagem="/caminhao_ramos.jpg"
                         titulo="Carga Lotação"
                         descricao="Transporte dedicado para grandes volumes com máxima eficiência."
                     />

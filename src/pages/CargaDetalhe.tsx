@@ -128,11 +128,8 @@ function CargaDetalhe() {
 
             const dados = await resposta.json();
 
-            console.log("Motoristas recebidos:", dados);
-
             setMotoristas(dados);
         } catch (erro) {
-            console.log("Erro ao carregar motoristas.", erro);
             setMensagemMotorista("Não foi possível carregar os motoristas.");
         }
     }
@@ -148,8 +145,6 @@ function CargaDetalhe() {
             }
 
             const dados = await resposta.json();
-
-            console.log("Veículos recebidos:", dados);
 
             setVeiculos(dados);
         } catch (erro) {
@@ -174,9 +169,6 @@ function CargaDetalhe() {
         }
 
         try {
-            console.log("Carga ID:", carga.id);
-            console.log("Veículo ID:", veiculoId);
-
             const resposta = await apiFetch(
                 `/api/admin/cargas/${carga.id}/atribuir-veiculo`,
                 {
@@ -191,9 +183,6 @@ function CargaDetalhe() {
             );
 
             const texto = await resposta.text();
-
-            console.log("Status recebido:", resposta.status);
-            console.log("Resposta recebida:", texto);
 
             const dados = texto ? JSON.parse(texto) : {};
 
@@ -271,9 +260,6 @@ function CargaDetalhe() {
             const texto = await resposta.text();
             const dados = texto ? JSON.parse(texto) : {};
 
-            console.log("Status HTTP:", resposta.status);
-            console.log("Resposta da API:", dados);
-
             if (!resposta.ok) {
                 throw new Error(
                     dados.erro ||
@@ -322,10 +308,6 @@ function CargaDetalhe() {
         }
 
         try {
-            console.log("ID da URL:", id);
-            console.log("ID real da carga:", carga.id);
-            console.log("Motorista ID:", motoristaId);
-
             const resposta = await apiFetch(
                 `/api/admin/cargas/${carga.id}/atribuir-motorista`,
                 {
@@ -340,9 +322,6 @@ function CargaDetalhe() {
             );
 
             const texto = await resposta.text();
-
-            console.log("Status recebido:", resposta.status);
-            console.log("Resposta recebida:", texto);
 
             const dados = texto ? JSON.parse(texto) : {};
 

@@ -71,8 +71,6 @@ function AdminDashboard() {
 
             setLoading(false)
         } catch {
-            console.log("Erro ao carregar dashboard.")
-
             setLoading(false)
         }
     }

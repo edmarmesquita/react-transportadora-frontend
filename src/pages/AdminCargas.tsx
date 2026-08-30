@@ -39,8 +39,6 @@ function AdminCargas() {
 
             setLoading(false)
         } catch {
-            console.log("Erro ao carregar cargas.")
-
             setLoading(false)
         }
     }

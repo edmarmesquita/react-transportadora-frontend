@@ -31,9 +31,6 @@ export async function buscarDetalheCarga(
 
         const texto = await resposta.text();
 
-        console.log("STATUS DETALHE:", resposta.status);
-        console.log("RESPOSTA DETALHE:", texto);
-
         if (!resposta.ok) {
             let mensagem = `Erro ${resposta.status} ao carregar a carga.`;
 

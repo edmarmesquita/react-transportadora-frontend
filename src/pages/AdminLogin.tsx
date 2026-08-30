@@ -40,9 +40,6 @@ function AdminLogin() {
             } else {
                 navigate("/admin");
             }
-            console.log("LOGIN:", dados);
-
-
         } catch (error) {
             if (error instanceof Error) {
                 setErro(error.message);
