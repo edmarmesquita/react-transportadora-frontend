@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { apiFetch } from "../../services/api"
 import { buscarUsuarioLogado } from "../../services/authService";
+import { abrirArquivoAutenticado } from "../../services/arquivosService";
 
 type Props = {
     viagemId: number
@@ -11,7 +12,7 @@ type ArquivoComprovante = {
     id: number
     nome_arquivo: string
     data_upload: string
-    url: string
+    download_endpoint: string
 }
 
 function ListaComprovantes({
@@ -20,6 +21,21 @@ function ListaComprovantes({
 }: Props) {
     const usuario = buscarUsuarioLogado();
     const [arquivos, setArquivos] = useState<ArquivoComprovante[]>([])
+    const [erroDownload, setErroDownload] = useState("")
+
+    async function abrirArquivo(downloadEndpoint: string) {
+        setErroDownload("");
+
+        try {
+            await abrirArquivoAutenticado(downloadEndpoint);
+        } catch (erro) {
+            setErroDownload(
+                erro instanceof Error
+                    ? erro.message
+                    : "Não foi possível abrir o arquivo."
+            );
+        }
+    }
 
     async function carregarArquivos() {
         const endpoint =
@@ -52,6 +68,8 @@ function ListaComprovantes({
         <div className="grafico-card detalhe-viagem-card comprovantes-arquivos-card">
             <h2>Arquivos do Comprovante</h2>
 
+            {erroDownload && <p className="mensagem-erro">{erroDownload}</p>}
+
             {arquivos.length === 0 ? (
                 <p>Nenhum arquivo enviado.</p>
             ) : (
@@ -69,14 +87,13 @@ function ListaComprovantes({
                                 </small>
                             </div>
 
-                            <a
-                                href={arquivo.url}
-                                target="_blank"
-                                rel="noreferrer"
+                            <button
+                                type="button"
+                                onClick={() => abrirArquivo(arquivo.download_endpoint)}
                                 className="btn-detalhes"
                             >
                                 Abrir
-                            </a>
+                            </button>
                         </div>
                     ))}
                 </div>

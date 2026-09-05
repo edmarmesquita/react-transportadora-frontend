@@ -19,6 +19,7 @@ import {
     listarOcorrenciasCarga,
     listarComprovantesCarga,
 } from "../services/clienteService";
+import { abrirArquivoAutenticado } from "../services/arquivosService";
 
 import type {
     DetalheMinhaCarga,
@@ -41,6 +42,22 @@ function DetalheCargaCliente() {
 
     const [arquivosComprovante, setArquivosComprovante] =
         useState<ArquivoComprovanteCarga[]>([]);
+
+    const [erroDownload, setErroDownload] = useState("");
+
+    async function abrirArquivo(downloadEndpoint: string) {
+        setErroDownload("");
+
+        try {
+            await abrirArquivoAutenticado(downloadEndpoint);
+        } catch (error) {
+            setErroDownload(
+                error instanceof Error
+                    ? error.message
+                    : "Não foi possível abrir o arquivo."
+            );
+        }
+    }
 
     const [tituloOcorrencia, setTituloOcorrencia] =
         useState("");
@@ -368,6 +385,10 @@ function DetalheCargaCliente() {
                                 <div className="lista-arquivos">
                                     <h3>Arquivos do comprovante</h3>
 
+                                    {erroDownload && (
+                                        <p className="mensagem-erro">{erroDownload}</p>
+                                    )}
+
                                     {arquivosComprovante.map((arquivo) => (
                                         <div
                                             className="arquivo-item"
@@ -383,14 +404,15 @@ function DetalheCargaCliente() {
                                                 </small>
                                             </div>
 
-                                            <a
-                                                href={arquivo.url}
-                                                target="_blank"
-                                                rel="noreferrer"
+                                            <button
+                                                type="button"
+                                                onClick={() => abrirArquivo(
+                                                    arquivo.download_endpoint
+                                                )}
                                                 className="btn-detalhes"
                                             >
                                                 Abrir
-                                            </a>
+                                            </button>
                                         </div>
                                     ))}
                                 </div>

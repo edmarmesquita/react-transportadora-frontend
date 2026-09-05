@@ -51,7 +51,7 @@ export type ArquivoComprovanteCarga = {
     id: number;
     nome_arquivo: string;
     data_upload: string;
-    url: string;
+    download_endpoint: string;
 };
 
 export type ComprovantesCargaResponse = {
