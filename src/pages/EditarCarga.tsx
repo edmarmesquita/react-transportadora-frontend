@@ -212,8 +212,7 @@ function EditarCarga() {
                             id="codigo"
                             name="codigo"
                             value={formData.codigo}
-                            onChange={handleChange}
-                            required
+                            readOnly
                         />
                     </div>
 

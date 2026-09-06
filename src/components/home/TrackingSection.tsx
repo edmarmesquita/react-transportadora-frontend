@@ -5,12 +5,9 @@ import TrackingForm from "./TrackingForm"
 import { apiFetch } from "../../services/api"
 
 type TrackingData = {
-    id: number
     codigo: string
-    cliente: string
     status: string
-    local_atual: string
-    destino: string
+    previsao_entrega: string
     ultima_atualizacao: string
 }
 
@@ -26,7 +23,7 @@ function TrackingSection() {
 
         try {
             const resposta = await apiFetch(
-                `/api/rastreamento/${codigo}`
+                `/api/rastreamento/${encodeURIComponent(codigo)}`
             )
 
             const dados = await resposta.json()
@@ -67,10 +64,11 @@ function TrackingSection() {
                         {resultado && (
                             <div className="status-rastreamento-preview">
                                 <p><strong>Código:</strong> {resultado.codigo}</p>
-                                <p><strong>Cliente:</strong> {resultado.cliente}</p>
                                 <p><strong>Status:</strong> {resultado.status}</p>
-                                <p><strong>Local atual:</strong> {resultado.local_atual}</p>
-                                <p><strong>Destino:</strong> {resultado.destino}</p>
+                                <p>
+                                    <strong>Previsão de entrega:</strong>{" "}
+                                    {resultado.previsao_entrega || "A confirmar"}
+                                </p>
                                 <p>
                                     <strong>Última atualização:</strong>{" "}
                                     {resultado.ultima_atualizacao}

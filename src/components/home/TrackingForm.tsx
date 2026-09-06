@@ -26,6 +26,9 @@ function TrackingForm({ onBuscar, loading }: TrackingFormProps) {
                 type="text"
                 name="codigo"
                 placeholder="Digite o código da carga"
+                maxLength={30}
+                autoCapitalize="characters"
+                autoComplete="off"
                 required
                 value={codigo}
                 onChange={(event) => setCodigo(event.target.value)}

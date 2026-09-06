@@ -15,7 +15,6 @@ function NovaCarga() {
     const navigate = useNavigate()
 
     const [formData, setFormData] = useState({
-        codigo: "",
         cliente_id: "",
         status: "Em coleta",
         local_atual: "",
@@ -117,16 +116,6 @@ function NovaCarga() {
                 </div>
 
                 <form className="admin-form admin-form-card admin-form-grid" onSubmit={handleSubmit}>
-                    <div className="linha-input">
-                        <label>Código</label>
-                        <input
-                            name="codigo"
-                            value={formData.codigo}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
                     <div className="linha-input">
                         <label>Cliente</label>
 
