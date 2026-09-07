@@ -16,7 +16,7 @@ function NovaCarga() {
 
     const [formData, setFormData] = useState({
         cliente_id: "",
-        status: "Em coleta",
+        status: "Pendente",
         local_atual: "",
         destino: "",
         valor_frete: "",
@@ -150,10 +150,8 @@ function NovaCarga() {
                             value={formData.status}
                             onChange={handleChange}
                         >
-                            <option>Em coleta</option>
-                            <option>Em trânsito</option>
-                            <option>Saiu para entrega</option>
-                            <option>Entregue</option>
+                            <option>Pendente</option>
+                            <option>Programada</option>
                         </select>
                     </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNotification } from "../components/ui/NotificationProvider";
 import { apiFetch } from "../services/api";
+import { transicoesCarga } from "../constants/estadosOperacionais";
 import "../styles/ui.css";
 
 type Carga = {
@@ -581,27 +582,22 @@ function CargaDetalhe() {
                                     Selecione o status
                                 </option>
 
-                                <option value="Pendente">
-                                    Pendente
-                                </option>
-
-                                <option value="Programada">
-                                    Programada
-                                </option>
-
-                                <option value="Em preparação">
-                                    Em preparação
-                                </option>
-
-                                <option value="Carregando">
-                                    Carregando
-                                </option>
+                                {(transicoesCarga[carga?.status ?? ""] ?? []).map(
+                                    (status) => (
+                                        <option key={status} value={status}>
+                                            {status}
+                                        </option>
+                                    )
+                                )}
                             </select>
 
                             <button
                                 type="button"
                                 onClick={atualizarStatus}
-                                disabled={!novoStatus}
+                                disabled={
+                                    !novoStatus
+                                    || (transicoesCarga[carga?.status ?? ""] ?? []).length === 0
+                                }
                             >
                                 Atualizar
                             </button>

@@ -7,6 +7,7 @@ import ListaComprovantes from "../components/admin/ListaComprovantes"
 import RastreamentoViagem from "../components/admin/RastreamentoViagem"
 import { buscarUsuarioLogado } from "../services/authService";
 import { useNotification } from "../components/ui/NotificationProvider";
+import { transicoesViagem } from "../constants/estadosOperacionais";
 
 type Historico = {
     id: number
@@ -294,15 +295,16 @@ function DetalheViagem() {
                                     }
                                 >
                                     <option value="">Alterar status</option>
-                                    <option value="Em coleta">Em coleta</option>
-                                    <option value="Carregando">Carregando</option>
-                                    <option value="Em trânsito">Em trânsito</option>
-                                    <option value="Parada operacional">Parada operacional</option>
-                                    <option value="Saiu para entrega">Saiu para entrega</option>
-
-                                    {usuario?.perfil?.toLowerCase() !== "motorista" && (
-                                        <option value="Cancelada">Cancelada</option>
-                                    )}
+                                    {(transicoesViagem[viagem?.status ?? ""] ?? [])
+                                        .filter(
+                                            (status) => status !== "Cancelada"
+                                                || usuario?.perfil?.toLowerCase() !== "motorista"
+                                        )
+                                        .map((status) => (
+                                            <option key={status} value={status}>
+                                                {status}
+                                            </option>
+                                        ))}
                                 </select>
 
                                 <button
@@ -368,17 +370,19 @@ function DetalheViagem() {
                             </button>
                         </div>
 
-                        <FormComprovanteEntrega
-                            viagemId={Number(id)}
-                            onFinalizada={() => {
-                                carregarViagem();
-                                carregarHistorico();
-                                carregarComprovante();
-                            }}
-                            onArquivoEnviado={() =>
-                                setAtualizacaoArquivos((valor) => valor + 1)
-                            }
-                        />
+                        {viagem?.status === "Saiu para entrega" && (
+                            <FormComprovanteEntrega
+                                viagemId={Number(id)}
+                                onFinalizada={() => {
+                                    carregarViagem();
+                                    carregarHistorico();
+                                    carregarComprovante();
+                                }}
+                                onArquivoEnviado={() =>
+                                    setAtualizacaoArquivos((valor) => valor + 1)
+                                }
+                            />
+                        )}
 
                         <div className="timeline-box detalhe-viagem-card">
                             <div className="timeline-titulo">
