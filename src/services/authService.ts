@@ -40,6 +40,14 @@ export async function login(dados: LoginRequest): Promise<LoginResponse> {
     });
 
     if (!resposta.ok) {
+        if (resposta.status === 429) {
+            const dados = await resposta.json().catch(() => null);
+            throw new Error(
+                dados?.erro ||
+                "Muitas tentativas. Aguarde antes de tentar novamente."
+            );
+        }
+
         const erro = await resposta.text();
         console.error("Erro no login:", resposta.status, erro);
         throw new Error("Usuário ou senha inválidos.");
