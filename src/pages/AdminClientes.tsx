@@ -4,6 +4,8 @@ import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
 import AdminHeader from "../components/layout/AdminHeader"
 import { apiFetch } from "../services/api"
+import { buscarUsuarioLogado } from "../services/authService"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 type Cliente = {
     id: number
@@ -19,6 +21,8 @@ type Cliente = {
 }
 
 function AdminClientes() {
+    const { notificar } = useNotification()
+    const administrador = buscarUsuarioLogado()?.perfil?.trim().toLowerCase() === "administrador"
     const [clientes, setClientes] = useState<Cliente[]>([])
     const [busca, setBusca] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("Todos")
@@ -34,34 +38,33 @@ function AdminClientes() {
     }
 
     async function inativarCliente(id: number) {
+        if (!administrador) return
+
         const confirmar = window.confirm("Deseja inativar este cliente?")
 
         if (!confirmar) return
 
-        const resposta = await apiFetch(`/api/admin/clientes/${id}/inativar`, {
-            method: "PUT",
-        })
+        try {
+            const resposta = await apiFetch(`/api/admin/clientes/${id}/inativar`, {
+                method: "PUT",
+            })
+            const dados = await resposta.json().catch(() => null)
 
-        const dados = await resposta.json().catch(() => null)
+            if (!resposta.ok) {
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro || dados?.msg || "Não foi possível inativar o cliente."
+                )
+                return
+            }
 
-        if (resposta.status === 403) {
-            alert(
-                dados?.erro ||
-                "Você não possui permissão para inativar clientes."
-            )
-            return
+            setClientes((atuais) => atuais.map((cliente) =>
+                cliente.id === id ? { ...cliente, ativo: false } : cliente
+            ))
+            notificar("sucesso", "Cliente inativado com sucesso!")
+        } catch {
+            notificar("erro", "Erro ao conectar com o servidor.")
         }
-
-        if (!resposta.ok) {
-            alert(
-                dados?.erro ||
-                dados?.msg ||
-                "Não foi possível inativar o cliente."
-            )
-            return
-        }
-
-        carregarClientes()
     }
 
     useEffect(() => {
@@ -170,12 +173,12 @@ function AdminClientes() {
                                                 Editar
                                             </Link>
 
-                                            <button
+                                            {administrador && <button
                                                 className="btn-excluir"
                                                 onClick={() => inativarCliente(cliente.id)}
                                             >
                                                 Inativar
-                                            </button>
+                                            </button>}
                                         </div>
                                     </td>
                                 </tr>

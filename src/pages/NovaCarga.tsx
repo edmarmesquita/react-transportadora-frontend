@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 type ClienteOpcao = {
     id: number
@@ -13,6 +14,7 @@ type ClienteOpcao = {
 
 function NovaCarga() {
     const navigate = useNavigate()
+    const { notificar } = useNotification()
 
     const [formData, setFormData] = useState({
         cliente_id: "",
@@ -23,7 +25,6 @@ function NovaCarga() {
         status_pagamento: "Pendente",
     })
 
-    const [erro, setErro] = useState("")
     const [loading, setLoading] = useState(false)
     const [clientes, setClientes] = useState<ClienteOpcao[]>([])
     const [carregandoClientes, setCarregandoClientes] = useState(true)
@@ -46,7 +47,7 @@ function NovaCarga() {
                     )
                 )
             } catch (error) {
-                setErro(
+                notificar("erro",
                     error instanceof Error
                         ? error.message
                         : "Erro ao carregar clientes."
@@ -57,7 +58,7 @@ function NovaCarga() {
         }
 
         carregarClientes()
-    }, [])
+    }, [notificar])
 
     function handleChange(
         event:
@@ -75,7 +76,6 @@ function NovaCarga() {
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        setErro("")
         setLoading(true)
 
         try {
@@ -90,17 +90,21 @@ function NovaCarga() {
                 }
             )
 
-            const dados = await resposta.json()
+            const dados = await resposta.json().catch(() => null)
 
             if (!resposta.ok) {
-                setErro(dados.erro || "Erro ao criar carga.")
-                setLoading(false)
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro || dados?.msg || "Erro ao criar carga."
+                )
                 return
             }
 
+            notificar("sucesso", "Carga cadastrada com sucesso!")
             navigate("/admin/cargas")
         } catch {
-            setErro("Erro ao conectar com o servidor.")
+            notificar("erro", "Erro ao conectar com o servidor.")
+        } finally {
             setLoading(false)
         }
     }
@@ -174,8 +178,6 @@ function NovaCarga() {
                             required
                         />
                     </div>
-
-                    {erro && <p className="mensagem-erro">{erro}</p>}
 
                     <div className="linha-input">
                         <label>Valor do frete</label>

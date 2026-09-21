@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import AdminHeader from "../components/layout/AdminHeader"
 import { apiFetch } from "../services/api"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 type Carga = {
     id: number
@@ -18,6 +19,7 @@ type Carga = {
 }
 
 function AdminCargas() {
+    const { notificar } = useNotification()
     const [cargas, setCargas] = useState<Carga[]>([])
 
     const [loading, setLoading] = useState(true)
@@ -78,7 +80,8 @@ function AdminCargas() {
             const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                alert(
+                notificar(
+                    "erro",
                     dados?.erro ||
                     dados?.msg ||
                     "Não foi possível excluir a carga."
@@ -86,16 +89,13 @@ function AdminCargas() {
                 return;
             }
 
-            alert(
-                dados?.mensagem ||
-                "Carga excluída com sucesso!"
-            );
+            notificar("sucesso", "Carga excluída com sucesso!");
 
             setCargas((prev) =>
                 prev.filter((carga) => carga.id !== id)
             );
         } catch {
-            alert("Erro ao conectar com o servidor.");
+            notificar("erro", "Erro ao conectar com o servidor.");
         }
     }
 

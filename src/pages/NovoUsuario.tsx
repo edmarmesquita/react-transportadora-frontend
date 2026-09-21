@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 type ClienteOpcao = {
     id: number;
@@ -10,6 +12,8 @@ type ClienteOpcao = {
 };
 
 function NovoUsuario() {
+    const navigate = useNavigate()
+    const { notificar } = useNotification()
 
     const [nome, setNome] = useState("")
     const [usuario, setUsuario] = useState("")
@@ -37,12 +41,12 @@ function NovoUsuario() {
                     )
                 );
             } catch (erro) {
-                console.error("Erro ao carregar clientes:", erro);
+                notificar("erro", erro instanceof Error ? erro.message : "Erro ao carregar clientes.");
             }
         }
 
         carregarClientes();
-    }, []);
+    }, [notificar]);
 
     async function salvarUsuario(event: React.FormEvent) {
         event.preventDefault();
@@ -72,17 +76,17 @@ function NovoUsuario() {
             const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                throw new Error(
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
                     dados?.erro ||
                     dados?.mensagem ||
                     `Erro HTTP ${resposta.status}`
                 );
+                return;
             }
 
-            alert(
-                dados?.mensagem ||
-                "Usuário cadastrado com sucesso!"
-            );
+            notificar("sucesso", "Usuário criado com sucesso!");
+            navigate("/admin/usuarios");
         } catch (erro) {
             console.error(
                 "Erro ao cadastrar usuário:",
@@ -90,9 +94,9 @@ function NovoUsuario() {
             );
 
             if (erro instanceof Error) {
-                alert(erro.message);
+                notificar("erro", erro.message);
             } else {
-                alert(
+                notificar("erro",
                     "Não foi possível salvar o usuário."
                 );
             }

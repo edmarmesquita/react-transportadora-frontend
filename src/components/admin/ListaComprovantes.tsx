@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { apiFetch } from "../../services/api"
 import { buscarUsuarioLogado } from "../../services/authService";
 import { abrirArquivoAutenticado } from "../../services/arquivosService";
+import { useNotification } from "../ui/NotificationProvider";
 
 type Props = {
     viagemId: number
@@ -20,16 +21,15 @@ function ListaComprovantes({
     atualizacao = 0,
 }: Props) {
     const usuario = buscarUsuarioLogado();
+    const motorista = usuario?.perfil?.toLowerCase() === "motorista";
+    const { notificar } = useNotification();
     const [arquivos, setArquivos] = useState<ArquivoComprovante[]>([])
-    const [erroDownload, setErroDownload] = useState("")
 
     async function abrirArquivo(downloadEndpoint: string) {
-        setErroDownload("");
-
         try {
             await abrirArquivoAutenticado(downloadEndpoint);
         } catch (erro) {
-            setErroDownload(
+            notificar("erro",
                 erro instanceof Error
                     ? erro.message
                     : "Não foi possível abrir o arquivo."
@@ -37,38 +37,38 @@ function ListaComprovantes({
         }
     }
 
-    async function carregarArquivos() {
-        const endpoint =
-            usuario?.perfil?.toLowerCase() === "motorista"
+    useEffect(() => {
+        let ativo = true;
+
+        async function carregarArquivos() {
+            const endpoint = motorista
                 ? `/api/motorista/minhas-viagens/${viagemId}/comprovantes/arquivos`
                 : `/api/admin/viagens/${viagemId}/comprovantes/arquivos`;
 
-        const resposta = await apiFetch(endpoint);
+            try {
+                const resposta = await apiFetch(endpoint);
+                const dados = await resposta.json().catch(() => null);
 
-        const dados = await resposta.json().catch(() => null);
+                if (!resposta.ok) {
+                    throw new Error(dados?.erro || dados?.msg || "Não foi possível carregar os comprovantes.");
+                }
 
-        if (!resposta.ok) {
-            throw new Error(
-                dados?.erro ||
-                dados?.msg ||
-                "Não foi possível carregar os comprovantes."
-            );
+                if (ativo) setArquivos(Array.isArray(dados) ? dados : []);
+            } catch (erro) {
+                if (ativo) {
+                    notificar("erro", erro instanceof Error ? erro.message : "Não foi possível carregar os comprovantes.");
+                }
+            }
         }
 
-        setArquivos(
-            Array.isArray(dados) ? dados : []
-        );
-    }
-
-    useEffect(() => {
-        carregarArquivos()
-    }, [viagemId, atualizacao])
+        void carregarArquivos();
+        // Uma consulta anterior ao upload não deve sobrescrever a lista atualizada.
+        return () => { ativo = false; };
+    }, [viagemId, atualizacao, motorista, notificar])
 
     return (
         <div className="grafico-card detalhe-viagem-card comprovantes-arquivos-card">
             <h2>Arquivos do Comprovante</h2>
-
-            {erroDownload && <p className="mensagem-erro">{erroDownload}</p>}
 
             {arquivos.length === 0 ? (
                 <p>Nenhum arquivo enviado.</p>

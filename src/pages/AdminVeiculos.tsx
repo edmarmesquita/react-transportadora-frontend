@@ -4,6 +4,8 @@ import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
 import { apiFetch } from "../services/api"
 import AdminHeader from "../components/layout/AdminHeader"
+import { buscarUsuarioLogado } from "../services/authService"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 type Veiculo = {
     id: number
@@ -17,6 +19,8 @@ type Veiculo = {
 }
 
 function AdminVeiculos() {
+    const { notificar } = useNotification()
+    const administrador = buscarUsuarioLogado()?.perfil?.trim().toLowerCase() === "administrador"
     const [veiculos, setVeiculos] = useState<Veiculo[]>([])
     const [busca, setBusca] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("Todos")
@@ -34,32 +38,36 @@ function AdminVeiculos() {
     }, [])
 
     async function inativarVeiculo(id: number) {
+        if (!administrador) return
+
         const confirmar = window.confirm(
             "Deseja inativar este veículo?"
         )
 
         if (!confirmar) return
 
-        const resposta = await apiFetch(
-            `/api/admin/veiculos/${id}/inativar`,
-            {
-                method: "PUT",
+        try {
+            const resposta = await apiFetch(
+                `/api/admin/veiculos/${id}/inativar`,
+                { method: "PUT" }
+            )
+            const dados = await resposta.json().catch(() => null)
+
+            if (!resposta.ok) {
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro || dados?.msg || "Não foi possível inativar o veículo."
+                )
+                return
             }
-        )
 
-        const dados = await resposta.json().catch(() => ({}))
-
-        if (resposta.status === 403) {
-            alert(dados.erro || "Você não possui permissão para inativar veículos.")
-            return
+            setVeiculos((atuais) => atuais.map((veiculo) =>
+                veiculo.id === id ? { ...veiculo, status: "Inativo" } : veiculo
+            ))
+            notificar("sucesso", "Veículo inativado com sucesso!")
+        } catch {
+            notificar("erro", "Erro ao conectar com o servidor.")
         }
-
-        if (!resposta.ok) {
-            alert(dados.erro || "Não foi possível inativar o veículo.")
-            return
-        }
-
-        carregarVeiculos()
     }
 
     const veiculosFiltrados = veiculos.filter((veiculo) => {
@@ -147,12 +155,12 @@ function AdminVeiculos() {
                                                 Editar
                                             </Link>
 
-                                            <button
+                                            {administrador && <button
                                                 className="btn-excluir"
                                                 onClick={() => inativarVeiculo(veiculo.id)}
                                             >
                                                 Inativar
-                                            </button>
+                                            </button>}
                                         </div>
                                     </td>
                                 </tr>

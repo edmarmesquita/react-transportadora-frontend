@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 function NovoVeiculo() {
     const navigate = useNavigate()
+    const { notificar } = useNotification()
 
     const [formData, setFormData] = useState({
         placa: "",
@@ -47,14 +49,20 @@ function NovoVeiculo() {
                 }
             )
 
+            const dados = await resposta.json().catch(() => null)
+
             if (!resposta.ok) {
-                alert("Erro ao cadastrar veículo.")
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro || dados?.msg || "Erro ao cadastrar veículo."
+                )
                 return
             }
 
+            notificar("sucesso", "Veículo cadastrado com sucesso!")
             navigate("/admin/veiculos")
         } catch {
-            alert("Erro ao conectar com servidor.")
+            notificar("erro", "Erro ao conectar com servidor.")
         }
     }
 

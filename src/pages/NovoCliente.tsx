@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 function NovoCliente() {
     const navigate = useNavigate()
+    const { notificar } = useNotification()
 
     const [formData, setFormData] = useState({
         razao_social: "",
@@ -46,14 +48,20 @@ function NovoCliente() {
                 }
             )
 
+            const dados = await resposta.json().catch(() => null)
+
             if (!resposta.ok) {
-                alert("Erro ao cadastrar cliente.")
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro || dados?.msg || "Erro ao cadastrar cliente."
+                )
                 return
             }
 
+            notificar("sucesso", "Cliente cadastrado com sucesso!")
             navigate("/admin/clientes")
         } catch {
-            alert("Erro ao conectar com servidor.")
+            notificar("erro", "Erro ao conectar com servidor.")
         }
     }
 

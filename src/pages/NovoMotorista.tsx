@@ -4,15 +4,16 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
 import { apiFetch } from "../services/api";
 import { buscarUsuarioLogado } from "../services/authService";
+import { useNotification } from "../components/ui/NotificationProvider";
 
 function NovoMotorista() {
     const navigate = useNavigate();
+    const { notificar } = useNotification();
     const usuario = buscarUsuarioLogado();
     const administrador =
         usuario?.perfil?.trim().toLowerCase() === "administrador";
 
     const [salvando, setSalvando] = useState(false);
-    const [mensagemErro, setMensagemErro] = useState("");
 
     const [formData, setFormData] = useState({
         nome: "",
@@ -49,7 +50,6 @@ function NovoMotorista() {
 
         try {
             setSalvando(true);
-            setMensagemErro("");
 
             const resposta = await apiFetch(
                 "/api/admin/motoristas",
@@ -68,24 +68,23 @@ function NovoMotorista() {
             const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                throw new Error(
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
                     dados?.erro ||
                     dados?.msg ||
                     "Erro ao cadastrar motorista."
                 );
+                return;
             }
 
-            alert(
-                dados?.mensagem ||
-                "Motorista cadastrado com sucesso!"
-            );
+            notificar("sucesso", "Motorista cadastrado com sucesso!");
 
             navigate("/admin/motoristas");
         } catch (erro) {
             if (erro instanceof Error) {
-                setMensagemErro(erro.message);
+                notificar("erro", erro.message);
             } else {
-                setMensagemErro(
+                notificar("erro",
                     "Erro ao conectar com o servidor."
                 );
             }
@@ -103,12 +102,6 @@ function NovoMotorista() {
                         <p>Cadastro de motorista parceiro</p>
                     </div>
                 </div>
-
-                {mensagemErro && (
-                    <p className="mensagem-erro">
-                        {mensagemErro}
-                    </p>
-                )}
 
                 <form
                     className="admin-form admin-form-card admin-form-grid"

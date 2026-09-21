@@ -42,6 +42,7 @@ function DetalheViagem() {
     const [viagem, setViagem] = useState<ViagemDetalhe | null>(null)
     const [novoStatus, setNovoStatus] = useState("")
     const [novaOcorrencia, setNovaOcorrencia] = useState("")
+    const [registrandoOcorrencia, setRegistrandoOcorrencia] = useState(false)
     const [comprovante, setComprovante] =
         useState<ComprovanteEntrega | null>(null)
     const [atualizacaoArquivos, setAtualizacaoArquivos] = useState(0)
@@ -157,42 +158,55 @@ function DetalheViagem() {
     }
 
     async function registrarOcorrencia() {
-        if (!novaOcorrencia.trim()) return;
+        if (registrandoOcorrencia) return;
+        if (!novaOcorrencia.trim()) {
+            notificar("aviso", "Descreva a ocorrência.");
+            return;
+        }
 
         const endpoint =
             usuario?.perfil?.toLowerCase() === "motorista"
                 ? `/api/motorista/minhas-viagens/${id}/ocorrencias`
                 : `/api/admin/viagens/${id}/ocorrencias`;
 
-        const resposta = await apiFetch(
-            endpoint,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    descricao: novaOcorrencia.trim(),
-                }),
-            }
-        );
-
-        const dados = await resposta.json().catch(() => null);
-
-        if (!resposta.ok) {
-            alert(
-                dados?.erro ||
-                dados?.msg ||
-                "Não foi possível registrar a ocorrência."
+        try {
+            setRegistrandoOcorrencia(true);
+            const resposta = await apiFetch(
+                endpoint,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        descricao: novaOcorrencia.trim(),
+                    }),
+                }
             );
-            return;
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (!resposta.ok) {
+                notificar(
+                    resposta.status === 403 || resposta.status === 409 ? "aviso" : "erro",
+                    dados?.erro ||
+                    dados?.msg ||
+                    "Não foi possível registrar a ocorrência."
+                );
+                return;
+            }
+
+            setNovaOcorrencia("");
+            notificar("sucesso", "Ocorrência registrada com sucesso!");
+
+            await carregarHistorico().catch(() => {
+                notificar("aviso", "Ocorrência salva, mas não foi possível atualizar a timeline.");
+            });
+        } catch {
+            notificar("erro", "Erro ao conectar com o servidor.");
+        } finally {
+            setRegistrandoOcorrencia(false);
         }
-
-        setNovaOcorrencia("");
-
-        await Promise.all([
-            carregarHistorico(),
-        ]);
     }
 
     useEffect(() => {
@@ -365,8 +379,9 @@ function DetalheViagem() {
                             <button
                                 className="btn-nova-carga"
                                 onClick={registrarOcorrencia}
+                                disabled={registrandoOcorrencia}
                             >
-                                Registrar Ocorrência
+                                {registrandoOcorrencia ? "Registrando..." : "Registrar Ocorrência"}
                             </button>
                         </div>
 
@@ -378,9 +393,12 @@ function DetalheViagem() {
                                     carregarHistorico();
                                     carregarComprovante();
                                 }}
-                                onArquivoEnviado={() =>
+                                onArquivoEnviado={() => {
                                     setAtualizacaoArquivos((valor) => valor + 1)
-                                }
+                                    void carregarHistorico().catch(() => {
+                                        notificar("aviso", "Arquivo enviado, mas não foi possível atualizar a timeline.")
+                                    })
+                                }}
                             />
                         )}
 

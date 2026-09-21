@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import { apiFetch } from "../../services/api"
 import { buscarUsuarioLogado } from "../../services/authService";
@@ -21,14 +21,13 @@ function FormComprovanteEntrega({
     const [observacao, setObservacao] = useState("")
     const [arquivo, setArquivo] =
         useState<File | null>(null)
+    const inputArquivo = useRef<HTMLInputElement>(null)
 
     const [finalizando, setFinalizando] =
         useState(false)
 
     const [enviandoArquivo, setEnviandoArquivo] =
         useState(false)
-
-    const [erro, setErro] = useState("")
 
     async function finalizarEntrega() {
         if (!recebedor.trim()) {
@@ -50,7 +49,6 @@ function FormComprovanteEntrega({
 
         try {
             setFinalizando(true)
-            setErro("")
 
             const endpoint =
                 usuario?.perfil?.toLowerCase() === "motorista"
@@ -112,13 +110,12 @@ function FormComprovanteEntrega({
 
     async function enviarArquivo() {
         if (!arquivo) {
-            setErro("Selecione um arquivo.");
+            notificar("aviso", "Selecione um arquivo.");
             return;
         }
 
         try {
             setEnviandoArquivo(true);
-            setErro("");
 
             const formData = new FormData();
 
@@ -153,18 +150,16 @@ function FormComprovanteEntrega({
                 return;
             }
 
-            alert(
-                dados.mensagem ||
-                "Arquivo enviado com sucesso!"
-            );
+            notificar("sucesso", "Arquivo do comprovante enviado com sucesso!");
 
             setArquivo(null);
+            if (inputArquivo.current) inputArquivo.current.value = "";
             onArquivoEnviado?.();
         } catch (erro) {
             if (erro instanceof Error) {
-                setErro(erro.message);
+                notificar("erro", erro.message);
             } else {
-                setErro(
+                notificar("erro",
                     "Erro ao enviar o arquivo."
                 );
             }
@@ -181,12 +176,6 @@ function FormComprovanteEntrega({
                 Registre o recebedor e conclua a
                 operação da viagem.
             </p>
-
-            {erro && (
-                <div className="mensagem-erro">
-                    {erro}
-                </div>
-            )}
 
             <div className="admin-form detalhe-viagem-form">
                 <label htmlFor="recebedor">
@@ -245,6 +234,7 @@ function FormComprovanteEntrega({
 
                 <input
                     id="arquivo-comprovante"
+                    ref={inputArquivo}
                     name="arquivo-comprovante"
                     type="file"
                     accept=".png,.jpg,.jpeg,.pdf"
