@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 function EditarCliente() {
     const { id } = useParams()
 
     const navigate = useNavigate()
+    const { notificar } = useNotification()
     const usuario = buscarUsuarioLogado()
     const administrador =
         usuario?.perfil?.trim().toLowerCase() === "administrador"
@@ -67,7 +69,7 @@ function EditarCliente() {
             }
         )
 
-        alert("Cliente atualizado com sucesso!")
+        notificar("sucesso", "Cliente atualizado com sucesso!")
 
         navigate("/admin/clientes")
     }

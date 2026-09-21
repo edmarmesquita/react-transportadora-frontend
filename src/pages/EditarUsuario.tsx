@@ -74,7 +74,7 @@ function EditarUsuario() {
             );
         } catch (erro) {
             console.error("Erro ao carregar usuário:", erro);
-            alert("Não foi possível carregar o usuário.");
+            notificar("erro", "Não foi possível carregar o usuário.");
         }
     }
 

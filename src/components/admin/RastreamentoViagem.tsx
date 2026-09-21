@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../services/api";
 import { buscarUsuarioLogado } from "../../services/authService";
+import { useNotification } from "../ui/NotificationProvider";
 
 type Props = {
     viagemId: number;
@@ -15,6 +16,7 @@ type Localizacao = {
 
 function RastreamentoViagem({ viagemId }: Props) {
     const usuario = buscarUsuarioLogado();
+    const { notificar } = useNotification();
 
     const [localizacoes, setLocalizacoes] = useState<Localizacao[]>([]);
     const [localizacao, setLocalizacao] = useState("");
@@ -45,7 +47,7 @@ function RastreamentoViagem({ viagemId }: Props) {
 
     async function salvarLocalizacao() {
         if (!localizacao.trim()) {
-            alert("Informe a localização.");
+            notificar("aviso", "Informe a localização.");
             return;
         }
 
@@ -71,7 +73,8 @@ function RastreamentoViagem({ viagemId }: Props) {
         const dados = await resposta.json().catch(() => null);
 
         if (!resposta.ok) {
-            alert(
+            notificar(
+                "erro",
                 dados?.erro ||
                 dados?.msg ||
                 "Não foi possível registrar a localização."
@@ -79,10 +82,7 @@ function RastreamentoViagem({ viagemId }: Props) {
             return;
         }
 
-        alert(
-            dados?.mensagem ||
-            "Localização registrada com sucesso!"
-        );
+        notificar("sucesso", "Localização registrada com sucesso!");
 
         setLocalizacao("");
         setObservacao("");

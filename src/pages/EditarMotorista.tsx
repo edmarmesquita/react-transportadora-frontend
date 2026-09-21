@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 function EditarMotorista() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { notificar } = useNotification()
     const usuario = buscarUsuarioLogado()
     const administrador =
         usuario?.perfil?.trim().toLowerCase() === "administrador"
@@ -95,7 +97,7 @@ function EditarMotorista() {
                 )
             }
 
-            alert(dados?.mensagem || "Motorista atualizado com sucesso!")
+            notificar("sucesso", "Motorista atualizado com sucesso!")
             navigate("/admin/motoristas")
         } catch (erro) {
             setMensagemErro(

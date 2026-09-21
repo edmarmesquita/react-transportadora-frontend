@@ -6,12 +6,14 @@ import StatusBadge from "../components/ui/StatusBadge";
 import PerfilBadge from "../components/ui/PerfilBadge";
 import AdminHeader from "../components/layout/AdminHeader";
 import DataTable from "../components/ui/DataTable";
+import { useNotification } from "../components/ui/NotificationProvider";
 import {
     listarUsuarios,
     inativarUsuarioService,
 } from "../services/usuariosService";
 
 function AdminUsuarios() {
+    const { notificar } = useNotification();
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [carregando, setCarregando] = useState(true);
 
@@ -29,7 +31,7 @@ function AdminUsuarios() {
 
             console.error(error);
 
-            alert("Não foi possível carregar os usuários.");
+            notificar("erro", "Não foi possível carregar os usuários.");
 
         } finally {
 
@@ -46,11 +48,11 @@ function AdminUsuarios() {
         try {
             await inativarUsuarioService(id);
 
-            alert("Usuário inativado com sucesso!");
+            notificar("sucesso", "Usuário inativado com sucesso!");
             carregarUsuarios();
         } catch (error) {
             console.error("Erro ao inativar usuário:", error);
-            alert("Não foi possível inativar o usuário.");
+            notificar("erro", "Não foi possível inativar o usuário.");
         }
     }
 

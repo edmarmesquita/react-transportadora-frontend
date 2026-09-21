@@ -46,7 +46,7 @@ function ListaComprovantes({
                 : `/api/admin/viagens/${viagemId}/comprovantes/arquivos`;
 
             try {
-                const resposta = await apiFetch(endpoint);
+                const resposta = await apiFetch(endpoint, { cache: "no-store" });
                 const dados = await resposta.json().catch(() => null);
 
                 if (!resposta.ok) {

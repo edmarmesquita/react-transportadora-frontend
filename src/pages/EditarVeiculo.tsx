@@ -3,11 +3,13 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
+import { useNotification } from "../components/ui/NotificationProvider"
 
 function EditarVeiculo() {
     const { id } = useParams()
 
     const navigate = useNavigate()
+    const { notificar } = useNotification()
     const usuario = buscarUsuarioLogado()
     const perfil = usuario?.perfil?.trim().toLowerCase()
     const administrador = perfil === "administrador"
@@ -68,7 +70,7 @@ function EditarVeiculo() {
             }
         )
 
-        alert("Veículo atualizado com sucesso!")
+        notificar("sucesso", "Veículo atualizado com sucesso!")
 
         navigate("/admin/veiculos")
     }
