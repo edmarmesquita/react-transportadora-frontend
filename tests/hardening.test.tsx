@@ -60,9 +60,9 @@ describe("hardening do frontend Vercel", () => {
         );
     });
 
-    it("mantém CSP em Report-Only com as origens necessárias", () => {
+    it("mantém CSP bloqueante com as origens necessárias", () => {
         const headers = obterHeadersGlobais();
-        const csp = headers.get("Content-Security-Policy-Report-Only") ?? "";
+        const csp = headers.get("Content-Security-Policy") ?? "";
 
         expect(csp).toContain("connect-src 'self' https://backend-transportadora-staging-staging.up.railway.app");
         expect(csp).toContain("frame-src https://www.google.com");
@@ -70,5 +70,6 @@ describe("hardening do frontend Vercel", () => {
         expect(csp).toContain("style-src 'self' 'unsafe-inline'");
         expect(csp).not.toContain("unsafe-eval");
         expect(csp).not.toContain("default-src *");
+        expect(headers.has("Content-Security-Policy-Report-Only")).toBe(false);
     });
 });
