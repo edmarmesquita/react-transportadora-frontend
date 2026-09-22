@@ -1,48 +1,60 @@
+import { lazy, Suspense } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 
 import Home from "./pages/Home"
-import Sobre from "./pages/Sobre"
-import Frota from "./pages/Frota"
-import Servicos from "./pages/Servicos"
-import Contato from "./pages/Contato"
-import Parceiros from "./pages/Parceiros"
-import AreasAtendidas from "./pages/AreasAtendidas"
-import Cliente from "./pages/Cliente"
-import Motorista from "./pages/Motorista"
-import Orcamento from "./pages/Orcamento"
 import AdminLogin from "./pages/AdminLogin"
-import AdminDashboard from "./pages/AdminDashboard"
-import CargaDetalhe from "./pages/CargaDetalhe"
-import AdminCargas from "./pages/AdminCargas"
-import NovaCarga from "./pages/NovaCarga"
-import EditarCarga from "./pages/EditarCarga"
-import AdminCotacoes from "./pages/AdminCotacoes"
-import NovaCotacao from "./pages/NovaCotacao"
-import AdminClientes from "./pages/AdminClientes"
-import NovoCliente from "./pages/NovoCliente"
-import AdminMotoristas from "./pages/AdminMotoristas"
-import NovoMotorista from "./pages/NovoMotorista"
-import AdminVeiculos from "./pages/AdminVeiculos"
-import NovoVeiculo from "./pages/NovoVeiculo"
-import AdminViagens from "./pages/AdminViagens"
-import NovaViagem from "./pages/NovaViagem"
-import DetalheViagem from "./pages/DetalheViagem"
-import AdminRelatorios from "./pages/AdminRelatorios"
-import AdminBusca from "./pages/AdminBusca"
-import EditarVeiculo from "./pages/EditarVeiculo"
-import EditarCliente from "./pages/EditarCliente"
-import EditarMotorista from "./pages/EditarMotorista"
-import AdminUsuarios from "./pages/AdminUsuarios"
-import NovoUsuario from "./pages/NovoUsuario"
-import EditarUsuario from "./pages/EditarUsuario";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import MeuPerfil from "./pages/MeuPerfil";
-import PainelCliente from "./pages/PainelCliente";
-import PainelMotorista from "./pages/PainelMotorista";
-import DetalheCargaCliente from "./pages/DetalheCargaCliente";
 import SemPermissao from "./pages/SemPermissao";
-import PortalClienteHome from "./pages/PortalClienteHome";
 import SessaoGuard from "./components/auth/SessaoGuard";
+
+const Sobre = lazy(() => import("./pages/Sobre"))
+const Frota = lazy(() => import("./pages/Frota"))
+const Servicos = lazy(() => import("./pages/Servicos"))
+const Contato = lazy(() => import("./pages/Contato"))
+const Parceiros = lazy(() => import("./pages/Parceiros"))
+const AreasAtendidas = lazy(() => import("./pages/AreasAtendidas"))
+const Cliente = lazy(() => import("./pages/Cliente"))
+const Motorista = lazy(() => import("./pages/Motorista"))
+const Orcamento = lazy(() => import("./pages/Orcamento"))
+
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"))
+const CargaDetalhe = lazy(() => import("./pages/CargaDetalhe"))
+const AdminCargas = lazy(() => import("./pages/AdminCargas"))
+const NovaCarga = lazy(() => import("./pages/NovaCarga"))
+const EditarCarga = lazy(() => import("./pages/EditarCarga"))
+const AdminCotacoes = lazy(() => import("./pages/AdminCotacoes"))
+const NovaCotacao = lazy(() => import("./pages/NovaCotacao"))
+const AdminClientes = lazy(() => import("./pages/AdminClientes"))
+const NovoCliente = lazy(() => import("./pages/NovoCliente"))
+const AdminMotoristas = lazy(() => import("./pages/AdminMotoristas"))
+const NovoMotorista = lazy(() => import("./pages/NovoMotorista"))
+const AdminVeiculos = lazy(() => import("./pages/AdminVeiculos"))
+const NovoVeiculo = lazy(() => import("./pages/NovoVeiculo"))
+const AdminViagens = lazy(() => import("./pages/AdminViagens"))
+const NovaViagem = lazy(() => import("./pages/NovaViagem"))
+const DetalheViagem = lazy(() => import("./pages/DetalheViagem"))
+const AdminRelatorios = lazy(() => import("./pages/AdminRelatorios"))
+const AdminBusca = lazy(() => import("./pages/AdminBusca"))
+const EditarVeiculo = lazy(() => import("./pages/EditarVeiculo"))
+const EditarCliente = lazy(() => import("./pages/EditarCliente"))
+const EditarMotorista = lazy(() => import("./pages/EditarMotorista"))
+const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios"))
+const NovoUsuario = lazy(() => import("./pages/NovoUsuario"))
+const EditarUsuario = lazy(() => import("./pages/EditarUsuario"))
+
+const MeuPerfil = lazy(() => import("./pages/MeuPerfil"))
+const PainelCliente = lazy(() => import("./pages/PainelCliente"))
+const PainelMotorista = lazy(() => import("./pages/PainelMotorista"))
+const DetalheCargaCliente = lazy(() => import("./pages/DetalheCargaCliente"))
+const PortalClienteHome = lazy(() => import("./pages/PortalClienteHome"))
+
+function CarregandoRota() {
+  return (
+    <div role="status" className="rota-carregando">
+      Carregando...
+    </div>
+  )
+}
 
 
 
@@ -50,7 +62,8 @@ function App() {
   return (
     <BrowserRouter>
       <SessaoGuard />
-      <Routes>
+      <Suspense fallback={<CarregandoRota />}>
+        <Routes>
         {/* ROTAS PÚBLICAS */}
         <Route path="/" element={<Home />} />
         <Route path="/sobre" element={<Sobre />} />
@@ -418,7 +431,8 @@ function App() {
             </ProtectedRoute>
           }
         />
-      </Routes>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
