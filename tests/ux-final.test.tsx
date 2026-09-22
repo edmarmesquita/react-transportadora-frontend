@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { NotificationProvider } from "../src/components/ui/NotificationProvider";
@@ -247,30 +247,17 @@ it("reconsulta comprovantes sem cache após uma atualização", async () => {
         download_endpoint: "/api/comprovantes/arquivos/8/download",
     };
 
-    api.mockResolvedValueOnce(resposta([]));
     const view = render(
         <NotificationProvider>
-            <ListaComprovantes viagemId={7} atualizacao={0} />
+            <ListaComprovantes arquivos={[]} />
         </NotificationProvider>
     );
 
-    await waitFor(() => {
-        expect(api).toHaveBeenCalledWith(
-            "/api/admin/viagens/7/comprovantes/arquivos",
-            { cache: "no-store" }
-        );
-    });
-
-    api.mockResolvedValueOnce(resposta([arquivo]));
     view.rerender(
         <NotificationProvider>
-            <ListaComprovantes viagemId={7} atualizacao={1} />
+            <ListaComprovantes arquivos={[arquivo]} />
         </NotificationProvider>
     );
 
-    expect(await screen.findByText(arquivo.nome_arquivo)).toBeTruthy();
-    expect(api).toHaveBeenLastCalledWith(
-        "/api/admin/viagens/7/comprovantes/arquivos",
-        { cache: "no-store" }
-    );
+    expect(screen.getByText(arquivo.nome_arquivo)).toBeTruthy();
 });

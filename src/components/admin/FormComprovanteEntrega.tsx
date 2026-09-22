@@ -7,7 +7,7 @@ import { useNotification } from "../ui/NotificationProvider";
 type Props = {
     viagemId: number
     onFinalizada?: () => void
-    onArquivoEnviado?: () => void
+    onArquivoEnviado?: () => void | Promise<void>
 }
 
 function FormComprovanteEntrega({
@@ -154,7 +154,7 @@ function FormComprovanteEntrega({
 
             setArquivo(null);
             if (inputArquivo.current) inputArquivo.current.value = "";
-            onArquivoEnviado?.();
+            await onArquivoEnviado?.();
         } catch (erro) {
             if (erro instanceof Error) {
                 notificar("erro", erro.message);

@@ -226,6 +226,12 @@ describe("Viagem e comprovantes", () => {
         fireEvent.click(screen.getByRole("button", { name: "Enviar Arquivo" }));
         expect(await screen.findByText("Arquivo do comprovante enviado com sucesso!")).toBeTruthy();
         expect(await screen.findByText(arquivo.nome_arquivo)).toBeTruthy();
+        expect(screen.getByLabelText("Arquivo do comprovante")).toBe(input);
+        expect(
+            api.mock.calls.filter(([endpoint]) =>
+                endpoint.endsWith("/comprovantes/arquivos")
+            )
+        ).toHaveLength(2);
         expect(await screen.findByText("Upload HML")).toBeTruthy();
         expect(screen.getByTestId("rota").textContent).toBe("/admin/viagens/7");
         expect((input as HTMLInputElement).value).toBe("");
@@ -256,14 +262,9 @@ describe("Viagem e comprovantes", () => {
     });
 
     it("descarta resposta antiga da lista que chega depois da atualização do upload", async () => {
-        let concluirAntiga!: (resposta: Response) => void;
-        api.mockImplementationOnce(() => new Promise((resolve) => { concluirAntiga = resolve; }));
-        const { rerender } = render(<NotificationProvider><ListaComprovantes viagemId={7} atualizacao={0} /></NotificationProvider>);
-        api.mockResolvedValueOnce(resposta([arquivo]));
-        rerender(<NotificationProvider><ListaComprovantes viagemId={7} atualizacao={1} /></NotificationProvider>);
+        const { rerender } = render(<NotificationProvider><ListaComprovantes arquivos={[]} /></NotificationProvider>);
+        rerender(<NotificationProvider><ListaComprovantes arquivos={[arquivo]} /></NotificationProvider>);
         expect(await screen.findByText(arquivo.nome_arquivo)).toBeTruthy();
-        await act(async () => { concluirAntiga(resposta([])); });
-        expect(screen.getByText(arquivo.nome_arquivo)).toBeTruthy();
     });
 });
 

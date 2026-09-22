@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { apiFetch } from "../services/api"
 import AdminLayout from "../components/admin/AdminLayout"
 import FormComprovanteEntrega from "../components/admin/FormComprovanteEntrega"
-import ListaComprovantes from "../components/admin/ListaComprovantes"
+import ListaComprovantes, {
+    type ArquivoComprovante,
+} from "../components/admin/ListaComprovantes"
 import RastreamentoViagem from "../components/admin/RastreamentoViagem"
 import { buscarUsuarioLogado } from "../services/authService";
 import { useNotification } from "../components/ui/NotificationProvider";
@@ -45,7 +47,9 @@ function DetalheViagem() {
     const [registrandoOcorrencia, setRegistrandoOcorrencia] = useState(false)
     const [comprovante, setComprovante] =
         useState<ComprovanteEntrega | null>(null)
-    const [atualizacaoArquivos, setAtualizacaoArquivos] = useState(0)
+    const [arquivosComprovante, setArquivosComprovante] =
+        useState<ArquivoComprovante[]>([])
+    const arquivosRequisicao = useRef(0)
     const [carregando, setCarregando] = useState(true)
     const [erroCarregamento, setErroCarregamento] = useState("")
     const usuario = buscarUsuarioLogado();
@@ -170,6 +174,40 @@ function DetalheViagem() {
         }
     }
 
+    async function carregarArquivosComprovante() {
+        const requisicaoAtual = ++arquivosRequisicao.current
+        const endpoint =
+            usuario?.perfil?.toLowerCase() === "motorista"
+                ? `/api/motorista/minhas-viagens/${id}/comprovantes/arquivos`
+                : `/api/admin/viagens/${id}/comprovantes/arquivos`
+
+        try {
+            const resposta = await apiFetch(endpoint, { cache: "no-store" })
+            const dados = await resposta.json().catch(() => null)
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados?.erro ||
+                    dados?.msg ||
+                    "Não foi possível carregar os comprovantes."
+                )
+            }
+
+            if (requisicaoAtual === arquivosRequisicao.current) {
+                setArquivosComprovante(Array.isArray(dados) ? dados : [])
+            }
+        } catch (erro) {
+            if (requisicaoAtual === arquivosRequisicao.current) {
+                notificar(
+                    "erro",
+                    erro instanceof Error
+                        ? erro.message
+                        : "Não foi possível carregar os comprovantes."
+                )
+            }
+        }
+    }
+
     async function carregarDados() {
         try {
             await Promise.all([
@@ -177,6 +215,7 @@ function DetalheViagem() {
                 carregarHistorico(),
                 carregarComprovante(),
             ])
+            await carregarArquivosComprovante()
         } catch (error) {
             setViagem(null)
             setErroCarregamento(
@@ -407,8 +446,7 @@ function DetalheViagem() {
                         )}
 
                         <ListaComprovantes
-                            viagemId={Number(id)}
-                            atualizacao={atualizacaoArquivos}
+                            arquivos={arquivosComprovante}
                         />
 
                         <RastreamentoViagem
@@ -448,9 +486,9 @@ function DetalheViagem() {
                                     carregarHistorico();
                                     carregarComprovante();
                                 }}
-                                onArquivoEnviado={() => {
-                                    setAtualizacaoArquivos((valor) => valor + 1)
-                                    void carregarHistorico().catch(() => {
+                                onArquivoEnviado={async () => {
+                                    await carregarArquivosComprovante()
+                                    await carregarHistorico().catch(() => {
                                         notificar("aviso", "Arquivo enviado, mas não foi possível atualizar a timeline.")
                                     })
                                 }}

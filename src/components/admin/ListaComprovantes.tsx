@@ -1,15 +1,11 @@
-import { useEffect, useState } from "react"
-import { apiFetch } from "../../services/api"
-import { buscarUsuarioLogado } from "../../services/authService";
 import { abrirArquivoAutenticado } from "../../services/arquivosService";
 import { useNotification } from "../ui/NotificationProvider";
 
 type Props = {
-    viagemId: number
-    atualizacao?: number
+    arquivos: ArquivoComprovante[]
 }
 
-type ArquivoComprovante = {
+export type ArquivoComprovante = {
     id: number
     nome_arquivo: string
     data_upload: string
@@ -17,13 +13,9 @@ type ArquivoComprovante = {
 }
 
 function ListaComprovantes({
-    viagemId,
-    atualizacao = 0,
+    arquivos,
 }: Props) {
-    const usuario = buscarUsuarioLogado();
-    const motorista = usuario?.perfil?.toLowerCase() === "motorista";
     const { notificar } = useNotification();
-    const [arquivos, setArquivos] = useState<ArquivoComprovante[]>([])
 
     async function abrirArquivo(downloadEndpoint: string) {
         try {
@@ -36,35 +28,6 @@ function ListaComprovantes({
             );
         }
     }
-
-    useEffect(() => {
-        let ativo = true;
-
-        async function carregarArquivos() {
-            const endpoint = motorista
-                ? `/api/motorista/minhas-viagens/${viagemId}/comprovantes/arquivos`
-                : `/api/admin/viagens/${viagemId}/comprovantes/arquivos`;
-
-            try {
-                const resposta = await apiFetch(endpoint, { cache: "no-store" });
-                const dados = await resposta.json().catch(() => null);
-
-                if (!resposta.ok) {
-                    throw new Error(dados?.erro || dados?.msg || "Não foi possível carregar os comprovantes.");
-                }
-
-                if (ativo) setArquivos(Array.isArray(dados) ? dados : []);
-            } catch (erro) {
-                if (ativo) {
-                    notificar("erro", erro instanceof Error ? erro.message : "Não foi possível carregar os comprovantes.");
-                }
-            }
-        }
-
-        void carregarArquivos();
-        // Uma consulta anterior ao upload não deve sobrescrever a lista atualizada.
-        return () => { ativo = false; };
-    }, [viagemId, atualizacao, motorista, notificar])
 
     return (
         <div className="grafico-card detalhe-viagem-card comprovantes-arquivos-card">
