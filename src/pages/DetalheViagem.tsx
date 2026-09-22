@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { apiFetch } from "../services/api"
 import AdminLayout from "../components/admin/AdminLayout"
 import FormComprovanteEntrega from "../components/admin/FormComprovanteEntrega"
@@ -46,6 +46,8 @@ function DetalheViagem() {
     const [comprovante, setComprovante] =
         useState<ComprovanteEntrega | null>(null)
     const [atualizacaoArquivos, setAtualizacaoArquivos] = useState(0)
+    const [carregando, setCarregando] = useState(true)
+    const [erroCarregamento, setErroCarregamento] = useState("")
     const usuario = buscarUsuarioLogado();
 
     async function atualizarStatus() {
@@ -132,6 +134,17 @@ function DetalheViagem() {
             );
         }
 
+        if (
+            !dados ||
+            typeof dados !== "object" ||
+            Array.isArray(dados) ||
+            !dados.id
+        ) {
+            throw new Error(
+                "Viagem não encontrada ou sem dados disponíveis."
+            );
+        }
+
         setViagem(dados);
     }
 
@@ -154,6 +167,25 @@ function DetalheViagem() {
             setComprovante(dados)
         } else {
             setComprovante(null)
+        }
+    }
+
+    async function carregarDados() {
+        try {
+            await Promise.all([
+                carregarViagem(),
+                carregarHistorico(),
+                carregarComprovante(),
+            ])
+        } catch (error) {
+            setViagem(null)
+            setErroCarregamento(
+                error instanceof Error
+                    ? error.message
+                    : "NÃ£o foi possÃ­vel carregar a viagem."
+            )
+        } finally {
+            setCarregando(false)
         }
     }
 
@@ -209,15 +241,38 @@ function DetalheViagem() {
         }
     }
 
+    /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => {
-        carregarViagem()
-        carregarHistorico()
-        carregarComprovante()
+        queueMicrotask(() => {
+            void carregarDados()
+        })
     }, [])
+    /* eslint-enable react-hooks/exhaustive-deps */
     return (
         <AdminLayout>
             <div className="admin-page detalhe-viagem-page">
-                {viagem && (
+                {carregando && (
+                    <p>Carregando detalhes da viagem...</p>
+                )}
+
+                {!carregando && erroCarregamento && (
+                    <section className="detalhe-viagem-card" role="alert">
+                        <h1>Viagem não encontrada</h1>
+                        <p className="mensagem-erro">
+                            {erroCarregamento}
+                        </p>
+                        {usuario?.perfil?.toLowerCase() === "motorista" && (
+                            <Link
+                                to="/portal/motorista"
+                                className="btn-primary"
+                            >
+                                Voltar para Minhas Viagens
+                            </Link>
+                        )}
+                    </section>
+                )}
+
+                {!carregando && !erroCarregamento && viagem && (
                     <div className="detalhe-viagem-container">
                         <div className="carga-detalhe-header detalhe-viagem-header">
                             <div>

@@ -42,12 +42,14 @@ import PainelMotorista from "./pages/PainelMotorista";
 import DetalheCargaCliente from "./pages/DetalheCargaCliente";
 import SemPermissao from "./pages/SemPermissao";
 import PortalClienteHome from "./pages/PortalClienteHome";
+import SessaoGuard from "./components/auth/SessaoGuard";
 
 
 
 function App() {
   return (
     <BrowserRouter>
+      <SessaoGuard />
       <Routes>
         {/* ROTAS PÚBLICAS */}
         <Route path="/" element={<Home />} />

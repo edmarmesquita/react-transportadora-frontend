@@ -14,6 +14,32 @@ function obterApiUrl(): string {
 
 const API_URL = obterApiUrl();
 
+export const EVENTO_SESSAO_NAO_AUTORIZADA =
+    "app:sessao-nao-autorizada";
+
+async function sinalizarSessaoNaoAutorizada(
+    endpoint: string,
+    resposta: Response
+) {
+    if (
+        resposta.status !== 401 ||
+        endpoint === "/api/login" ||
+        !endpoint.startsWith("/api/")
+    ) {
+        return;
+    }
+
+    const dados = await resposta.clone().json().catch(() => null);
+
+    if (dados?.erro !== "Usuário não autorizado.") {
+        return;
+    }
+
+    window.dispatchEvent(
+        new CustomEvent(EVENTO_SESSAO_NAO_AUTORIZADA)
+    );
+}
+
 export async function apiFetch(
     endpoint: string,
     options: RequestInit = {}
@@ -29,8 +55,12 @@ export async function apiFetch(
         );
     }
 
-    return fetch(`${API_URL}${endpoint}`, {
+    const resposta = await fetch(`${API_URL}${endpoint}`, {
         ...options,
         headers,
     });
+
+    await sinalizarSessaoNaoAutorizada(endpoint, resposta);
+
+    return resposta;
 }
