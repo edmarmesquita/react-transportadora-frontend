@@ -7,6 +7,7 @@ import PerfilBadge from "../components/ui/PerfilBadge";
 import AdminHeader from "../components/layout/AdminHeader";
 import DataTable from "../components/ui/DataTable";
 import { useNotification } from "../components/ui/NotificationProvider";
+import { apiFetch } from "../services/api";
 import {
     listarUsuarios,
     inativarUsuarioService,
@@ -40,19 +41,64 @@ function AdminUsuarios() {
         }
     }
 
-    async function inativarUsuario(id: number) {
-        const confirmar = confirm("Deseja realmente inativar este usuário?");
+    async function alterarStatusUsuario(usuario: Usuario) {
+        const ativar = !usuario.ativo;
+        const acao = ativar ? "ativar" : "inativar";
+        const confirmar = confirm(`Deseja realmente ${acao} este usuário?`);
 
         if (!confirmar) return;
 
         try {
-            await inativarUsuarioService(id);
+            if (ativar) {
+                const detalhe = await apiFetch(`/api/admin/usuarios/${usuario.id}`);
+                const dados = await detalhe.json().catch(() => null);
 
-            notificar("sucesso", "Usuário inativado com sucesso!");
-            carregarUsuarios();
+                if (!detalhe.ok) {
+                    throw new Error(
+                        dados?.erro || "Não foi possível carregar o usuário."
+                    );
+                }
+
+                const resposta = await apiFetch(`/api/admin/usuarios/${usuario.id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nome: dados.nome,
+                        usuario: dados.usuario,
+                        email: dados.email || "",
+                        perfil: dados.perfil,
+                        ativo: true,
+                        ...(dados.cliente_id != null
+                            ? { cliente_id: dados.cliente_id }
+                            : {}),
+                    }),
+                });
+                const retorno = await resposta.json().catch(() => null);
+
+                if (!resposta.ok) {
+                    throw new Error(
+                        retorno?.erro || "Não foi possível ativar o usuário."
+                    );
+                }
+            } else {
+                await inativarUsuarioService(usuario.id);
+            }
+
+            notificar(
+                "sucesso",
+                ativar
+                    ? "Usuário ativado com sucesso!"
+                    : "Usuário inativado com sucesso!"
+            );
+            await carregarUsuarios();
         } catch (error) {
             console.error("Erro ao inativar usuário:", error);
-            notificar("erro", "Não foi possível inativar o usuário.");
+            notificar(
+                "erro",
+                error instanceof Error
+                    ? error.message
+                    : `Não foi possível ${acao} o usuário.`
+            );
         }
     }
 
@@ -107,10 +153,10 @@ function AdminUsuarios() {
                                             </Link>
 
                                             <button
-                                                className="btn-small btn-disable"
-                                                onClick={() => inativarUsuario(usuario.id)}
+                                                className={`btn-small ${usuario.ativo ? "btn-disable" : "btn-ativar"}`}
+                                                onClick={() => alterarStatusUsuario(usuario)}
                                             >
-                                                Inativar
+                                                {usuario.ativo ? "Inativar" : "Ativar"}
                                             </button>
                                         </div>
                                     </td>

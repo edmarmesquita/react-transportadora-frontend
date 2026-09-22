@@ -13,10 +13,6 @@ import RastreamentoViagem from "../src/components/admin/RastreamentoViagem";
 import ListaComprovantes from "../src/components/admin/ListaComprovantes";
 
 vi.mock("../src/services/api", () => ({ apiFetch: vi.fn() }));
-vi.mock("../src/components/admin/AdminLayout", () => ({
-    default: ({ children }: { children: ReactNode }) => <main>{children}</main>,
-}));
-
 const api = vi.mocked(apiFetch);
 
 function resposta(dados: unknown, status = 200) {
@@ -27,7 +23,9 @@ function resposta(dados: unknown, status = 200) {
 }
 
 function montarRota(caminho: string, pagina: ReactNode) {
-    const rota = caminho.replace(/\/\d+$/, "/:id");
+    const rota = caminho
+        .replace(/\/\d+\/editar$/, "/:id/editar")
+        .replace(/\/\d+$/, "/:id");
 
     return render(
         <NotificationProvider>
@@ -63,6 +61,7 @@ beforeEach(() => {
                 email: "usuario@example.invalid",
                 perfil: "operador",
                 ativo: true,
+                cliente_id: null,
             },
             "/api/admin/clientes": [],
             "/api/admin/motoristas/3": {
@@ -116,7 +115,7 @@ describe("Edições administrativas", () => {
     it.each([
         {
             nome: "cliente",
-            caminho: "/admin/clientes/editar/1",
+            caminho: "/admin/clientes/1/editar",
             pagina: <EditarCliente />,
             carregado: "Cliente HML",
             mensagem: "Cliente atualizado com sucesso!",
@@ -130,14 +129,14 @@ describe("Edições administrativas", () => {
         },
         {
             nome: "motorista",
-            caminho: "/admin/motoristas/editar/3",
+            caminho: "/admin/motoristas/3/editar",
             pagina: <EditarMotorista />,
             carregado: "Motorista HML",
             mensagem: "Motorista atualizado com sucesso!",
         },
         {
             nome: "veículo",
-            caminho: "/admin/veiculos/editar/4",
+            caminho: "/admin/veiculos/4/editar",
             pagina: <EditarVeiculo />,
             carregado: "HML1A23",
             mensagem: "Veículo atualizado com sucesso!",
@@ -193,6 +192,50 @@ it("usa toast e atualiza a listagem ao inativar usuário", async () => {
 
     expect(await screen.findByText("Usuário inativado com sucesso!")).toBeTruthy();
     expect(window.confirm).toHaveBeenCalledTimes(1);
+    expect(window.alert).not.toHaveBeenCalled();
+});
+
+it("confirma ativação e mostra toast de sucesso", async () => {
+    api.mockImplementation(async (endpoint, opcoes) => {
+        if (endpoint === "/api/admin/usuarios" && !opcoes?.method) {
+            return resposta([
+                {
+                    id: 2,
+                    nome: "Usuário HML",
+                    usuario: "usuario-hml",
+                    email: "usuario@example.invalid",
+                    perfil: "operador",
+                    ativo: false,
+                    data_criacao: "21/09/2026",
+                },
+            ]);
+        }
+
+        if (endpoint === "/api/admin/usuarios/2" && !opcoes?.method) {
+            return resposta({
+                nome: "Usuário HML",
+                usuario: "usuario-hml",
+                email: "usuario@example.invalid",
+                perfil: "operador",
+                ativo: false,
+                cliente_id: null,
+            });
+        }
+
+        if (endpoint === "/api/admin/usuarios/2" && opcoes?.method === "PUT") {
+            return resposta({ mensagem: "Usuário ativado com sucesso!" });
+        }
+
+        return resposta([]);
+    });
+
+    montarRota("/admin/usuarios", <AdminUsuarios />);
+    await screen.findByText("Usuário HML");
+
+    fireEvent.click(screen.getByRole("button", { name: "Ativar" }));
+
+    expect(await screen.findByText("Usuário ativado com sucesso!")).toBeTruthy();
+    expect(window.confirm).toHaveBeenCalledWith("Deseja realmente ativar este usuário?");
     expect(window.alert).not.toHaveBeenCalled();
 });
 
