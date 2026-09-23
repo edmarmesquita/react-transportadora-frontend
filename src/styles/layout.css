@@ -26,7 +26,9 @@
 
 .navbar {
     display: flex;
-    gap: 25px;
+    align-items: center;
+    margin-left: clamp(48px, 4vw, 72px);
+    gap: clamp(28px, 1.65vw, 34px);
 }
 
 .navbar a {
