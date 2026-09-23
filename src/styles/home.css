@@ -31,6 +31,8 @@
 }
 
 .hero-content {
+    position: relative;
+    top: clamp(28px, 4vh, 44px);
     color: white;
     width: 100%;
     max-width: 900px;
