@@ -1,6 +1,30 @@
 
 /* RESPONSIVIDADE */
 
+@media (min-width: 1201px) and (max-width: 1450px) {
+    .header {
+        height: 70px;
+        padding-inline: 20px;
+    }
+
+    .public-main {
+        padding-top: 70px;
+    }
+
+    .logo img {
+        width: 110px;
+    }
+
+    .navbar {
+        margin-left: 20px;
+        gap: 16px;
+    }
+
+    .navbar a {
+        font-size: 15px;
+    }
+}
+
 @media (max-width: 1200px) {
     .header {
         height: 90px;

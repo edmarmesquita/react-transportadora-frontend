@@ -2,7 +2,7 @@
 
 .header {
     width: 100%;
-    height: 76px;
+    height: 72px;
 
     background-color: #111;
 
@@ -21,20 +21,23 @@
 }
 
 .logo img {
-    width: 140px;
+    width: 132px;
 }
 
 .navbar {
     display: flex;
     align-items: center;
-    margin-left: clamp(48px, 4vw, 72px);
-    gap: clamp(28px, 1.65vw, 34px);
+    margin-left: 48px;
+    gap: 24px;
 }
 
 .navbar a {
     color: white;
     text-decoration: none;
     font-weight: bold;
+    font-size: 16px;
+    line-height: 1.2;
+    white-space: nowrap;
 }
 
 .navbar a.active {
