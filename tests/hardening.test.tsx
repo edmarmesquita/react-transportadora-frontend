@@ -53,6 +53,23 @@ afterEach(() => {
 });
 
 describe("hardening do frontend Vercel", () => {
+    it("mantem key e value nao vazios em todos os headers", async () => {
+        const configuracao = await carregarConfiguracaoVercel(API_STAGING);
+
+        expect(configuracao.headers).toBeDefined();
+
+        for (const regra of configuracao.headers ?? []) {
+            expect(regra.headers.length).toBeGreaterThan(0);
+
+            for (const header of regra.headers) {
+                expect(typeof header.key).toBe("string");
+                expect(header.key.trim()).not.toBe("");
+                expect(typeof header.value).toBe("string");
+                expect(header.value.trim()).not.toBe("");
+            }
+        }
+    });
+
     it.each([
         ["staging", API_STAGING, API_PRODUCAO],
         ["produção", API_PRODUCAO, API_STAGING],

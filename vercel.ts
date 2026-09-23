@@ -65,7 +65,11 @@ export const config = {
         },
         {
           key: "Content-Security-Policy",
-          value: contentSecurityPolicy,
+          // O importador de projetos da Vercel valida este objeto antes de
+          // executar a configuracao programatica. Mantenha um valor literal
+          // valido para essa validacao preliminar; ele e substituido abaixo
+          // pela politica dinamica antes de o modulo terminar de carregar.
+          value: "default-src 'none';",
         },
       ],
     },
@@ -77,3 +81,5 @@ export const config = {
     },
   ],
 };
+
+config.headers[0].headers[4].value = contentSecurityPolicy;
