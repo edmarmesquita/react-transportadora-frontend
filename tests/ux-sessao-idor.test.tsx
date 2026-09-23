@@ -133,6 +133,11 @@ describe("detalhe de viagem do motorista", () => {
         ).toBeTruthy();
         expect(screen.queryByText("Carga alheia HML")).toBeNull();
         expect(screen.getByRole("alert")).toBeTruthy();
+        expect(
+            screen
+                .getByRole("heading", { name: "Viagem não encontrada" })
+                .classList.contains("detalhe-viagem-erro-titulo")
+        ).toBe(true);
     });
 
     it("não deixa a área principal vazia quando a resposta não tem dados", async () => {

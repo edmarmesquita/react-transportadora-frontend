@@ -463,6 +463,10 @@
     box-sizing: border-box;
 }
 
+.detalhe-viagem-erro-titulo {
+    color: #172033;
+}
+
 .detalhe-viagem-card > h2,
 .detalhe-viagem-card > div:first-child h2,
 .timeline-titulo h2 {

@@ -296,7 +296,9 @@ function DetalheViagem() {
 
                 {!carregando && erroCarregamento && (
                     <section className="detalhe-viagem-card" role="alert">
-                        <h1>Viagem não encontrada</h1>
+                        <h1 className="detalhe-viagem-erro-titulo">
+                            Viagem não encontrada
+                        </h1>
                         <p className="mensagem-erro">
                             {erroCarregamento}
                         </p>
