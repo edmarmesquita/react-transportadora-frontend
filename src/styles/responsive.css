@@ -3,12 +3,12 @@
 
 @media (min-width: 1201px) and (max-width: 1450px) {
     .header {
-        height: 58px;
+        height: 52px;
         padding-inline: 20px;
     }
 
     .public-main {
-        padding-top: 58px;
+        padding-top: 52px;
     }
 
     .logo img {
