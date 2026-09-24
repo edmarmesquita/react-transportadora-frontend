@@ -13,7 +13,7 @@ function Contato() {
                 subtitulo="Fale conosco e solicite sua cotação."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Canais de Atendimento</h2>

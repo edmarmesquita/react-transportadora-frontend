@@ -18,7 +18,7 @@ function Motorista() {
                 subtitulo="Espaço dedicado aos nossos motoristas parceiros."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Recursos para Motoristas</h2>

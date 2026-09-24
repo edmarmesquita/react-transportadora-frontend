@@ -18,7 +18,7 @@ function Cliente() {
                 subtitulo="Acompanhe informações importantes da sua carga."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Serviços ao Cliente</h2>

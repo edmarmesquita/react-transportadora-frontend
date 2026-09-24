@@ -18,7 +18,7 @@ function Servicos() {
                 subtitulo="Soluções logísticas com segurança, agilidade e compromisso."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Nossos Serviços</h2>

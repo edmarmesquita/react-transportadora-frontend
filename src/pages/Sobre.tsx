@@ -18,7 +18,7 @@ function Sobre() {
                 subtitulo="Transporte de cargas com segurança, eficiência e compromisso."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Quem Somos</h2>

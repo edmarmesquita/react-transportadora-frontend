@@ -13,7 +13,7 @@ function AreasAtendidas() {
                 subtitulo="Transporte estratégico para diferentes regiões do Brasil."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Onde Atendemos</h2>

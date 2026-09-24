@@ -18,7 +18,7 @@ function Parceiros() {
                 subtitulo="Parcerias sólidas que fortalecem nossa logística."
             />
 
-            <section className="cards-section">
+            <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
                         <h2>Nossos Parceiros</h2>

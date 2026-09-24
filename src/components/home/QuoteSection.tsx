@@ -1,8 +1,14 @@
 import QuoteForm from "./QuoteForm"
 
-function QuoteSection() {
+type QuoteSectionProps = {
+    className?: string
+}
+
+function QuoteSection({ className = "" }: QuoteSectionProps) {
+    const classes = ["quote-section", className].filter(Boolean).join(" ")
+
     return (
-        <section id="cotacao" className="quote-section">
+        <section id="cotacao" className={classes}>
             <div className="quote-container">
                 <h2>DADOS PARA COTAÇÃO</h2>
 

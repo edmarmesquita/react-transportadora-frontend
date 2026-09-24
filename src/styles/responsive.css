@@ -3,16 +3,16 @@
 
 @media (min-width: 1201px) and (max-width: 1450px) {
     .header {
-        height: 70px;
+        height: 58px;
         padding-inline: 20px;
     }
 
     .public-main {
-        padding-top: 70px;
+        padding-top: 58px;
     }
 
     .logo img {
-        width: 110px;
+        width: 96px;
     }
 
     .navbar {
@@ -32,6 +32,10 @@
 
     .public-main {
         padding-top: 90px;
+    }
+
+    .logo img {
+        width: 132px;
     }
 
     .navbar {

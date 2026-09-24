@@ -11,7 +11,7 @@ function Orcamento() {
                 subtitulo="Preencha os dados e nossa equipe entrará em contato."
             />
 
-            <QuoteSection />
+            <QuoteSection className="public-section-compact" />
         </Layout>
     )
 }

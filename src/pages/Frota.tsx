@@ -13,7 +13,7 @@ function Frota() {
                 subtitulo="Veículos modernos preparados para todo o Brasil."
             />
 
-            <section className="fleet-info-section">
+            <section className="fleet-info-section public-section-compact">
                 <div className="container-central">
                     <div className="fleet-info-grid">
                         <FleetInfoCard
