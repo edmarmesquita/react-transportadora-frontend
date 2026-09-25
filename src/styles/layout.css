@@ -20,8 +20,13 @@
     z-index: 1000;
 }
 
-.logo img {
-    width: 112px;
+.logo-brand {
+    color: #fff;
+    display: inline-block;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    line-height: 1;
 }
 
 .navbar {
@@ -95,7 +100,7 @@
     padding-inline: 24px;
 }
 
-.redes-sociais-ramos {
+.redes-sociais-rotanza {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

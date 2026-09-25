@@ -1,9 +1,11 @@
 /* HERO */
 
 .hero {
-    min-height: calc(100svh - 90px);
+    min-height: calc(100svh - 50px);
 
-    background-image: url("/caminhao_ramos.jpg");
+    background-image:
+        radial-gradient(circle at 20% 18%, rgba(196, 22, 28, 0.42), transparent 38%),
+        linear-gradient(135deg, #0f0f10 0%, #351014 52%, #111 100%);
     background-size: cover;
     background-position: center;
 
@@ -183,12 +185,13 @@
 
 @media (max-width: 600px) {
     .hero {
-        min-height: 520px;
+        min-height: calc(100svh - 50px);
     }
 
-    .hero-content {
-        padding-inline: 16px;
-    }
+   .hero-content {
+       top: -80px;
+       padding-inline: 16px;
+   }
 
     .hero-content p {
         font-size: 17px;
@@ -197,6 +200,7 @@
     .btn-hero {
         padding: 13px 20px;
     }
+
 
     .tracking-section,
     .quote-section {

@@ -46,9 +46,11 @@
 /* PAGE BANNER */
 
 .page-banner {
-    height: clamp(520px, 78svh, 760px);
+    height: calc(100svh - 50px);
 
-    background-image: url("/caminhao_ramos.jpg");
+    background-image:
+        radial-gradient(circle at 20% 18%, rgba(196, 22, 28, 0.42), transparent 38%),
+        linear-gradient(135deg, #0f0f10 0%, #351014 52%, #111 100%);
 
     background-size: cover;
     background-position: center;
@@ -259,11 +261,19 @@
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
 }
 
-.fleet-card img {
+.fleet-card img,
+.fleet-card-media {
     width: 100%;
     height: 230px;
     object-fit: cover;
     transition: 0.4s ease;
+}
+
+.fleet-card-media,
+.fleet-info-media {
+    background:
+        radial-gradient(circle at 20% 18%, rgba(196, 22, 28, 0.48), transparent 38%),
+        linear-gradient(135deg, #171719 0%, #4b1519 55%, #111 100%);
 }
 
 .fleet-card-content {
@@ -283,7 +293,8 @@
     overflow-wrap: anywhere;
 }
 
-.fleet-card:hover img {
+.fleet-card:hover img,
+.fleet-card:hover .fleet-card-media {
     transform: scale(1.05);
 }
 
@@ -320,7 +331,8 @@
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.15);
 }
 
-.fleet-info-card img {
+.fleet-info-card img,
+.fleet-info-media {
     width: 100%;
     height: 260px;
 
@@ -393,10 +405,12 @@
 
 @media (max-width: 700px) {
     .page-banner {
-        height: clamp(420px, 68svh, 520px);
+        height: calc(100svh - 50px);
     }
 
     .page-banner-content {
+        position: relative;
+        top: -60px;
         padding-inline: 16px;
     }
 
@@ -441,6 +455,10 @@
 
     .fleet-info-card img {
         height: auto;
+    }
+
+    .fleet-info-media {
+        height: 230px;
     }
 
     .cta-section .btn-hero {

@@ -1,5 +1,5 @@
 type FleetInfoCardProps = {
-    imagem: string
+    imagem?: string
     titulo: string
     descricao: string
 }
@@ -11,7 +11,11 @@ function FleetInfoCard({
 }: FleetInfoCardProps) {
     return (
         <article className="fleet-info-card">
-            <img src={imagem} alt={titulo} />
+            {imagem ? (
+                <img src={imagem} alt={titulo} />
+            ) : (
+                <div className="fleet-info-media" aria-hidden="true" />
+            )}
 
             <div className="fleet-info-content">
                 <h3>{titulo}</h3>

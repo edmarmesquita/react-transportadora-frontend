@@ -10,7 +10,7 @@ function Hero() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <h1>Transportadora Ramos</h1>
+                    <h1>ROTANZA</h1>
 
                     <p>
                         Eficiência, Segurança e Pontualidade em cada quilômetro.

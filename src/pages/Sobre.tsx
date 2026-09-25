@@ -23,9 +23,9 @@ function Sobre() {
                     <div className="section-title">
                         <h2>Quem Somos</h2>
                         <p>
-                            A Transportadora Ramos oferece soluções de transporte
-                            voltadas à segurança da carga, à eficiência operacional
-                            e à transparência durante o trajeto.
+                            A ROTANZA é uma plataforma para gestão e acompanhamento
+                            de operações de transporte, com visibilidade, segurança
+                            e eficiência em cada etapa.
                         </p>
                     </div>
 
@@ -58,8 +58,8 @@ function Sobre() {
             </section>
 
             <CTASection
-                titulo="Conte com a Transportadora Ramos"
-                texto="Fale com nossa equipe e encontre a solução adequada para sua carga."
+                titulo="Conte com a ROTANZA"
+                texto="Centralize a gestão das suas operações e acompanhe cada entrega com mais clareza."
                 botaoTexto="Solicitar Cotação"
                 link="/#cotacao"
             />

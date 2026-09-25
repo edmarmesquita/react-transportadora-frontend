@@ -1,5 +1,4 @@
 import { useState } from "react"
-import logo from "../../assets/logo_ramos.png"
 import Navbar from "./Navbar"
 import MobileMenu from "./MobileMenu"
 
@@ -13,7 +12,7 @@ function Header() {
     return (
         <header className="header">
             <div className="logo">
-                <img src={logo} alt="Logo Transportadora Ramos" />
+                <span className="logo-brand" aria-label="ROTANZA">ROTANZA</span>
             </div>
 
             <button

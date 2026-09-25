@@ -11,8 +11,8 @@
         padding-top: 52px;
     }
 
-    .logo img {
-        width: 96px;
+    .logo-brand {
+        font-size: 19px;
     }
 
     .navbar {
@@ -34,8 +34,8 @@
         padding-top: 90px;
     }
 
-    .logo img {
-        width: 132px;
+    .logo-brand {
+        font-size: 21px;
     }
 
     .navbar {
@@ -57,8 +57,8 @@
         padding-inline: 20px;
     }
 
-    .logo img {
-        width: 120px;
+    .logo-brand {
+        font-size: 20px;
     }
 
     .hero-content h1 {

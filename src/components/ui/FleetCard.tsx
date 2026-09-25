@@ -1,7 +1,7 @@
 import { motion } from "framer-motion"
 
 type FleetCardProps = {
-    imagem: string
+    imagem?: string
     titulo: string
     descricao: string
 }
@@ -19,7 +19,11 @@ function FleetCard({
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
         >
-            <img src={imagem} alt={titulo} />
+            {imagem ? (
+                <img src={imagem} alt={titulo} />
+            ) : (
+                <div className="fleet-card-media" aria-hidden="true" />
+            )}
 
             <div className="fleet-card-content">
                 <h3>{titulo}</h3>
