@@ -20,10 +20,10 @@ function Home() {
             <TrackingSection />
 
             <CTASection
-                titulo="Precisa transportar sua carga com segurança?"
-                texto="Solicite agora uma cotação e fale com nossa equipe."
-                botaoTexto="Solicitar Cotação"
-                link="#cotacao"
+                titulo="Sua transportadora merece uma operação mais previsível."
+                texto="Centralize cargas, viagens, veículos, motoristas e acompanhamento em uma única plataforma."
+                botaoTexto="Conhecer a ROTANZA"
+                link="/sobre"
             />
 
             <QuoteSection />

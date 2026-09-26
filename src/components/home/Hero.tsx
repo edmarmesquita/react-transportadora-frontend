@@ -13,11 +13,11 @@ function Hero() {
                     <h1>ROTANZA</h1>
 
                     <p>
-                        Eficiência, Segurança e Pontualidade em cada quilômetro.
+                        Software para gestão de transportes, com controle da operação do início ao fim.
                     </p>
 
-                    <a href="#cotacao" className="btn-hero">
-                        SOLICITAR COTAÇÃO AGORA
+                    <a href="#recursos" className="btn-hero">
+                        CONHEÇA A PLATAFORMA
                     </a>
                 </motion.div>
             </div>

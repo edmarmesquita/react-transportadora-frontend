@@ -6,23 +6,23 @@ function Navbar() {
             <NavLink to="/">Home</NavLink>
 
             <NavLink to="/sobre">
-                Sobre Nós
+                Plataforma
             </NavLink>
 
             <NavLink to="/frota">
-                Nossa Frota
+                Gestão de Frota
             </NavLink>
 
             <NavLink to="/servicos">
-                Serviços 
+                Recursos
             </NavLink>
 
             <NavLink to="/areas-atendidas">
-                Áreas Atendidas
+                Operação Conectada
             </NavLink>
 
             <NavLink to="/parceiros">
-                Parceiros
+                Ecossistema
             </NavLink>
 
             <NavLink to="/contato">
@@ -30,15 +30,15 @@ function Navbar() {
             </NavLink>
 
             <NavLink to="/cliente">
-                Área do Cliente
+                Portal do Cliente
             </NavLink>
 
             <NavLink to="/motorista">
-                Área do Motorista
+                Portal do Motorista
             </NavLink>
 
             <NavLink to="/orcamento">
-                Orçamentos
+                Demonstração
             </NavLink>
         </nav>
     )

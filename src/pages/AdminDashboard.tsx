@@ -91,8 +91,7 @@ function AdminDashboard() {
                         <h1>🚚 Central de Operações</h1>
 
                         <p>
-                            Controle e monitoramento em tempo real da
-                            Transportadora Ramos.
+                            Controle e monitoramento da operação em tempo real.
                         </p>
                     </div>
                 </div>

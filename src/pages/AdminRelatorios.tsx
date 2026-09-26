@@ -50,7 +50,7 @@ function AdminRelatorios() {
                 <div className="page-header">
                     <div>
                         <h1>Relatórios Operacionais</h1>
-                        <p>Resumo gerencial da operação da Transportadora Ramos</p>
+                        <p>Resumo gerencial da operação de transportes</p>
                     </div>
                 </div>
                 <button
@@ -61,8 +61,8 @@ function AdminRelatorios() {
                 </button>
 
                 <div className="cabecalho-relatorio">
-                    <h2>Transportadora Ramos</h2>
-                    <p>Relatório Operacional Gerencial</p>
+                    <h2>Relatório Operacional</h2>
+                    <p>Resumo Gerencial de Transportes</p>
                     <span>Gerado em: {new Date().toLocaleString("pt-BR")}</span>
                 </div>
 

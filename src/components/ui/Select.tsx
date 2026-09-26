@@ -2,6 +2,7 @@ type SelectProps = {
     label: string
     name?: string
     value?: string
+    options?: Array<{ value: string; label: string }>
     onChange?: (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => void
@@ -11,6 +12,10 @@ function Select({
     label,
     name,
     value,
+    options = [
+        { value: "fracionada", label: "Carga fracionada" },
+        { value: "lotacao", label: "Carga lotação" },
+    ],
     onChange,
 }: SelectProps) {
     return (
@@ -22,13 +27,11 @@ function Select({
                 value={value}
                 onChange={onChange}
             >
-                <option value="fracionada">
-                    Fracionada
-                </option>
-
-                <option value="lotacao">
-                    Lotação
-                </option>
+                {options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
             </select>
         </div>
     )

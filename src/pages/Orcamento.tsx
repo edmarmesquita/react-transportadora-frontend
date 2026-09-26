@@ -7,8 +7,8 @@ function Orcamento() {
     return (
         <Layout>
             <PageBanner
-                titulo="Solicitar Orçamento"
-                subtitulo="Preencha os dados e nossa equipe entrará em contato."
+                titulo="Solicite uma demonstração"
+                subtitulo="Conte um pouco sobre a sua transportadora e conheça a plataforma ROTANZA."
             />
 
             <QuoteSection className="public-section-compact" />

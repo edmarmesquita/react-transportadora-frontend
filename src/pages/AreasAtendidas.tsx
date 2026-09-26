@@ -9,39 +9,39 @@ function AreasAtendidas() {
     return (
         <Layout>
             <PageBanner
-                titulo="Áreas Atendidas"
-                subtitulo="Transporte estratégico para diferentes regiões do Brasil."
+                titulo="Operação conectada"
+                subtitulo="A ROTANZA acompanha a rotina da sua transportadora onde ela estiver."
             />
 
             <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
-                        <h2>Onde Atendemos</h2>
-                        <p>Operações planejadas para garantir agilidade e segurança.</p>
+                        <h2>Recursos para toda a operação</h2>
+                        <p>Uma plataforma única para equipes que precisam trabalhar com informação atualizada.</p>
                     </div>
 
                     <div className="cards-grid">
                         <InfoCard
-                            titulo="Sudeste"
-                            descricao="Atendimento em São Paulo, Rio de Janeiro, Minas Gerais e Espírito Santo."
+                            titulo="Administração"
+                            descricao="Acompanhe cadastros, permissões, indicadores e registros da operação."
                             Icone={FaMapMarkerAlt}
                         />
 
                         <InfoCard
-                            titulo="Centro-Oeste"
-                            descricao="Rotas para Goiás, Distrito Federal, Mato Grosso e Mato Grosso do Sul."
+                            titulo="Operação"
+                            descricao="Organize cargas, viagens, motoristas e veículos em fluxos conectados."
                             Icone={FaRoad}
                         />
 
                         <InfoCard
-                            titulo="Operações Nacionais"
-                            descricao="Soluções de transporte para cargas fracionadas e lotação."
+                            titulo="Clientes"
+                            descricao="Ofereça portal, rastreamento e comprovantes para melhorar a transparência."
                             Icone={FaWarehouse}
                         />
 
                         <InfoCard
-                            titulo="Sul"
-                            descricao="Atendimento para Paraná, Santa Catarina e Rio Grande do Sul."
+                            titulo="Motoristas"
+                            descricao="Facilite o acesso a viagens, ocorrências e atualizações de localização."
                             Icone={FaMapMarkerAlt}
                         />
                     </div>
@@ -49,10 +49,10 @@ function AreasAtendidas() {
             </section>
 
             <CTASection
-                titulo="Quer saber se atendemos sua região?"
-                texto="Entre em contato e consulte uma rota personalizada."
-                botaoTexto="Solicitar Cotação"
-                link="/#cotacao"
+                titulo="Leve mais controle para a sua transportadora."
+                texto="Conheça os recursos da ROTANZA para conectar toda a operação."
+                botaoTexto="Ver recursos"
+                link="/servicos"
             />
         </Layout>
     )

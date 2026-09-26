@@ -21,7 +21,7 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
             id="admin-sidebar-navigation"
             className={`admin-sidebar${aberto ? " aberta" : ""}`}
         >
-            <h2>Ramos</h2>
+            <h2>ROTANZA</h2>
 
             <nav>
                 {menuPermitido.map((item) => {

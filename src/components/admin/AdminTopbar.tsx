@@ -18,7 +18,7 @@ function AdminTopbar() {
         <header className="admin-topbar">
 
             <div>
-                <h1>Transportadora Ramos</h1>
+                <h1>ROTANZA</h1>
 
                 <p>
                     Central administrativa de cargas, viagens e entregas

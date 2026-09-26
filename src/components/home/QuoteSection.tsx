@@ -8,9 +8,9 @@ function QuoteSection({ className = "" }: QuoteSectionProps) {
     const classes = ["quote-section", className].filter(Boolean).join(" ")
 
     return (
-        <section id="cotacao" className={classes}>
+        <section id="demonstracao" className={classes}>
             <div className="quote-container">
-                <h2>DADOS PARA COTAÇÃO</h2>
+                <h2>SOLICITE UMA DEMONSTRAÇÃO</h2>
 
                 <QuoteForm />
             </div>

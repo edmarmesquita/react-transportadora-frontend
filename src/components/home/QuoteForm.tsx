@@ -21,7 +21,7 @@ function QuoteForm() {
         whatsapp: "",
         origem: "",
         destino: "",
-        tipoCarga: "fracionada",
+        tipoCarga: "gestao-operacional",
         observacoes: "",
     })
 
@@ -89,7 +89,7 @@ function QuoteForm() {
 
                 if (!resposta.ok) {
                     setErro(
-                        dados.erro || "Erro ao enviar orçamento."
+                        dados.erro || "Erro ao enviar a solicitação."
                     )
 
                     setLoading(false)
@@ -104,7 +104,7 @@ function QuoteForm() {
                     whatsapp: "",
                     origem: "",
                     destino: "",
-                    tipoCarga: "fracionada",
+                    tipoCarga: "gestao-operacional",
                     observacoes: "",
                 })
 
@@ -124,7 +124,7 @@ function QuoteForm() {
     return (
         <form className="quote-form" onSubmit={handleSubmit}>
             <Input
-                label="Nome/Empresa:"
+                label="Nome da transportadora:"
                 name="cliente"
                 required
                 value={formData.cliente}
@@ -141,7 +141,7 @@ function QuoteForm() {
             />
 
             <Input
-                label="Origem:"
+                label="Cidade-sede:"
                 name="origem"
                 required
                 value={formData.origem}
@@ -149,7 +149,7 @@ function QuoteForm() {
             />
 
             <Input
-                label="Destino:"
+                label="Principal região de atuação:"
                 name="destino"
                 required
                 value={formData.destino}
@@ -157,14 +157,19 @@ function QuoteForm() {
             />
 
             <Select
-                label="Tipo de Carga:"
+                label="Interesse principal:"
                 name="tipoCarga"
                 value={formData.tipoCarga}
+                options={[
+                    { value: "gestao-operacional", label: "Gestão operacional" },
+                    { value: "frota-e-viagens", label: "Frota e viagens" },
+                    { value: "rastreamento", label: "Rastreamento e portais" },
+                ]}
                 onChange={handleChange}
             />
 
             <Textarea
-                label="Observações:"
+                label="Como a ROTANZA pode ajudar?"
                 name="observacoes"
                 value={formData.observacoes}
                 onChange={handleChange}
@@ -178,7 +183,7 @@ function QuoteForm() {
             )}
 
             <Button
-                texto={loading ? "Enviando..." : "Enviar Orçamento"}
+                texto={loading ? "Enviando..." : "Solicitar demonstração"}
                 type="submit"
             />
         </form>

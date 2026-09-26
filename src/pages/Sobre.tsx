@@ -14,8 +14,8 @@ function Sobre() {
     return (
         <Layout>
             <PageBanner
-                titulo="Sobre Nós"
-                subtitulo="Transporte de cargas com segurança, eficiência e compromisso."
+                titulo="A plataforma ROTANZA"
+                subtitulo="Tecnologia para organizar e acompanhar operações de transporte."
             />
 
             <section className="cards-section public-section-compact">
@@ -31,26 +31,26 @@ function Sobre() {
 
                     <div className="cards-grid">
                         <InfoCard
-                            titulo="Nossa Missão"
-                            descricao="Realizar o transporte de cargas com responsabilidade, cuidado e compromisso em cada etapa."
+                            titulo="Nossa missão"
+                            descricao="Simplificar a gestão de transportes para que cada equipe opere com mais controle e previsibilidade."
                             Icone={FaTruck}
                         />
 
                         <InfoCard
                             titulo="Segurança"
-                            descricao="Processos pensados para proteger a carga desde a coleta até a entrega."
+                            descricao="Acessos por perfil e registros operacionais para apoiar uma rotina confiável."
                             Icone={FaShieldAlt}
                         />
 
                         <InfoCard
                             titulo="Tecnologia"
-                            descricao="Acompanhamento das operações para oferecer mais visibilidade e confiança."
+                            descricao="Informações de cargas, viagens e ocorrências reunidas em um só lugar."
                             Icone={FaMapMarkedAlt}
                         />
 
                         <InfoCard
                             titulo="Atendimento"
-                            descricao="Relacionamento baseado em clareza, atenção e compromisso com cada necessidade."
+                            descricao="Uma plataforma pensada para apoiar administradores, operadores, motoristas e clientes."
                             Icone={FaHandshake}
                         />
                     </div>
@@ -58,10 +58,10 @@ function Sobre() {
             </section>
 
             <CTASection
-                titulo="Conte com a ROTANZA"
+                titulo="Conheça a ROTANZA"
                 texto="Centralize a gestão das suas operações e acompanhe cada entrega com mais clareza."
-                botaoTexto="Solicitar Cotação"
-                link="/#cotacao"
+                botaoTexto="Solicitar demonstração"
+                link="/orcamento"
             />
         </Layout>
     )

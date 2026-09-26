@@ -4,13 +4,13 @@ import FleetCard from "../ui/FleetCard"
 
 function FleetSection() {
     return (
-        <section className="fleet-section">
+        <section id="recursos" className="fleet-section">
             <div className="container-central">
                 <div className="section-title">
-                    <h2>Nossa Frota</h2>
+                    <h2>Gestão completa para sua transportadora</h2>
 
                     <p>
-                        Veículos preparados para diferentes tipos de transporte.
+                        Recursos conectados para transformar a rotina operacional em decisões mais claras.
                     </p>
                 </div>
 
@@ -30,18 +30,18 @@ function FleetSection() {
                     }}
                 >
                     <FleetCard
-                        titulo="Caminhões Rastreados"
-                        descricao="Mais segurança e controle em cada etapa do transporte."
+                        titulo="Frota conectada"
+                        descricao="Centralize veículos, motoristas e disponibilidade para planejar cada viagem."
                     />
 
                     <FleetCard
-                        titulo="Carga Fracionada"
-                        descricao="Soluções econômicas para volumes menores e entregas ágeis."
+                        titulo="Cargas e viagens"
+                        descricao="Organize etapas, responsáveis e status em um fluxo operacional único."
                     />
 
                     <FleetCard
-                        titulo="Carga Lotação"
-                        descricao="Transporte dedicado para grandes volumes com máxima eficiência."
+                        titulo="Rastreamento e comprovantes"
+                        descricao="Dê visibilidade à operação e registre evidências de entrega com segurança."
                     />
                 </motion.div>
             </div>

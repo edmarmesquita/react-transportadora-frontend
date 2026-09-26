@@ -9,41 +9,41 @@ function Frota() {
     return (
         <Layout>
             <PageBanner
-                titulo="Nossa Frota"
-                subtitulo="Veículos modernos preparados para todo o Brasil."
+                titulo="Gestão de frota"
+                subtitulo="Visibilidade para veículos, motoristas e disponibilidade operacional."
             />
 
             <section className="fleet-info-section public-section-compact">
                 <div className="container-central">
                     <div className="fleet-info-grid">
                         <FleetInfoCard
-                            titulo="Carreta Baú"
-                            descricao="Ideal para transporte seguro de cargas secas e protegidas contra intempéries."
+                            titulo="Veículos centralizados"
+                            descricao="Cadastre e consulte os dados da frota da sua transportadora em uma única tela."
                         />
 
                         <FleetInfoCard
-                            titulo="Carga Fracionada"
-                            descricao="Veículos preparados para distribuição eficiente e entregas rápidas."
+                            titulo="Disponibilidade operacional"
+                            descricao="Tenha clareza sobre recursos disponíveis, ocupados e liberados para novas viagens."
                         />
 
                         <FleetInfoCard
-                            titulo="Carga Lotação"
-                            descricao="Transporte dedicado para grandes operações logísticas."
+                            titulo="Motoristas integrados"
+                            descricao="Conecte equipes, viagens e ocorrências para acompanhar a execução da operação."
                         />
 
                         <FleetInfoCard
-                            titulo="Frota Rastreadora"
-                            descricao="Monitoramento em tempo real oferecendo mais segurança e controle."
+                            titulo="Decisões com contexto"
+                            descricao="Use informações atualizadas para planejar rotas, alocações e prioridades."
                         />
                     </div>
                 </div>
             </section>
 
             <CTASection
-                titulo="Sua carga merece segurança."
-                texto="Conte com nossa frota moderna para transportar com eficiência."
-                botaoTexto="Solicitar Cotação"
-                link="/#cotacao"
+                titulo="A sua frota, sob seu controle."
+                texto="Use a ROTANZA para conectar recursos e manter a operação em movimento."
+                botaoTexto="Conhecer os recursos"
+                link="/servicos"
             />
         </Layout>
     )

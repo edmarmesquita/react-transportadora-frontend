@@ -10,38 +10,38 @@ function Contato() {
         <Layout>
             <PageBanner
                 titulo="Contato"
-                subtitulo="Fale conosco e solicite sua cotação."
+                subtitulo="Conheça a plataforma para gestão de transportes."
             />
 
             <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
-                        <h2>Canais de Atendimento</h2>
-                        <p>Estamos prontos para atender você.</p>
+                        <h2>Como podemos ajudar</h2>
+                        <p>Escolha o melhor momento da sua operação para conhecer a ROTANZA.</p>
                     </div>
 
                     <div className="cards-grid">
                         <InfoCard
                             titulo="WhatsApp"
-                            descricao="Atendimento rápido para orçamentos e dúvidas."
+                            descricao="Converse sobre os desafios operacionais da sua transportadora."
                             Icone={FaWhatsapp}
                         />
 
                         <InfoCard
                             titulo="Telefone"
-                            descricao="Fale diretamente com nossa equipe comercial."
+                            descricao="Apresente sua operação em uma demonstração orientada ao seu contexto."
                             Icone={FaPhoneAlt}
                         />
 
                         <InfoCard
                             titulo="E-mail"
-                            descricao="Envie sua solicitação e retornaremos em breve."
+                            descricao="Compartilhe os recursos que sua equipe precisa centralizar."
                             Icone={FaEnvelope}
                         />
 
                         <InfoCard
-                            titulo="Localização"
-                            descricao="Base estratégica para operações logísticas."
+                            titulo="Implantação"
+                            descricao="Planeje o início da plataforma com segurança e clareza para sua equipe."
                             Icone={FaMapMarkerAlt}
                         />
                     </div>
@@ -49,10 +49,10 @@ function Contato() {
             </section>
 
             <CTASection
-                titulo="Precisa de atendimento agora?"
-                texto="Fale com nossa equipe e receba orientação personalizada."
-                botaoTexto="Chamar no WhatsApp"
-                link="https://wa.me/5511999999999"
+                titulo="Quer ver a ROTANZA em ação?"
+                texto="Envie uma solicitação de demonstração pelo formulário da plataforma."
+                botaoTexto="Solicitar demonstração"
+                link="/orcamento"
             />
         </Layout>
     )

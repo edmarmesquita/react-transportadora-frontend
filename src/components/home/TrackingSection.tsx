@@ -47,11 +47,10 @@ function TrackingSection() {
             <div className="container-central">
                 <div className="rastreamento-box">
                     <div className="rastreamento-info">
-                        <h2>Rastreamento Nacional</h2>
+                        <h2>Rastreamento para sua operação</h2>
 
                         <p>
-                            Acompanhe o status da sua carga em território nacional com mais
-                            transparência, segurança e agilidade.
+                            Compartilhe visibilidade com clientes da sua transportadora em cada etapa da viagem.
                         </p>
 
                         <TrackingForm

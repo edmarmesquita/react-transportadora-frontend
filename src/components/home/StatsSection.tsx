@@ -7,13 +7,13 @@ function StatsSection() {
             <div className="container-central">
                 <FadeIn>
                     <div className="stats-grid">
-                        <StatCard numero="+15" texto="Anos de experiência" />
+                        <StatCard numero="01" texto="Operação centralizada" />
 
-                        <StatCard numero="+120" texto="Veículos na frota" />
+                        <StatCard numero="24h" texto="Visibilidade das viagens" />
 
-                        <StatCard numero="+500" texto="Clientes atendidos" />
+                        <StatCard numero="360°" texto="Gestão da frota" />
 
-                        <StatCard numero="100%" texto="Cobertura nacional" />
+                        <StatCard numero="+" texto="Portais para sua operação" />
                     </div>
                 </FadeIn>
             </div>

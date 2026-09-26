@@ -14,39 +14,39 @@ function Servicos() {
     return (
         <Layout>
             <PageBanner
-                titulo="Serviços"
-                subtitulo="Soluções logísticas com segurança, agilidade e compromisso."
+                titulo="Recursos da plataforma"
+                subtitulo="Ferramentas para dar controle, visibilidade e fluidez à operação de transportes."
             />
 
             <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
-                        <h2>Nossos Serviços</h2>
-                        <p>Atendimento completo para diferentes necessidades de transporte.</p>
+                        <h2>Uma operação conectada</h2>
+                        <p>Recursos práticos para a rotina de quem administra transportadoras.</p>
                     </div>
 
                     <div className="cards-grid">
                         <InfoCard
-                            titulo="Carga Fracionada"
-                            descricao="Ideal para entregas menores, com economia, agilidade e acompanhamento em todo o trajeto."
+                            titulo="Gestão de cargas"
+                            descricao="Organize cadastros, responsáveis, status e informações da operação."
                             Icone={FaBox}
                         />
 
                         <InfoCard
-                            titulo="Carga Lotação"
-                            descricao="Transporte exclusivo para grandes volumes, oferecendo mais controle, segurança e rapidez."
+                            titulo="Viagens e recursos"
+                            descricao="Planeje viagens e associe veículos e motoristas com regras operacionais claras."
                             Icone={FaTruck}
                         />
 
                         <InfoCard
-                            titulo="Rastreamento"
-                            descricao="Monitoramento da carga para oferecer mais transparência e confiança ao cliente."
+                            titulo="Rastreamento público"
+                            descricao="Compartilhe atualizações de viagem de forma simples com clientes da transportadora."
                             Icone={FaMapMarkedAlt}
                         />
 
                         <InfoCard
-                            titulo="Segurança"
-                            descricao="Processos pensados para proteger sua carga desde a coleta até a entrega."
+                            titulo="Segurança e auditoria"
+                            descricao="Apoie sua equipe com perfis de acesso, histórico e registros da operação."
                             Icone={FaShieldAlt}
                         />
                     </div>
@@ -54,10 +54,10 @@ function Servicos() {
             </section>
 
             <CTASection
-                titulo="Precisa de uma solução logística?"
-                texto="Fale com nossa equipe e solicite uma cotação personalizada."
-                botaoTexto="Solicitar Cotação"
-                link="/#cotacao"
+                titulo="Pronto para digitalizar sua operação?"
+                texto="Veja como a ROTANZA se adapta à rotina da sua transportadora."
+                botaoTexto="Solicitar demonstração"
+                link="/orcamento"
             />
         </Layout>
     )

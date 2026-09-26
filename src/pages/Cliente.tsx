@@ -14,42 +14,42 @@ function Cliente() {
     return (
         <Layout>
             <PageBanner
-                titulo="Área do Cliente"
-                subtitulo="Acompanhe informações importantes da sua carga."
+                titulo="Portal do Cliente"
+                subtitulo="Um recurso da transportadora para compartilhar visibilidade com seus clientes."
             />
 
             <section className="cards-section public-section-compact">
                 <div className="container-central">
                     <div className="section-title">
-                        <h2>Serviços ao Cliente</h2>
+                        <h2>Transparência para quem acompanha a operação</h2>
 
                         <p>
-                            Mais controle, transparência e praticidade para nossos clientes.
+                            A ROTANZA permite que cada transportadora ofereça informações atualizadas aos clientes cadastrados.
                         </p>
                     </div>
 
                     <div className="cards-grid">
                         <InfoCard
                             titulo="Rastreamento"
-                            descricao="Acompanhe o status da carga em tempo real."
+                            descricao="Acompanhe o status das cargas vinculadas à sua transportadora."
                             Icone={FaBoxOpen}
                         />
 
                         <InfoCard
                             titulo="Histórico"
-                            descricao="Consulte entregas e operações anteriores."
+                            descricao="Consulte o histórico das operações disponibilizadas pela sua transportadora."
                             Icone={FaClipboardList}
                         />
 
                         <InfoCard
                             titulo="Documentos"
-                            descricao="Acesso rápido a comprovantes e informações da carga."
+                            descricao="Acesse comprovantes e informações compartilhadas pela operação."
                             Icone={FaFileInvoice}
                         />
 
                         <InfoCard
                             titulo="Segurança"
-                            descricao="Área protegida para clientes cadastrados."
+                            descricao="Acesso protegido, definido pela transportadora responsável pela operação."
                             Icone={FaUserShield}
                         />
                     </div>
@@ -57,10 +57,10 @@ function Cliente() {
             </section>
 
             <CTASection
-                titulo="Precisa acessar suas informações?"
-                texto="Entre em contato com nossa equipe de atendimento."
-                botaoTexto="Falar com a Equipe"
-                link="/contato"
+                titulo="Já recebeu seu acesso?"
+                texto="Entre com as credenciais fornecidas pela sua transportadora."
+                botaoTexto="Acessar o sistema"
+                link="/admin/login"
             />
         </Layout>
     )

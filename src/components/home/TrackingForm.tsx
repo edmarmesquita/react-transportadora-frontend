@@ -25,7 +25,7 @@ function TrackingForm({ onBuscar, loading }: TrackingFormProps) {
             <input
                 type="text"
                 name="codigo"
-                placeholder="Digite o código da carga"
+                placeholder="Digite o código de rastreamento"
                 maxLength={30}
                 autoCapitalize="characters"
                 autoComplete="off"

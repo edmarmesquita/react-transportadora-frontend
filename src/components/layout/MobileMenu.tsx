@@ -18,23 +18,23 @@ function MobileMenu({ fecharMenu }: MobileMenuProps) {
                 to="/sobre"
                 onClick={fecharMenu}
             >
-                Sobre Nós
+                Plataforma
             </NavLink>
 
             <NavLink to="/frota" onClick={fecharMenu}>
-                Nossa Frota
+                Gestão de Frota
             </NavLink>
 
             <NavLink to="/servicos" onClick={fecharMenu}>
-                Serviços
+                Recursos
             </NavLink>
 
             <NavLink to="/areas-atendidas" onClick={fecharMenu}>
-                Áreas Atendidas
+                Operação Conectada
             </NavLink>
 
             <NavLink to="/parceiros" onClick={fecharMenu}>
-                Parceiros
+                Ecossistema
             </NavLink>
 
             <NavLink to="/contato" onClick={fecharMenu}>
@@ -42,18 +42,18 @@ function MobileMenu({ fecharMenu }: MobileMenuProps) {
             </NavLink>
 
             <NavLink to="/cliente" onClick={fecharMenu}>
-                Área do Cliente
+                Portal do Cliente
             </NavLink>
 
             <NavLink to="/motorista" onClick={fecharMenu}>
-                Área do Motorista
+                Portal do Motorista
             </NavLink>
 
             <NavLink
                 to="/orcamento"
                 onClick={fecharMenu}
             >
-                Orçamentos
+                Demonstração
             </NavLink>
         </nav>
     )
