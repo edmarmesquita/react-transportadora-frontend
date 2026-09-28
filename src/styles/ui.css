@@ -2164,6 +2164,12 @@ textarea {
     color: #e60000;
 }
 
+.relatorios-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
 .cabecalho-relatorio {
     background: white;
     padding: 24px;

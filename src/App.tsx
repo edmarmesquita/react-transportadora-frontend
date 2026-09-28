@@ -34,6 +34,7 @@ const AdminViagens = lazy(() => import("./pages/AdminViagens"))
 const NovaViagem = lazy(() => import("./pages/NovaViagem"))
 const DetalheViagem = lazy(() => import("./pages/DetalheViagem"))
 const AdminRelatorios = lazy(() => import("./pages/AdminRelatorios"))
+const DadosTransportadora = lazy(() => import("./pages/DadosTransportadora"))
 const AdminBusca = lazy(() => import("./pages/AdminBusca"))
 const EditarVeiculo = lazy(() => import("./pages/EditarVeiculo"))
 const EditarCliente = lazy(() => import("./pages/EditarCliente"))
@@ -327,6 +328,14 @@ function App() {
         />
 
         {/* RELATÓRIOS */}
+        <Route
+          path="/admin/dados-transportadora"
+          element={
+            <ProtectedRoute perfisPermitidos={["administrador"]}>
+              <DadosTransportadora />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/relatorios"
           element={

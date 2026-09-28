@@ -10,6 +10,7 @@ import {
     ClipboardList,
     Route,
     ShieldUser,
+    Building2,
 } from "lucide-react";
 
 export type MenuItem = {
@@ -57,6 +58,12 @@ export const adminMenu: MenuItem[] = [
         titulo: "Relatórios",
         rota: "/admin/relatorios",
         icone: FileBarChart,
+        perfis: ["administrador"],
+    },
+    {
+        titulo: "Dados da Transportadora",
+        rota: "/admin/dados-transportadora",
+        icone: Building2,
         perfis: ["administrador"],
     },
     {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
+import { useNotification } from "../components/ui/NotificationProvider"
 import { apiFetch } from "../services/api"
 
 type RelatorioResumo = {
@@ -28,6 +29,7 @@ type RelatorioResumo = {
 }
 
 function AdminRelatorios() {
+    const { notificar } = useNotification()
     const [resumo, setResumo] = useState<RelatorioResumo | null>(null)
 
     async function carregarResumo() {
@@ -38,6 +40,41 @@ function AdminRelatorios() {
         const dados = await resposta.json()
 
         setResumo(dados)
+    }
+
+    async function baixarRelatorioViagens() {
+        try {
+            const resposta = await apiFetch(
+                "/api/admin/relatorios/viagens/pdf"
+            )
+
+            if (!resposta.ok) {
+                const dados = await resposta.json().catch(() => null)
+                throw new Error(
+                    dados?.erro || "Não foi possível gerar o relatório de viagens."
+                )
+            }
+
+            const arquivo = await resposta.blob()
+            const url = URL.createObjectURL(arquivo)
+            const link = document.createElement("a")
+            try {
+                link.href = url
+                link.download = "relatorio_viagens.pdf"
+                document.body.appendChild(link)
+                link.click()
+            } finally {
+                link.remove()
+                URL.revokeObjectURL(url)
+            }
+        } catch (erro) {
+            notificar(
+                "erro",
+                erro instanceof Error
+                    ? erro.message
+                    : "Não foi possível baixar o relatório de viagens."
+            )
+        }
     }
 
     useEffect(() => {
@@ -53,12 +90,21 @@ function AdminRelatorios() {
                         <p>Resumo gerencial da operação de transportes</p>
                     </div>
                 </div>
-                <button
-                    className="btn-nova-carga"
-                    onClick={() => window.print()}
-                >
-                    Imprimir Relatório
-                </button>
+                <div className="relatorios-actions">
+                    <button
+                        className="btn-nova-carga"
+                        onClick={() => window.print()}
+                    >
+                        Imprimir Relatório
+                    </button>
+
+                    <button
+                        className="btn-nova-carga"
+                        onClick={baixarRelatorioViagens}
+                    >
+                        Baixar Viagens em PDF
+                    </button>
+                </div>
 
                 <div className="cabecalho-relatorio">
                     <h2>Relatório Operacional</h2>
