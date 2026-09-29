@@ -35,7 +35,7 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
                             onClick={fecharMenu}
                         >
                             <Icone size={20} />
-                            {item.titulo}
+                            <span>{item.titulo}</span>
                         </NavLink>
                     );
                 })}
