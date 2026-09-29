@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
 import { useNotification } from "../components/ui/NotificationProvider"
 import { apiFetch } from "../services/api"
@@ -28,9 +28,18 @@ type RelatorioResumo = {
     }
 }
 
+type IdentidadeTransportadora = {
+    nome_exibicao: string | null
+    logo: string | null
+}
+
 function AdminRelatorios() {
     const { notificar } = useNotification()
     const [resumo, setResumo] = useState<RelatorioResumo | null>(null)
+    const [nomeTransportadora, setNomeTransportadora] = useState("TRANSPORTADORA")
+    const [urlLogo, setUrlLogo] = useState<string | null>(null)
+    const [carregandoIdentidade, setCarregandoIdentidade] = useState(true)
+    const tituloAnterior = useRef<string | null>(null)
 
     async function carregarResumo() {
         const resposta = await apiFetch(
@@ -42,40 +51,95 @@ function AdminRelatorios() {
         setResumo(dados)
     }
 
-    async function baixarRelatorioViagens() {
+    async function baixarPdf(rota: string, nomeArquivo: string, mensagemErro: string) {
         try {
-            const resposta = await apiFetch(
-                "/api/admin/relatorios/viagens/pdf"
-            )
+            const resposta = await apiFetch(rota)
 
             if (!resposta.ok) {
                 const dados = await resposta.json().catch(() => null)
                 throw new Error(
-                    dados?.erro || "Não foi possível gerar o relatório de viagens."
+                    dados?.erro || mensagemErro
                 )
             }
 
             const arquivo = await resposta.blob()
             const url = URL.createObjectURL(arquivo)
             const link = document.createElement("a")
+            let downloadIniciado = false
             try {
                 link.href = url
-                link.download = "relatorio_viagens.pdf"
+                link.download = nomeArquivo
                 document.body.appendChild(link)
                 link.click()
+                downloadIniciado = true
             } finally {
                 link.remove()
-                URL.revokeObjectURL(url)
+                if (downloadIniciado) {
+                    window.setTimeout(() => URL.revokeObjectURL(url), 60_000)
+                } else {
+                    URL.revokeObjectURL(url)
+                }
             }
         } catch (erro) {
             notificar(
                 "erro",
                 erro instanceof Error
                     ? erro.message
-                    : "Não foi possível baixar o relatório de viagens."
+                    : mensagemErro
             )
         }
     }
+
+    useEffect(() => {
+        let ativo = true
+        async function carregarIdentidade() {
+            try {
+                const resposta = await apiFetch("/api/configuracao/transportadora")
+                const dados = await resposta.json().catch(() => null) as IdentidadeTransportadora | null
+                if (!resposta.ok) throw new Error("Não foi possível carregar a identidade da transportadora.")
+                if (!ativo) return
+                setNomeTransportadora(dados?.nome_exibicao?.trim() || "TRANSPORTADORA")
+
+                if (dados?.logo) {
+                    const respostaLogo = await apiFetch("/api/configuracao/transportadora/logo")
+                    if (respostaLogo.status === 404) return
+                    if (!respostaLogo.ok) throw new Error("Não foi possível carregar o logotipo da transportadora.")
+                    const arquivo = await respostaLogo.blob()
+                    if (ativo) setUrlLogo(URL.createObjectURL(arquivo))
+                }
+            } catch (erro) {
+                if (ativo) notificar("erro", erro instanceof Error ? erro.message : "Erro de conexão.")
+            } finally {
+                if (ativo) setCarregandoIdentidade(false)
+            }
+        }
+        void carregarIdentidade()
+        return () => { ativo = false }
+    }, [notificar])
+
+    useEffect(() => () => {
+        if (urlLogo) URL.revokeObjectURL(urlLogo)
+    }, [urlLogo])
+
+    useEffect(() => {
+        function antesDaImpressao() {
+            if (tituloAnterior.current === null) tituloAnterior.current = document.title
+            document.title = `Relatório Operacional - ${nomeTransportadora}`
+        }
+        function depoisDaImpressao() {
+            if (tituloAnterior.current !== null) {
+                document.title = tituloAnterior.current
+                tituloAnterior.current = null
+            }
+        }
+        window.addEventListener("beforeprint", antesDaImpressao)
+        window.addEventListener("afterprint", depoisDaImpressao)
+        return () => {
+            window.removeEventListener("beforeprint", antesDaImpressao)
+            window.removeEventListener("afterprint", depoisDaImpressao)
+            depoisDaImpressao()
+        }
+    }, [nomeTransportadora])
 
     useEffect(() => {
         carregarResumo()
@@ -93,6 +157,7 @@ function AdminRelatorios() {
                 <div className="relatorios-actions">
                     <button
                         className="btn-nova-carga"
+                        disabled={carregandoIdentidade}
                         onClick={() => window.print()}
                     >
                         Imprimir Relatório
@@ -100,13 +165,32 @@ function AdminRelatorios() {
 
                     <button
                         className="btn-nova-carga"
-                        onClick={baixarRelatorioViagens}
+                        onClick={() => void baixarPdf(
+                            "/api/admin/relatorios/viagens/pdf",
+                            "relatorio_viagens.pdf",
+                            "Não foi possível baixar o relatório de viagens."
+                        )}
                     >
                         Baixar Viagens em PDF
+                    </button>
+
+                    <button
+                        className="btn-nova-carga"
+                        onClick={() => void baixarPdf(
+                            "/api/admin/relatorios/financeiro/pdf",
+                            "relatorio_financeiro.pdf",
+                            "Não foi possível baixar o relatório financeiro."
+                        )}
+                    >
+                        Baixar Financeiro em PDF
                     </button>
                 </div>
 
                 <div className="cabecalho-relatorio">
+                    <div className="relatorio-identidade">
+                        {urlLogo && <img src={urlLogo} alt={`Logotipo de ${nomeTransportadora}`} />}
+                        <strong>{nomeTransportadora}</strong>
+                    </div>
                     <h2>Relatório Operacional</h2>
                     <p>Resumo Gerencial de Transportes</p>
                     <span>Gerado em: {new Date().toLocaleString("pt-BR")}</span>
