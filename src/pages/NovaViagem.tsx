@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
+import { useNotification } from "../components/ui/NotificationProvider"
 import { apiFetch } from "../services/api"
 
 type Carga = {
@@ -50,6 +51,7 @@ type FormDataViagem = {
 
 function NovaViagem() {
     const navigate = useNavigate()
+    const { notificar } = useNotification()
 
     const [cargas, setCargas] = useState<Carga[]>([])
     const [motoristas, setMotoristas] = useState<Motorista[]>([])
@@ -247,7 +249,8 @@ function NovaViagem() {
                 )
             }
 
-            alert(
+            notificar(
+                "sucesso",
                 dados.mensagem ||
                 "Viagem despachada com sucesso!"
             )

@@ -10,22 +10,36 @@ import NovoUsuario from "../src/pages/NovoUsuario";
 import NovoMotorista from "../src/pages/NovoMotorista";
 import NovoVeiculo from "../src/pages/NovoVeiculo";
 import NovaCarga from "../src/pages/NovaCarga";
+import NovaViagem from "../src/pages/NovaViagem";
 import AdminClientes from "../src/pages/AdminClientes";
 import AdminUsuarios from "../src/pages/AdminUsuarios";
 import AdminMotoristas from "../src/pages/AdminMotoristas";
 import AdminVeiculos from "../src/pages/AdminVeiculos";
 import AdminCargas from "../src/pages/AdminCargas";
 import DetalheViagem from "../src/pages/DetalheViagem";
+import CargaDetalhe from "../src/pages/CargaDetalhe";
+import DetalheCargaCliente from "../src/pages/DetalheCargaCliente";
+import { transicoesCarga, transicoesViagem } from "../src/constants/estadosOperacionais";
+import { buscarDetalheCarga, listarComprovantesCarga, listarOcorrenciasCarga } from "../src/services/clienteService";
 import ListaComprovantes from "../src/components/admin/ListaComprovantes";
 
 vi.mock("../src/services/api", () => ({ apiFetch: vi.fn() }));
 vi.mock("../src/services/arquivosService", () => ({ abrirArquivoAutenticado: vi.fn() }));
+vi.mock("../src/services/clienteService", () => ({
+    buscarDetalheCarga: vi.fn(),
+    criarOcorrenciaCarga: vi.fn(),
+    listarOcorrenciasCarga: vi.fn(),
+    listarComprovantesCarga: vi.fn(),
+}));
 vi.mock("../src/components/admin/AdminLayout", () => ({
     default: ({ children }: { children: ReactNode }) => <main>{children}</main>,
 }));
 vi.mock("../src/components/admin/RastreamentoViagem", () => ({ default: () => null }));
 
 const api = vi.mocked(apiFetch);
+const buscarCargaCliente = vi.mocked(buscarDetalheCarga);
+const listarOcorrenciasCliente = vi.mocked(listarOcorrenciasCarga);
+const listarComprovantesCliente = vi.mocked(listarComprovantesCarga);
 const cliente = { id: 1, razao_social: "Cliente HML", nome_fantasia: "HML", ativo: true };
 const usuario = { id: 2, nome: "Usuário HML", usuario: "usuario-hml", email: "teste@example.invalid", perfil: "operador", ativo: true, data_criacao: "21/09/2026" };
 const motorista = { id: 3, nome: "Motorista HML", status: "Ativo", disponibilidade: "Disponível" };
@@ -64,7 +78,7 @@ function montar(pagina: ReactNode, caminho = "/novo", destino?: { caminho: strin
             <MemoryRouter initialEntries={[caminho]}>
                 <Localizacao />
                 <Routes>
-                    <Route path={caminho.includes("/viagens/") ? "/admin/viagens/:id" : caminho} element={pagina} />
+                    <Route path={caminho.includes("/viagens/") ? (caminho.startsWith("/portal/") ? "/portal/motorista/minhas-viagens/:id" : "/admin/viagens/:id") : caminho.startsWith("/portal/cliente/minhas-cargas/") ? "/portal/cliente/minhas-cargas/:id" : caminho.includes("/cargas/") && !caminho.endsWith("/nova") ? "/admin/cargas/:id" : caminho} element={pagina} />
                     {destino && <Route path={destino.caminho} element={destino.pagina} />}
                 </Routes>
             </MemoryRouter>
@@ -75,6 +89,9 @@ function montar(pagina: ReactNode, caminho = "/novo", destino?: { caminho: strin
 beforeEach(() => {
     sessionStorage.setItem("usuarioLogado", JSON.stringify({ perfil: "administrador" }));
     api.mockImplementation(async (endpoint) => leitura(endpoint));
+    buscarCargaCliente.mockResolvedValue({ id: 5, codigo: "HML-CARGA", cliente: "Cliente HML", status: "Em trânsito", local_atual: "Origem", destino: "Destino", ultima_atualizacao: "Agora", historico: [] });
+    listarOcorrenciasCliente.mockResolvedValue([]);
+    listarComprovantesCliente.mockResolvedValue({ comprovantes: [], arquivos: [] } as never);
     vi.spyOn(window, "alert").mockImplementation(() => { throw new Error("alert nativo inesperado"); });
     vi.spyOn(window, "confirm").mockReturnValue(true);
     vi.stubGlobal("fetch", vi.fn(() => { throw new Error("Rede real proibida nestes testes"); }));
@@ -265,6 +282,105 @@ describe("Viagem e comprovantes", () => {
         const { rerender } = render(<NotificationProvider><ListaComprovantes arquivos={[]} /></NotificationProvider>);
         rerender(<NotificationProvider><ListaComprovantes arquivos={[arquivo]} /></NotificationProvider>);
         expect(await screen.findByText(arquivo.nome_arquivo)).toBeTruthy();
+    });
+});
+
+describe("transições de status operacionais", () => {
+    async function opcoesCarga(status: string) {
+        api.mockImplementation(async (endpoint) => endpoint === "/api/admin/cargas/5"
+            ? resposta({ ...carga, status, local_atual: "Origem", ultima_atualizacao: "Agora", motorista_id: null, motorista: "", veiculo_id: null, veiculo: "", viagem_id: null })
+            : endpoint === "/api/admin/motoristas" || endpoint === "/api/admin/veiculos"
+                ? resposta([])
+                : leitura(endpoint));
+        montar(<CargaDetalhe />, "/admin/cargas/5");
+        await screen.findByText("Atualizar status");
+        const seletor = document.querySelector<HTMLSelectElement>("#status-carga");
+        expect(seletor).not.toBeNull();
+        return Array.from((seletor as HTMLSelectElement).options).map((opcao) => opcao.textContent);
+    }
+
+    it("apresenta apenas os próximos status de carga do fluxo administrativo", async () => {
+        expect(transicoesCarga.Pendente).toEqual(["Programada", "Em preparação"]);
+        expect(await opcoesCarga("Pendente")).toEqual(["Selecione o status", "Programada", "Em preparação"]);
+        cleanup();
+        expect(transicoesCarga["Em preparação"]).toEqual(["Em coleta"]);
+        expect(transicoesCarga["Em preparação"]).not.toContain("Carregando");
+        expect(await opcoesCarga("Em preparação")).toEqual(["Selecione o status", "Em coleta"]);
+        cleanup();
+        expect(transicoesCarga["Em coleta"]).toEqual(["Carregando"]);
+        expect(await opcoesCarga("Em coleta")).toEqual(["Selecione o status", "Carregando"]);
+    });
+
+    it("apresenta transições de viagem sem saltos no fluxo oficial", async () => {
+        expect(transicoesViagem["Em coleta"]).toEqual(["Carregando", "Cancelada"]);
+        expect(transicoesViagem.Carregando).toEqual(["Em trânsito", "Cancelada"]);
+        expect(transicoesViagem["Em trânsito"]).toEqual(["Parada operacional", "Saiu para entrega", "Cancelada"]);
+        expect(transicoesViagem["Saiu para entrega"]).toEqual(["Entregue", "Cancelada"]);
+        expect(transicoesViagem["Em coleta"]).not.toContain("Em trânsito");
+        expect(transicoesViagem.Carregando).not.toContain("Saiu para entrega");
+    });
+
+    it("não oferece Cancelada ao motorista e mantém sequência e progresso visual do cliente", async () => {
+        sessionStorage.setItem("usuarioLogado", JSON.stringify({ perfil: "motorista" }));
+        api.mockImplementation(async (endpoint) => endpoint === "/api/motorista/minhas-viagens/undefined"
+            ? resposta({ ...viagem, status: "Em trânsito", origem: "Origem", destino: "Destino", data_criacao: "Agora", motorista: "Motorista", veiculo: "HML1A23" })
+            : endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")
+                ? resposta([])
+                : endpoint.endsWith("/comprovante") ? resposta({}) : resposta([]));
+        montar(<DetalheViagem />, "/portal/motorista/minhas-viagens/7");
+        await screen.findByText("Atualizar status");
+        const opcoesMotorista = Array.from((document.querySelector(".status-box select") as HTMLSelectElement).options).map((opcao) => opcao.textContent);
+        expect(opcoesMotorista).toContain("Saiu para entrega");
+        expect(opcoesMotorista).not.toContain("Cancelada");
+        cleanup();
+
+        montar(<DetalheCargaCliente />, "/portal/cliente/minhas-cargas/5");
+        const etapas = await screen.findAllByText(/^(Em preparação|Em coleta|Carregando|Em trânsito|Saiu para entrega|Entregue)$/);
+        const etapasStepper = etapas.filter((etapa) => etapa.closest(".cliente-progresso-etapa"));
+        expect(etapasStepper.map((etapa) => etapa.textContent)).toEqual([
+            "Em preparação", "Em coleta", "Carregando", "Em trânsito", "Saiu para entrega", "Entregue",
+        ]);
+        const etapaEmTransito = etapasStepper[3].closest(".cliente-progresso-etapa");
+        expect(etapaEmTransito?.className).toContain("concluida");
+        expect(etapaEmTransito?.className).toContain("atual");
+        for (const etapa of etapasStepper.slice(0, 3)) {
+            expect(etapa.closest(".cliente-progresso-etapa")?.className).toContain("concluida");
+        }
+    });
+});
+
+describe("despacho de viagem", () => {
+    it("exibe toast de sucesso sem alert e redireciona para a lista de viagens", async () => {
+        api.mockImplementation(async (endpoint, opcoes) => {
+            if (endpoint === "/api/admin/viagens/opcoes") {
+                return resposta({
+                    cargas: [{ id: 5, codigo: "HML-CARGA", cliente: "Cliente HML", local_atual: "Origem HML", destino: "Destino HML", status: "Carregando" }],
+                    motoristas: [{ id: 3, nome: "Motorista HML", cpf: "123", cnh: "123", categoria_cnh: "B", status: "Ativo" }],
+                    veiculos: [{ id: 4, placa: "HML1A23", modelo: "Caminhão", marca: "Marca", tipo: "Caminhão", capacidade: "10t", status: "Disponível" }],
+                });
+            }
+            if (endpoint === "/api/admin/viagens/despachar" && opcoes?.method === "POST") {
+                return resposta({ mensagem: "Viagem iniciada com sucesso!" }, 201);
+            }
+            return leitura(endpoint);
+        });
+
+        montar(
+            <NovaViagem />,
+            "/admin/viagens/nova",
+            { caminho: "/admin/viagens", pagina: <p>Lista de viagens</p> },
+        );
+
+        fireEvent.change(await screen.findByLabelText("Carga"), { target: { value: "5" } });
+        fireEvent.change(screen.getByLabelText("Motorista"), { target: { value: "3" } });
+        fireEvent.change(screen.getByLabelText("Veículo"), { target: { value: "4" } });
+        fireEvent.submit(screen.getByRole("button", { name: "Iniciar Viagem" }).closest("form")!);
+
+        expect(await screen.findByText("Viagem iniciada com sucesso!")).toBeTruthy();
+        expect(screen.getByText("Viagem iniciada com sucesso!").closest("[role=status]")).toBeTruthy();
+        expect(window.alert).not.toHaveBeenCalled();
+        expect(await screen.findByText("Lista de viagens")).toBeTruthy();
+        expect(screen.getByTestId("rota").textContent).toBe("/admin/viagens");
     });
 });
 
