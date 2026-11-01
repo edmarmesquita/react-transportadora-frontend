@@ -11,6 +11,15 @@ type ClienteOpcao = {
     ativo: boolean;
 };
 
+type UsuarioOriginal = Readonly<{
+    nome: string;
+    usuario: string;
+    email: string;
+    perfil: string;
+    ativo: boolean;
+    clienteId: string;
+}>;
+
 function EditarUsuario() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -23,10 +32,23 @@ function EditarUsuario() {
     const [ativo, setAtivo] = useState(true);
     const [clientes, setClientes] = useState<ClienteOpcao[]>([]);
     const [clienteId, setClienteId] = useState("");
+    const [usuarioOriginal, setUsuarioOriginal] =
+        useState<UsuarioOriginal | null>(null);
 
     const [redefinirSenha, setRedefinirSenha] = useState(false);
     const [novaSenha, setNovaSenha] = useState("");
     const [confirmarSenha, setConfirmarSenha] = useState("");
+
+    const somenteRedefinicaoDeSenha =
+        redefinirSenha &&
+        usuarioOriginal !== null &&
+        nome.trim() === usuarioOriginal.nome.trim() &&
+        usuario.trim() === usuarioOriginal.usuario.trim() &&
+        email.trim().toLowerCase() ===
+            usuarioOriginal.email.trim().toLowerCase() &&
+        perfil === usuarioOriginal.perfil &&
+        ativo === usuarioOriginal.ativo &&
+        clienteId === usuarioOriginal.clienteId;
 
     useEffect(() => {
         carregarUsuario();
@@ -62,16 +84,25 @@ function EditarUsuario() {
 
             const dados = await resposta.json();
 
-            setNome(dados.nome);
-            setUsuario(dados.usuario);
-            setEmail(dados.email || "");
-            setPerfil(dados.perfil);
-            setAtivo(dados.ativo);
-            setClienteId(
-                dados.cliente_id != null
-                    ? String(dados.cliente_id)
-                    : ""
-            );
+            const valoresCarregados = {
+                nome: dados.nome,
+                usuario: dados.usuario,
+                email: dados.email || "",
+                perfil: dados.perfil,
+                ativo: dados.ativo,
+                clienteId:
+                    dados.cliente_id != null
+                        ? String(dados.cliente_id)
+                        : "",
+            };
+
+            setNome(valoresCarregados.nome);
+            setUsuario(valoresCarregados.usuario);
+            setEmail(valoresCarregados.email);
+            setPerfil(valoresCarregados.perfil);
+            setAtivo(valoresCarregados.ativo);
+            setClienteId(valoresCarregados.clienteId);
+            setUsuarioOriginal(valoresCarregados);
         } catch (erro) {
             console.error("Erro ao carregar usuário:", erro);
             notificar("erro", "Não foi possível carregar o usuário.");
@@ -99,19 +130,36 @@ function EditarUsuario() {
             }
         }
 
-        const dadosAtualizados = {
-            nome,
-            usuario,
-            email,
-            perfil,
-            ativo,
-            redefinir_senha: redefinirSenha,
-            nova_senha: redefinirSenha ? novaSenha : undefined,
-            cliente_id:
-                perfil === "cliente"
-                    ? Number(clienteId)
-                    : undefined,
-        };
+        let clienteIdNumerico: number | undefined;
+
+        if (!somenteRedefinicaoDeSenha && perfil === "cliente") {
+            clienteIdNumerico = Number(clienteId);
+
+            if (
+                clienteId.trim() === "" ||
+                !Number.isInteger(clienteIdNumerico) ||
+                clienteIdNumerico <= 0
+            ) {
+                notificar("erro", "Selecione um cliente comercial.");
+                return;
+            }
+        }
+
+        const dadosAtualizados = somenteRedefinicaoDeSenha
+            ? {
+                redefinir_senha: true,
+                nova_senha: novaSenha,
+            }
+            : {
+                nome,
+                usuario,
+                email,
+                perfil,
+                ativo,
+                redefinir_senha: redefinirSenha,
+                nova_senha: redefinirSenha ? novaSenha : undefined,
+                cliente_id: clienteIdNumerico,
+            };
 
         try {
             const resposta = await apiFetch(
@@ -196,7 +244,10 @@ function EditarUsuario() {
                             onChange={(event) =>
                                 setEmail(event.target.value)
                             }
-                            required={perfil === "cliente"}
+                            required={
+                                perfil === "cliente" &&
+                                !somenteRedefinicaoDeSenha
+                            }
                         />
                     </div>
 
@@ -236,7 +287,7 @@ function EditarUsuario() {
                                 onChange={(event) =>
                                     setClienteId(event.target.value)
                                 }
-                                required
+                                required={!somenteRedefinicaoDeSenha}
                             >
                                 <option value="">Selecione um cliente</option>
 

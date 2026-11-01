@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { NotificationProvider } from "../src/components/ui/NotificationProvider";
 import { apiFetch } from "../src/services/api";
 import EditarCliente from "../src/pages/EditarCliente";
 import EditarUsuario from "../src/pages/EditarUsuario";
+import NovoUsuario from "../src/pages/NovoUsuario";
 import EditarMotorista from "../src/pages/EditarMotorista";
 import EditarVeiculo from "../src/pages/EditarVeiculo";
 import AdminUsuarios from "../src/pages/AdminUsuarios";
@@ -37,6 +38,60 @@ function montarRota(caminho: string, pagina: ReactNode) {
             </MemoryRouter>
         </NotificationProvider>
     );
+}
+
+function campoDoRotulo(rotulo: string) {
+    const campo = screen
+        .getByText(rotulo)
+        .parentElement
+        ?.querySelector("input, select");
+
+    if (!(campo instanceof HTMLInputElement || campo instanceof HTMLSelectElement)) {
+        throw new Error(`Campo não encontrado: ${rotulo}`);
+    }
+
+    return campo;
+}
+
+function mockUsuarioClienteLegado() {
+    api.mockImplementation(async (endpoint, opcoes) => {
+        if (endpoint === "/api/admin/usuarios/2" && opcoes?.method === "PUT") {
+            return resposta({ mensagem: "Operação concluída." });
+        }
+
+        if (endpoint === "/api/admin/usuarios/2") {
+            return resposta({
+                nome: "Cliente legado",
+                usuario: "cliente-legado",
+                email: "",
+                perfil: "cliente",
+                ativo: true,
+                cliente_id: null,
+            });
+        }
+
+        if (endpoint === "/api/admin/clientes") {
+            return resposta([
+                {
+                    id: 7,
+                    razao_social: "Cliente Comercial HML",
+                    ativo: true,
+                },
+            ]);
+        }
+
+        return resposta([]);
+    });
+}
+
+function preencherRedefinicaoDeSenha() {
+    fireEvent.click(screen.getByRole("checkbox"));
+
+    const camposDeSenha = document.querySelectorAll<HTMLInputElement>(
+        'input[type="password"]'
+    );
+    fireEvent.change(camposDeSenha[0], { target: { value: "senha123" } });
+    fireEvent.change(camposDeSenha[1], { target: { value: "senha123" } });
 }
 
 beforeEach(() => {
@@ -150,6 +205,111 @@ describe("Edições administrativas", () => {
         expect(await screen.findByText(caso.mensagem)).toBeTruthy();
         expect(window.alert).not.toHaveBeenCalled();
     });
+});
+
+describe("Edição de usuário cliente legado", () => {
+    it("envia somente os campos de senha ao redefinir a senha sem alterar o cadastro", async () => {
+        mockUsuarioClienteLegado();
+        montarRota("/admin/usuarios/editar/2", <EditarUsuario />);
+        await screen.findByDisplayValue("Cliente legado");
+
+        preencherRedefinicaoDeSenha();
+
+        expect(campoDoRotulo("E-mail").required).toBe(false);
+        expect(campoDoRotulo("Cliente comercial").required).toBe(false);
+
+        fireEvent.click(
+            screen.getByRole("button", { name: "Salvar Alterações" })
+        );
+
+        await waitFor(() => {
+            expect(api).toHaveBeenCalledWith(
+                "/api/admin/usuarios/2",
+                expect.objectContaining({ method: "PUT" })
+            );
+        });
+
+        const chamadaPut = api.mock.calls.find(
+            ([endpoint, opcoes]) =>
+                endpoint === "/api/admin/usuarios/2" &&
+                opcoes?.method === "PUT"
+        );
+        const payload = JSON.parse(String(chamadaPut?.[1]?.body));
+
+        expect(payload).toEqual({
+            redefinir_senha: true,
+            nova_senha: "senha123",
+        });
+        expect(payload).not.toHaveProperty("cliente_id");
+        expect(JSON.stringify(payload)).not.toContain('"cliente_id":0');
+    });
+
+    it("mantém o cliente comercial obrigatório em uma edição cadastral com senha", async () => {
+        mockUsuarioClienteLegado();
+        montarRota("/admin/usuarios/editar/2", <EditarUsuario />);
+        const nome = await screen.findByDisplayValue("Cliente legado");
+
+        preencherRedefinicaoDeSenha();
+        fireEvent.change(nome, { target: { value: "Cliente legado alterado" } });
+
+        expect(campoDoRotulo("E-mail").required).toBe(true);
+        expect(campoDoRotulo("Cliente comercial").required).toBe(true);
+
+        fireEvent.submit(document.querySelector("form")!);
+
+        expect(await screen.findByText("Selecione um cliente comercial.")).toBeTruthy();
+        expect(
+            api.mock.calls.some(([, opcoes]) => opcoes?.method === "PUT")
+        ).toBe(false);
+    });
+
+    it("envia o payload completo ao selecionar um vínculo comercial", async () => {
+        mockUsuarioClienteLegado();
+        montarRota("/admin/usuarios/editar/2", <EditarUsuario />);
+        await screen.findByDisplayValue("Cliente legado");
+        await screen.findByRole("option", { name: "Cliente Comercial HML" });
+
+        fireEvent.change(campoDoRotulo("E-mail"), {
+            target: { value: "cliente@example.invalid" },
+        });
+        fireEvent.change(campoDoRotulo("Cliente comercial"), {
+            target: { value: "7" },
+        });
+        fireEvent.submit(document.querySelector("form")!);
+
+        await waitFor(() => {
+            expect(
+                api.mock.calls.some(([, opcoes]) => opcoes?.method === "PUT")
+            ).toBe(true);
+        });
+
+        const chamadaPut = api.mock.calls.find(
+            ([endpoint, opcoes]) =>
+                endpoint === "/api/admin/usuarios/2" &&
+                opcoes?.method === "PUT"
+        );
+
+        expect(JSON.parse(String(chamadaPut?.[1]?.body))).toEqual({
+            nome: "Cliente legado",
+            usuario: "cliente-legado",
+            email: "cliente@example.invalid",
+            perfil: "cliente",
+            ativo: true,
+            redefinir_senha: false,
+            cliente_id: 7,
+        });
+    });
+});
+
+it("continua exigindo cliente comercial na criação de usuário cliente", async () => {
+    montarRota("/admin/usuarios/novo", <NovoUsuario />);
+
+    fireEvent.change(campoDoRotulo("Perfil"), {
+        target: { value: "cliente" },
+    });
+
+    expect(await screen.findByText("Cliente comercial")).toBeTruthy();
+    expect(campoDoRotulo("Cliente comercial").required).toBe(true);
 });
 
 it("usa toast ao registrar localização e mantém a atualização do rastreamento", async () => {
