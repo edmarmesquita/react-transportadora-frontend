@@ -17,6 +17,14 @@ const rotaDados = "/api/configuracao/transportadora";
 const rotaLogo = `${rotaDados}/logo`;
 const dadosBase = { nome_exibicao: "Operadora", razao_social: "Operadora Ltda", logo: null };
 
+function respostaBinaria(blob: Blob) {
+    return {
+        ok: true,
+        status: 200,
+        blob: async () => blob,
+    } as Response;
+}
+
 function montar() {
     return render(
         <NotificationProvider>
@@ -81,7 +89,7 @@ describe("Dados da Transportadora", () => {
 
     it("busca imagem protegida, mostra preview e revoga URL ao desmontar", async () => {
         api.mockImplementation(async (rota) => rota === rotaLogo
-            ? new Response(new Blob(["imagem"], { type: "image/png" }), { status: 200 })
+            ? respostaBinaria(new Blob(["imagem"], { type: "image/png" }))
             : new Response(JSON.stringify({ ...dadosBase, logo: "referencia.png" }), { status: 200 }));
         const tela = montar();
 
@@ -107,7 +115,7 @@ describe("Dados da Transportadora", () => {
             if (rota === rotaLogo && opcoes?.method === "POST") {
                 return new Response(JSON.stringify({ logo: "novo.png" }), { status: 201 });
             }
-            if (rota === rotaLogo) return new Response(new Blob(["imagem"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["imagem"]));
             return new Response(JSON.stringify(dadosBase), { status: 200 });
         });
         montar();
@@ -149,7 +157,7 @@ describe("Dados da Transportadora", () => {
             if (rota === rotaLogo && opcoes?.method === "DELETE") {
                 return new Response(JSON.stringify({ logo: null }), { status: 200 });
             }
-            if (rota === rotaLogo) return new Response(new Blob(["imagem"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["imagem"]));
             return new Response(JSON.stringify({ ...dadosBase, logo: "antigo.png" }), { status: 200 });
         });
         montar();
@@ -172,7 +180,7 @@ describe("Dados da Transportadora", () => {
             if (rota === rotaLogo && opcoes?.method === "POST") {
                 return new Response(JSON.stringify({ erro: "Imagem recusada." }), { status: 400 });
             }
-            if (rota === rotaLogo) return new Response(new Blob(["imagem"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["imagem"]));
             return new Response(JSON.stringify({ ...dadosBase, logo: "antigo.png" }), { status: 200 });
         });
         montar();
@@ -189,7 +197,7 @@ describe("Dados da Transportadora", () => {
             if (rota === rotaLogo && opcoes?.method === "DELETE") {
                 return new Response(JSON.stringify({ erro: "Não foi possível remover." }), { status: 500 });
             }
-            if (rota === rotaLogo) return new Response(new Blob(["imagem"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["imagem"]));
             return new Response(JSON.stringify({ ...dadosBase, logo: "antigo.png" }), { status: 200 });
         });
         montar();
@@ -204,7 +212,7 @@ describe("Dados da Transportadora", () => {
         const uploadPendente = new Promise<Response>((resolver) => { concluirUpload = resolver; });
         api.mockImplementation(async (rota, opcoes) => {
             if (rota === rotaLogo && opcoes?.method === "POST") return uploadPendente;
-            if (rota === rotaLogo) return new Response(new Blob(["imagem"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["imagem"]));
             return new Response(JSON.stringify(dadosBase), { status: 200 });
         });
         montar();
@@ -231,7 +239,7 @@ describe("Dados da Transportadora", () => {
             if (rota === rotaLogo && api.mock.calls.filter(([caminho]) => caminho === rotaLogo).length === 1) {
                 return leituraPendente;
             }
-            if (rota === rotaLogo) return new Response(new Blob(["nova"]), { status: 200 });
+            if (rota === rotaLogo) return respostaBinaria(new Blob(["nova"]));
             return new Response(JSON.stringify({ ...dadosBase, logo: "antigo.png" }), { status: 200 });
         });
         montar();
@@ -240,7 +248,7 @@ describe("Dados da Transportadora", () => {
             target: { files: [new File(["nova"], "novo.png", { type: "image/png" })] },
         });
         expect(await screen.findByText("Logotipo enviado com sucesso.")).toBeTruthy();
-        concluirLeitura(new Response(new Blob(["antiga"]), { status: 200 }));
+        concluirLeitura(respostaBinaria(new Blob(["antiga"])));
         await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalledTimes(2));
         expect((screen.getByAltText("Logotipo da transportadora") as HTMLImageElement).src).toContain("blob:logo-2");
         fireEvent.click(screen.getByRole("button", { name: "Remover logotipo" }));

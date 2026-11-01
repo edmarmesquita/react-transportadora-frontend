@@ -28,6 +28,14 @@ function respostaDados(nome_exibicao: string | null = null, logo: string | null 
     return new Response(JSON.stringify({ nome_exibicao, logo }), { status: 200 });
 }
 
+function respostaBinaria(blob: Blob) {
+    return {
+        ok: true,
+        status: 200,
+        blob: async () => blob,
+    } as Response;
+}
+
 function respostaPadrao(rota: string) {
     if (rota === "/api/configuracao/transportadora") return respostaDados();
     if (rota === "/api/configuracao/transportadora/logo") return new Response(null, { status: 404 });
@@ -71,7 +79,7 @@ describe("download do relatório de viagens", () => {
     it("baixa PDF autenticado, libera recursos e preserva impressão", async () => {
         const pdf = new Blob(["%PDF-1.4"], { type: "application/pdf" });
         api.mockImplementation(async (rota) => rota.endsWith("/pdf")
-            ? new Response(pdf, { status: 200 })
+            ? respostaBinaria(pdf)
             : respostaPadrao(rota));
         montar();
 
@@ -108,7 +116,7 @@ describe("download do relatório de viagens", () => {
 
     it("libera URL e link mesmo se o clique de download falhar", async () => {
         api.mockImplementation(async (rota) => rota.endsWith("/pdf")
-            ? new Response(new Blob(["%PDF-1.4"]), { status: 200 })
+            ? respostaBinaria(new Blob(["%PDF-1.4"], { type: "application/pdf" }))
             : respostaPadrao(rota));
         vi.mocked(HTMLAnchorElement.prototype.click).mockImplementation(() => {
             throw new Error("Falha ao iniciar download.");
@@ -126,7 +134,7 @@ describe("identidade e relatório financeiro", () => {
     it("mostra nome e logo autenticado na tela e durante a impressão, liberando a URL no unmount", async () => {
         api.mockImplementation(async (rota) => {
             if (rota === "/api/configuracao/transportadora") return respostaDados("Transportadora Exemplo", "referencia-privada");
-            if (rota === "/api/configuracao/transportadora/logo") return new Response(new Blob(["imagem"], { type: "image/png" }), { status: 200 });
+            if (rota === "/api/configuracao/transportadora/logo") return respostaBinaria(new Blob(["imagem"], { type: "image/png" }));
             return respostaPadrao(rota);
         });
         const tituloOriginal = document.title;
