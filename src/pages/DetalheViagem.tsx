@@ -453,6 +453,11 @@ function DetalheViagem() {
 
                         <RastreamentoViagem
                             viagemId={Number(id)}
+                            onLocalizacaoRegistrada={
+                                usuario?.perfil?.toLowerCase() === "motorista"
+                                    ? carregarHistorico
+                                    : undefined
+                            }
                         />
 
                         <div className="ocorrencia-box detalhe-viagem-card">

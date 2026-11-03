@@ -5,6 +5,7 @@ import { useNotification } from "../ui/NotificationProvider";
 
 type Props = {
     viagemId: number;
+    onLocalizacaoRegistrada?: () => Promise<void>;
 };
 
 type Localizacao = {
@@ -14,7 +15,7 @@ type Localizacao = {
     data_registro: string;
 };
 
-function RastreamentoViagem({ viagemId }: Props) {
+function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada }: Props) {
     const usuario = buscarUsuarioLogado();
     const { notificar } = useNotification();
 
@@ -88,6 +89,9 @@ function RastreamentoViagem({ viagemId }: Props) {
         setObservacao("");
 
         await carregarLocalizacoes();
+        await onLocalizacaoRegistrada?.().catch(() => {
+            notificar("aviso", "Localização registrada, mas não foi possível atualizar a timeline.");
+        });
     }
 
     useEffect(() => {

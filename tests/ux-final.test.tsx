@@ -10,6 +10,7 @@ import NovoUsuario from "../src/pages/NovoUsuario";
 import EditarMotorista from "../src/pages/EditarMotorista";
 import EditarVeiculo from "../src/pages/EditarVeiculo";
 import AdminUsuarios from "../src/pages/AdminUsuarios";
+import DetalheViagem from "../src/pages/DetalheViagem";
 import RastreamentoViagem from "../src/components/admin/RastreamentoViagem";
 import ListaComprovantes from "../src/components/admin/ListaComprovantes";
 
@@ -342,6 +343,53 @@ it("usa toast ao registrar localização e mantém a atualização do rastreamen
     expect(await screen.findByText("Localização registrada com sucesso!")).toBeTruthy();
     expect(await screen.findByText("Uberaba/MG")).toBeTruthy();
     expect(window.alert).not.toHaveBeenCalled();
+});
+
+it("atualiza a timeline da viagem do motorista após registrar localização", async () => {
+    sessionStorage.setItem("usuarioLogado", JSON.stringify({ perfil: "motorista" }));
+    let registrada = false;
+    api.mockImplementation(async (endpoint, opcoes) => {
+        if (endpoint === "/api/motorista/minhas-viagens/7" && !opcoes?.method) {
+            return resposta({
+                id: 7,
+                codigo_carga: "HML-CARGA",
+                cliente: "Cliente HML",
+                motorista: "Motorista HML",
+                veiculo: "HML1A23",
+                origem: "Origem HML",
+                destino: "Destino HML",
+                status: "Em trânsito",
+                data_criacao: "21/09/2026 12:00",
+            });
+        }
+        if (endpoint === "/api/motorista/minhas-viagens/7/historico") {
+            return resposta(registrada ? [
+                { id: 10, status: "LOCALIZAÇÃO", observacao: "Localização Campinas/SP", data_evento: "21/09/2026 12:30" },
+            ] : []);
+        }
+        if (endpoint === "/api/motorista/minhas-viagens/7/localizacoes" && opcoes?.method === "POST") {
+            registrada = true;
+            return resposta({ mensagem: "Registrada" }, 201);
+        }
+        if (endpoint === "/api/motorista/minhas-viagens/7/localizacoes") {
+            return resposta(registrada ? [
+                { id: 10, localizacao: "Campinas/SP", observacao: "Atualização HML", data_registro: "21/09/2026 12:30" },
+            ] : []);
+        }
+        if (endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+        if (endpoint.endsWith("/comprovante")) return resposta({});
+        return resposta([]);
+    });
+
+    montarRota("/portal/motorista/minhas-viagens/7", <DetalheViagem />);
+    const campo = await screen.findByPlaceholderText("Localização atual. Ex: Uberaba/MG");
+    fireEvent.change(campo, { target: { value: "Campinas/SP" } });
+    fireEvent.click(screen.getByRole("button", { name: "Registrar Localização" }));
+
+    expect(await screen.findByText("Localização registrada com sucesso!")).toBeTruthy();
+    expect(await screen.findByText("Localização Campinas/SP")).toBeTruthy();
+    expect(screen.getByText("Campinas/SP")).toBeTruthy();
+    expect(api.mock.calls.filter(([endpoint]) => endpoint === "/api/motorista/minhas-viagens/7/historico")).toHaveLength(2);
 });
 
 it("usa toast e atualiza a listagem ao inativar usuário", async () => {
