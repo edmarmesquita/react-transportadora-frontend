@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { NotificationProvider } from "../src/components/ui/NotificationProvider";
@@ -468,4 +468,75 @@ it("reconsulta comprovantes sem cache após uma atualização", async () => {
     );
 
     expect(screen.getByText(arquivo.nome_arquivo)).toBeTruthy();
+});
+
+it.each([
+    { falharRecarga: false, caso: "immediate timeline refresh" },
+    { falharRecarga: true, caso: "saved notice when timeline refresh fails" },
+])("admin location registration supports $caso", async ({ falharRecarga }) => {
+    let registrada = false;
+    const observacao = "Ve\u00edculo em deslocamento para Sorocaba, seguindo normalmente para o destino.";
+    const evento = {
+        id: 11,
+        status: "LOCALIZA\u00c7\u00c3O",
+        observacao,
+        data_evento: "03/11/2026 20:50",
+    };
+
+    api.mockImplementation(async (endpoint, opcoes) => {
+        if (endpoint === "/api/admin/viagens/7") {
+            return resposta({
+                id: 7,
+                codigo_carga: "HML-CARGA",
+                cliente: "Cliente HML",
+                motorista: "Motorista HML",
+                veiculo: "HML1A23",
+                origem: "Origem HML",
+                destino: "Destino HML",
+                status: "Em andamento",
+                data_criacao: "03/11/2026 18:00",
+            });
+        }
+        if (endpoint === "/api/admin/viagens/7/historico") {
+            if (registrada && falharRecarga) {
+                return resposta({ erro: "Indispon\\u00edvel" }, 503);
+            }
+            return resposta(registrada ? [evento] : []);
+        }
+        if (endpoint === "/api/admin/viagens/7/localizacoes" && opcoes?.method === "POST") {
+            registrada = true;
+            return resposta({ mensagem: "Registrada" }, 201);
+        }
+        if (endpoint === "/api/admin/viagens/7/localizacoes") {
+            return resposta(registrada ? [{
+                id: 11,
+                localizacao: "Itu/SP",
+                observacao,
+                data_registro: "03/11/2026 20:50",
+            }] : []);
+        }
+        if (endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+        if (endpoint.endsWith("/comprovante")) return resposta({});
+        return resposta([]);
+    });
+
+    montarRota("/admin/viagens/7", <DetalheViagem />);
+    const campo = await screen.findByPlaceholderText(/localiza.*atual/i);
+    fireEvent.change(campo, { target: { value: "Itu/SP" } });
+    fireEvent.change(screen.getByPlaceholderText(/observa/i), {
+        target: { value: observacao },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /registrar localiza/i }));
+
+    expect(await screen.findByText(/Localiza.*registrada com sucesso!/i)).toBeTruthy();
+    expect(await screen.findByText("Itu/SP")).toBeTruthy();
+    if (falharRecarga) {
+        expect(await screen.findByText(/registrada, mas n.*atualizar a timeline/i)).toBeTruthy();
+    } else {
+        const timeline = screen.getByText("Timeline da viagem").closest(".timeline-box");
+        expect(timeline).not.toBeNull();
+        expect(await within(timeline!).findByText(observacao)).toBeTruthy();
+    }
+    expect(api.mock.calls.filter(([endpoint]) => endpoint === "/api/admin/viagens/7/historico")).toHaveLength(2);
+    expect(api.mock.calls.filter(([endpoint, opcoes]) => endpoint === "/api/admin/viagens/7/localizacoes" && opcoes?.method === "POST")).toHaveLength(1);
 });

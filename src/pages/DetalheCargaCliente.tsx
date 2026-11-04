@@ -292,6 +292,38 @@ function DetalheCargaCliente() {
                                 </div>
 
                                 <div className="carga-informacao-card">
+                                    <Package size={22} />
+                                    <div>
+                                        <span>Descrição da carga</span>
+                                        <strong>{carga.descricao_carga || "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="carga-informacao-card">
+                                    <Package size={22} />
+                                    <div>
+                                        <span>Peso</span>
+                                        <strong>{carga.peso_kg != null ? `${carga.peso_kg} kg` : "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="carga-informacao-card">
+                                    <Clock3 size={22} />
+                                    <div>
+                                        <span>Saída prevista</span>
+                                        <strong>{carga.data_prevista_saida || "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="carga-informacao-card">
+                                    <Clock3 size={22} />
+                                    <div>
+                                        <span>Previsão de entrega</span>
+                                        <strong>{carga.previsao_entrega || "-"}</strong>
+                                    </div>
+                                </div>
+
+                                <div className="carga-informacao-card">
                                     <Clock3 size={22} />
 
                                     <div>

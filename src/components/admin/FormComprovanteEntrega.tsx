@@ -26,10 +26,13 @@ function FormComprovanteEntrega({
     const [finalizando, setFinalizando] =
         useState(false)
 
+    const [confirmacaoAberta, setConfirmacaoAberta] =
+        useState(false)
+
     const [enviandoArquivo, setEnviandoArquivo] =
         useState(false)
 
-    async function finalizarEntrega() {
+    async function executarFinalizacao() {
         if (!recebedor.trim()) {
             notificar(
                 "aviso",
@@ -38,17 +41,9 @@ function FormComprovanteEntrega({
             return
         }
 
-        const confirmar = window.confirm(
-            "Deseja realmente finalizar esta entrega? " +
-            "O motorista e o veículo serão liberados."
-        )
-
-        if (!confirmar) {
-            return
-        }
-
         try {
             setFinalizando(true)
+            setConfirmacaoAberta(false)
 
             const endpoint =
                 usuario?.perfil?.toLowerCase() === "motorista"
@@ -108,6 +103,14 @@ function FormComprovanteEntrega({
         }
     }
 
+    function finalizarEntrega() {
+        if (!recebedor.trim()) {
+            notificar("aviso", "Informe o nome do recebedor.")
+            return
+        }
+
+        setConfirmacaoAberta(true)
+    }
     async function enviarArquivo() {
         if (!arquivo) {
             notificar("aviso", "Selecione um arquivo.");
@@ -226,6 +229,33 @@ function FormComprovanteEntrega({
                         : "Finalizar Entrega"}
                 </button>
 
+
+                {confirmacaoAberta && (
+                    <div className="confirmacao-entrega" role="dialog" aria-modal="true" aria-labelledby="confirmacao-entrega-titulo" aria-describedby="confirmacao-entrega-mensagem">
+                        <div className="confirmacao-entrega-conteudo">
+                            <h3 id="confirmacao-entrega-titulo">Confirmar finaliza&ccedil;&atilde;o</h3>
+                            <p id="confirmacao-entrega-mensagem">
+                                Deseja realmente finalizar esta entrega? O motorista e o ve&iacute;culo ser&atilde;o liberados.
+                            </p>
+                            <div className="confirmacao-entrega-acoes">
+                                <button
+                                    type="button"
+                                    className="confirmacao-entrega-cancelar"
+                                    onClick={() => setConfirmacaoAberta(false)}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn-primary"
+                                    onClick={() => void executarFinalizacao()}
+                                >
+                                    Confirmar entrega
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 <hr />
 
                 <label htmlFor="arquivo-comprovante">

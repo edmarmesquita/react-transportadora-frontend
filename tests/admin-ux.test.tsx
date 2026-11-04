@@ -16,6 +16,7 @@ import AdminUsuarios from "../src/pages/AdminUsuarios";
 import AdminMotoristas from "../src/pages/AdminMotoristas";
 import AdminVeiculos from "../src/pages/AdminVeiculos";
 import AdminCargas from "../src/pages/AdminCargas";
+import AdminViagens from "../src/pages/AdminViagens";
 import DetalheViagem from "../src/pages/DetalheViagem";
 import CargaDetalhe from "../src/pages/CargaDetalhe";
 import DetalheCargaCliente from "../src/pages/DetalheCargaCliente";
@@ -145,6 +146,29 @@ describe.each(cadastros)("Cadastro de $nome", (caso) => {
         expect(screen.getByTestId("rota").textContent).toBe("/novo");
         expect(screen.queryByText(caso.mensagem)).toBeNull();
     });
+
+    if (caso.nome === "carga") {
+        it("renderiza e envia os novos dados operacionais opcionais", async () => {
+            api.mockImplementation(async (endpoint, opcoes) => endpoint === "/api/admin/cargas" && opcoes?.method === "POST"
+                ? resposta({ mensagem: "Sucesso da API" }, 201)
+                : endpoint === "/api/admin/clientes" ? resposta([cliente]) : leitura(endpoint));
+            montar(<NovaCarga />, "/admin/cargas/nova");
+            fireEvent.change(await screen.findByLabelText("Cliente"), { target: { value: "1" } });
+            fireEvent.change(screen.getByLabelText("Descrição da carga"), { target: { value: "Alimentos embalados" } });
+            fireEvent.change(screen.getByLabelText("Peso da carga (kg)"), { target: { value: "125.5" } });
+            fireEvent.change(screen.getByLabelText("Saída prevista"), { target: { value: "2026-11-05T17:30" } });
+            fireEvent.change(screen.getByLabelText("Previsão de entrega"), { target: { value: "2026-11-06T09:15" } });
+            fireEvent.change(document.querySelector<HTMLInputElement>('input[name="local_atual"]')!, { target: { value: "Origem" } });
+            fireEvent.change(document.querySelector<HTMLInputElement>('input[name="destino"]')!, { target: { value: "Destino" } });
+            fireEvent.submit(screen.getByRole("button", { name: "Salvar Carga" }).closest("form")!);
+            await waitFor(() => expect(api).toHaveBeenCalledWith("/api/admin/cargas", expect.objectContaining({
+                method: "POST",
+                body: expect.stringContaining('"data_prevista_saida":"2026-11-05T17:30"'),
+            })));
+            const payload = JSON.parse((api.mock.calls.find(([url, options]) => url === "/api/admin/cargas" && options?.method === "POST")?.[1]?.body as string));
+            expect(payload).toMatchObject({ descricao_carga: "Alimentos embalados", peso_kg: "125.5", previsao_entrega: "2026-11-06T09:15" });
+        });
+    }
 });
 
 describe.each([
@@ -269,13 +293,28 @@ describe("Viagem e comprovantes", () => {
         expect(screen.getByText("Nenhum arquivo enviado.")).toBeTruthy();
     });
 
-    it("mantém confirmação antes da finalização", async () => {
-        vi.mocked(window.confirm).mockReturnValue(false);
+    it("cancela a confirma\u00e7\u00e3o visual sem finalizar a entrega", async () => {
         montar(<DetalheViagem />, "/admin/viagens/7");
         fireEvent.change(await screen.findByLabelText("Nome do recebedor"), { target: { value: "Recebedor HML" } });
         fireEvent.click(screen.getByRole("button", { name: "Finalizar Entrega" }));
-        expect(window.confirm).toHaveBeenCalledTimes(1);
+        expect(screen.getByRole("dialog").textContent).toContain("Deseja realmente finalizar esta entrega? O motorista e o ve\u00edculo ser\u00e3o liberados.");
+        fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+        expect(screen.queryByRole("dialog")).toBeNull();
         expect(api.mock.calls.some(([, opcoes]) => opcoes?.method === "POST")).toBe(false);
+        expect(window.confirm).not.toHaveBeenCalled();
+    });
+
+    it("confirma a entrega usando o fluxo de finaliza\u00e7\u00e3o existente", async () => {
+        montar(<DetalheViagem />, "/admin/viagens/7");
+        fireEvent.change(await screen.findByLabelText("Nome do recebedor"), { target: { value: "Recebedor HML" } });
+        fireEvent.change(screen.getByLabelText("Observa\u00e7\u00f5es"), { target: { value: "Entregue na recep\u00e7\u00e3o" } });
+        fireEvent.click(screen.getByRole("button", { name: "Finalizar Entrega" }));
+        fireEvent.click(screen.getByRole("button", { name: "Confirmar entrega" }));
+        await waitFor(() => expect(api).toHaveBeenCalledWith("/api/admin/viagens/7/finalizar", expect.objectContaining({
+            method: "POST",
+            body: JSON.stringify({ recebedor: "Recebedor HML", observacao: "Entregue na recep\u00e7\u00e3o" }),
+        })));
+        expect(window.confirm).not.toHaveBeenCalled();
     });
 
     it("descarta resposta antiga da lista que chega depois da atualização do upload", async () => {
@@ -299,27 +338,96 @@ describe("transições de status operacionais", () => {
         return Array.from((seletor as HTMLSelectElement).options).map((opcao) => opcao.textContent);
     }
 
-    it("apresenta apenas os próximos status de carga do fluxo administrativo", async () => {
-        expect(transicoesCarga.Pendente).toEqual(["Programada", "Em preparação"]);
-        expect(await opcoesCarga("Pendente")).toEqual(["Selecione o status", "Programada", "Em preparação"]);
-        cleanup();
-        expect(transicoesCarga["Em preparação"]).toEqual(["Em coleta"]);
-        expect(transicoesCarga["Em preparação"]).not.toContain("Carregando");
-        expect(await opcoesCarga("Em preparação")).toEqual(["Selecione o status", "Em coleta"]);
-        cleanup();
-        expect(transicoesCarga["Em coleta"]).toEqual(["Carregando"]);
-        expect(await opcoesCarga("Em coleta")).toEqual(["Selecione o status", "Carregando"]);
+    it("apresenta as transiÃ§Ãµes operacionais e os estados terminais", () => {
+        expect(transicoesViagem.Planejada).toEqual(["Em trânsito", "Cancelada"]);
+        expect(transicoesViagem["Em andamento"]).toContain("Cancelada");
+        expect(transicoesViagem["Em preparação"]).toEqual(["Em coleta"]);
+        expect(transicoesViagem["Em coleta"]).toEqual(["Carregando"]);
+        expect(transicoesViagem.Carregando).toEqual(["Em trânsito"]);
+        expect(transicoesViagem["Em trânsito"]).toEqual(["Saiu para entrega"]);
+        expect(transicoesViagem["Parada operacional"]).toEqual(["Em trânsito", "Saiu para entrega", "Cancelada"]);
+        expect(transicoesViagem["Saiu para entrega"]).toEqual(["Entregue"]);
+        expect(transicoesViagem.Entregue).toEqual([]);
+        expect(transicoesViagem.Finalizada).toEqual([]);
+        expect(transicoesViagem.Cancelada).toEqual([]);
+        for (const status of ["Em preparação", "Em coleta", "Carregando", "Em trânsito", "Saiu para entrega", "Entregue", "Finalizada", "Cancelada"]) expect(transicoesViagem[status]).not.toContain("Cancelada");
     });
 
-    it("apresenta transições de viagem sem saltos no fluxo oficial", async () => {
-        expect(transicoesViagem["Em coleta"]).toEqual(["Carregando", "Cancelada"]);
-        expect(transicoesViagem.Carregando).toEqual(["Em trânsito", "Cancelada"]);
-        expect(transicoesViagem["Em trânsito"]).toEqual(["Parada operacional", "Saiu para entrega", "Cancelada"]);
-        expect(transicoesViagem["Saiu para entrega"]).toEqual(["Entregue", "Cancelada"]);
-        expect(transicoesViagem["Em coleta"]).not.toContain("Em trânsito");
-        expect(transicoesViagem.Carregando).not.toContain("Saiu para entrega");
+    it("exibe criação, saída real e previsão de entrega sem converter os valores do backend", async () => {
+        const datas = { data_criacao: "03/11/2026 22:37", data_saida: "03/11/2026 23:03", previsao_entrega: "04/11/2026 03:30" };
+        api.mockImplementation(async (endpoint) => {
+            if (endpoint === "/api/admin/viagens/7") return resposta({ ...viagem, status: "Em trânsito", ...datas });
+            if (endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            throw new Error(`Consulta simulada não definida: ${endpoint}`);
+        });
+        montar(<DetalheViagem />, "/admin/viagens/7");
+        await screen.findByText("Resumo da viagem");
+        expect(screen.getByText("Criada em").nextElementSibling?.textContent).toBe(datas.data_criacao);
+        expect(screen.getByText("Saída real").nextElementSibling?.textContent).toBe(datas.data_saida);
+        expect(screen.getByText("Previsão de entrega").nextElementSibling?.textContent).toBe(datas.previsao_entrega);
+        expect(api).toHaveBeenCalledWith("/api/admin/viagens/7");
     });
 
+    it("usa fallback para datas operacionais nulas sem alterar a data de criação", async () => {
+        api.mockImplementation(async (endpoint) => {
+            if (endpoint === "/api/admin/viagens/7") return resposta({ ...viagem, status: "Em trânsito", data_criacao: "03/11/2026 22:37", data_saida: null, previsao_entrega: null });
+            if (endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            throw new Error(`Consulta simulada não definida: ${endpoint}`);
+        });
+        montar(<DetalheViagem />, "/admin/viagens/7");
+        await screen.findByText("Resumo da viagem");
+        expect(screen.getByText("Criada em").nextElementSibling?.textContent).toBe("03/11/2026 22:37");
+        expect(screen.getByText("Saída real").nextElementSibling?.textContent).toBe("Não informada");
+        expect(screen.getByText("Previsão de entrega").nextElementSibling?.textContent).toBe("Não informada");
+    });
+    it("mostra Planejada para Em trânsito e envia a transiÃ§Ã£o ao endpoint administrativo", async () => {
+        api.mockImplementation(async (endpoint, opcoes) => {
+            if (endpoint === "/api/admin/viagens/7") return resposta({ ...viagem, status: "Planejada", codigo_carga: "TRK-HML" });
+            if (endpoint === "/api/admin/viagens/7/status" && opcoes?.method === "POST") return resposta({ mensagem: "Status atualizado." });
+            if (endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            throw new Error(`Consulta simulada nÃ£o definida: ${endpoint}`);
+        });
+        montar(<DetalheViagem />, "/admin/viagens/7");
+        await screen.findByText("Atualizar status");
+        const seletor = document.querySelector<HTMLSelectElement>(".status-box select")!;
+        const opcoes = Array.from(seletor.options).map((opcao) => opcao.textContent);
+        expect(opcoes).toContain("Em trânsito");
+        expect(opcoes).not.toContain("Em coleta");
+        expect(opcoes).toContain("Cancelada");
+        fireEvent.change(seletor, { target: { value: "Em trânsito" } });
+        fireEvent.click(screen.getByRole("button", { name: "Atualizar" }));
+        await waitFor(() => expect(api).toHaveBeenCalledWith("/api/admin/viagens/7/status", expect.objectContaining({ method: "POST", body: JSON.stringify({ status: "Em trânsito" }) })));
+    });
+
+    it.each(["Em trânsito", "Saiu para entrega", "Entregue", "Finalizada", "Cancelada"])("nÃ£o oferece Cancelada em %s", async (status) => {
+        api.mockImplementation(async (endpoint) => {
+            if (endpoint === "/api/admin/viagens/7") return resposta({ ...viagem, status });
+            if (endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            throw new Error(`Consulta simulada nÃ£o definida: ${endpoint}`);
+        });
+        montar(<DetalheViagem />, "/admin/viagens/7");
+        await screen.findByText("Atualizar status");
+        const opcoes = Array.from((document.querySelector(".status-box select") as HTMLSelectElement).options).map((opcao) => opcao.textContent);
+        expect(opcoes).not.toContain("Cancelada");
+        if (["Entregue", "Finalizada", "Cancelada"].includes(status)) expect(opcoes).toEqual(["Alterar status"]);
+        cleanup();
+    });
+
+    it("mantÃ©m a aÃ§Ã£o Iniciar de AdminViagens enviando Em trânsito", async () => {
+        api.mockImplementation(async (endpoint, opcoes) => {
+            if (endpoint === "/api/admin/viagens" && opcoes?.method === "POST") throw new Error("POST inesperado na lista");
+            if (endpoint === "/api/admin/viagens") return resposta([{ ...viagem, id: 7, codigo_carga: "TRK-HML", status: "Planejada", motorista: "Motorista HML", veiculo: "HML1A23", origem: "Origem", destino: "Destino", data_criacao: "Agora", data_criacao_iso: null }]);
+            if (endpoint === "/api/admin/viagens/7/status" && opcoes?.method === "POST") return resposta({ mensagem: "Iniciada." });
+            throw new Error(`Consulta simulada nÃ£o definida: ${endpoint}`);
+        });
+        montar(<AdminViagens />, "/admin/viagens");
+        fireEvent.click(await screen.findByRole("button", { name: "Iniciar" }));
+        await waitFor(() => expect(api).toHaveBeenCalledWith("/api/admin/viagens/7/status", expect.objectContaining({ method: "POST", body: JSON.stringify({ status: "Em trânsito" }) })));
+    });
     it("não oferece Cancelada ao motorista e mantém sequência e progresso visual do cliente", async () => {
         sessionStorage.setItem("usuarioLogado", JSON.stringify({ perfil: "motorista" }));
         api.mockImplementation(async (endpoint) => endpoint === "/api/motorista/minhas-viagens/undefined"

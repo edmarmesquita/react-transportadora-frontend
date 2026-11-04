@@ -19,8 +19,12 @@ function NovaCarga() {
     const [formData, setFormData] = useState({
         cliente_id: "",
         status: "Pendente",
+        descricao_carga: "",
+        peso_kg: "",
         local_atual: "",
         destino: "",
+        data_prevista_saida: "",
+        previsao_entrega: "",
         valor_frete: "",
         status_pagamento: "Pendente",
     })
@@ -63,6 +67,7 @@ function NovaCarga() {
     function handleChange(
         event:
             | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>
     ) {
         const { name, value } = event.target
@@ -121,9 +126,10 @@ function NovaCarga() {
 
                 <form className="admin-form admin-form-card admin-form-grid" onSubmit={handleSubmit}>
                     <div className="linha-input">
-                        <label>Cliente</label>
+                        <label htmlFor="cliente_id">Cliente</label>
 
                         <select
+                            id="cliente_id"
                             name="cliente_id"
                             value={formData.cliente_id}
                             onChange={handleChange}
@@ -148,9 +154,10 @@ function NovaCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Status</label>
+                        <label htmlFor="status">Status</label>
                         <select
                             name="status"
+                            id="status"
                             value={formData.status}
                             onChange={handleChange}
                         >
@@ -160,18 +167,43 @@ function NovaCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Local atual</label>
-                        <input
-                            name="local_atual"
-                            value={formData.local_atual}
+                        <label htmlFor="descricao_carga">Descrição da carga</label>
+                        <textarea
+                            id="descricao_carga"
+                            name="descricao_carga"
+                            rows={3}
+                            value={formData.descricao_carga}
                             onChange={handleChange}
-                            required
                         />
                     </div>
 
                     <div className="linha-input">
-                        <label>Destino</label>
+                        <label htmlFor="peso_kg">Peso da carga (kg)</label>
                         <input
+                            id="peso_kg"
+                            name="peso_kg"
+                            type="number"
+                            min="0"
+                            step="any"
+                            value={formData.peso_kg}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="local_atual">Local atual</label>
+                        <input id="local_atual" name="local_atual" value={formData.local_atual} onChange={handleChange} required />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="data_prevista_saida">Saída prevista</label>
+                        <input id="data_prevista_saida" name="data_prevista_saida" type="datetime-local" value={formData.data_prevista_saida} onChange={handleChange} />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="destino">Destino</label>
+                        <input
+                            id="destino"
                             name="destino"
                             value={formData.destino}
                             onChange={handleChange}
@@ -180,10 +212,22 @@ function NovaCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Valor do frete</label>
+                        <label htmlFor="previsao_entrega">Previsão de entrega</label>
+                        <input
+                            id="previsao_entrega"
+                            name="previsao_entrega"
+                            type="datetime-local"
+                            value={formData.previsao_entrega}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="valor_frete">Valor do frete</label>
 
                         <input
                             name="valor_frete"
+                            id="valor_frete"
                             value={formData.valor_frete}
                             onChange={handleChange}
                             placeholder="Ex: 3500"
@@ -191,10 +235,11 @@ function NovaCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label>Status do pagamento</label>
+                        <label htmlFor="status_pagamento">Status do pagamento</label>
 
                         <select
                             name="status_pagamento"
+                            id="status_pagamento"
                             value={formData.status_pagamento}
                             onChange={handleChange}
                         >

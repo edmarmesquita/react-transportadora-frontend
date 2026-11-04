@@ -28,6 +28,8 @@ type ViagemDetalhe = {
     destino: string
     status: string
     data_criacao: string
+    data_saida?: string | null
+    previsao_entrega?: string | null
 }
 
 type ComprovanteEntrega = {
@@ -100,7 +102,7 @@ function DetalheViagem() {
         )
     }
 
-    async function carregarHistorico() {
+    async function carregarHistorico(): Promise<boolean> {
         const endpoint =
             usuario?.perfil?.trim().toLowerCase() === "motorista"
                 ? `/api/motorista/minhas-viagens/${id}/historico`
@@ -113,11 +115,18 @@ function DetalheViagem() {
         const dados = await resposta.json().catch(() => null)
 
         if (!resposta.ok) {
-            setHistorico([])
-            return
+            return false
         }
 
         setHistorico(Array.isArray(dados) ? dados : [])
+        return true
+    }
+
+    async function atualizarTimelineAposLocalizacao() {
+        const atualizou = await carregarHistorico()
+        if (!atualizou) {
+            throw new Error("Falha ao carregar histórico da viagem.")
+        }
     }
 
     async function carregarViagem() {
@@ -380,6 +389,16 @@ function DetalheViagem() {
                                 </div>
 
                                 <div className="resumo-item">
+                                    <span>Saída real</span>
+                                    <strong>{viagem.data_saida || "Não informada"}</strong>
+                                </div>
+
+                                <div className="resumo-item">
+                                    <span>Previsão de entrega</span>
+                                    <strong>{viagem.previsao_entrega || "Não informada"}</strong>
+                                </div>
+
+                                <div className="resumo-item">
                                     <span>Origem</span>
                                     <strong>{viagem.origem}</strong>
                                 </div>
@@ -453,11 +472,7 @@ function DetalheViagem() {
 
                         <RastreamentoViagem
                             viagemId={Number(id)}
-                            onLocalizacaoRegistrada={
-                                usuario?.perfil?.toLowerCase() === "motorista"
-                                    ? carregarHistorico
-                                    : undefined
-                            }
+                            onLocalizacaoRegistrada={atualizarTimelineAposLocalizacao}
                         />
 
                         <div className="ocorrencia-box detalhe-viagem-card">

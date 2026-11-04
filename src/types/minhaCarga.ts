@@ -6,6 +6,10 @@ export type MinhaCarga = {
     local_atual: string;
     destino: string;
     ultima_atualizacao: string;
+    descricao_carga?: string | null;
+    peso_kg?: number | null;
+    data_prevista_saida?: string | null;
+    previsao_entrega?: string | null;
 };
 
 export type DetalheMinhaCarga = {
@@ -17,6 +21,10 @@ export type DetalheMinhaCarga = {
     destino: string;
     ultima_atualizacao: string;
     historico: EventoRastreamento[];
+    descricao_carga?: string | null;
+    peso_kg?: number | null;
+    data_prevista_saida?: string | null;
+    previsao_entrega?: string | null;
 };
 
 export type EventoRastreamento = {

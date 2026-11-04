@@ -8,8 +8,12 @@ import { apiFetch } from "../services/api"
 type FormCarga = {
     codigo: string
     cliente_id: string
+    descricao_carga: string
+    peso_kg: string
     local_atual: string
     destino: string
+    data_prevista_saida: string
+    previsao_entrega: string
     valor_frete: string
     status_pagamento: string
 }
@@ -29,8 +33,12 @@ function EditarCarga() {
     const [formData, setFormData] = useState<FormCarga>({
         codigo: "",
         cliente_id: "",
+        descricao_carga: "",
+        peso_kg: "",
         local_atual: "",
         destino: "",
+        data_prevista_saida: "",
+        previsao_entrega: "",
         valor_frete: "",
         status_pagamento: "Pendente",
     })
@@ -76,8 +84,14 @@ function EditarCarga() {
             cliente_id: dados.cliente_id
                 ? String(dados.cliente_id)
                 : "",
+            descricao_carga: dados.descricao_carga || "",
+            peso_kg: dados.peso_kg !== null && dados.peso_kg !== undefined
+                ? String(dados.peso_kg)
+                : "",
             local_atual: dados.local_atual || "",
             destino: dados.destino || "",
+            data_prevista_saida: dados.data_prevista_saida_local || formatarDataPlanejadaParaInput(dados.data_prevista_saida),
+            previsao_entrega: dados.previsao_entrega_local || formatarDataPlanejadaParaInput(dados.previsao_entrega),
             valor_frete: dados.valor_frete !== null &&
                 dados.valor_frete !== undefined
                 ? String(dados.valor_frete)
@@ -111,6 +125,7 @@ function EditarCarga() {
     function handleChange(
         event:
             | React.ChangeEvent<HTMLInputElement>
+            | React.ChangeEvent<HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>
     ) {
         const { name, value } = event.target
@@ -119,6 +134,14 @@ function EditarCarga() {
             ...prev,
             [name]: value,
         }))
+    }
+
+    function formatarDataPlanejadaParaInput(valor: string | null | undefined) {
+        if (!valor) return ""
+        const [data, hora = "00:00"] = valor.split(" ")
+        const [dia, mes, ano] = data.split("/")
+        if (dia && mes && ano) return `${ano}-${mes}-${dia}T${hora.slice(0, 5)}`
+        return valor.slice(0, 16)
     }
 
     async function handleSubmit(
@@ -197,6 +220,7 @@ function EditarCarga() {
                             comerciais da carga.
                         </p>
                     </div>
+
                 </div>
 
                 <form
@@ -244,17 +268,23 @@ function EditarCarga() {
                     </div>
 
                     <div className="linha-input">
-                        <label htmlFor="local_atual">
-                            Local atual
-                        </label>
+                        <label htmlFor="descricao_carga">Descrição da carga</label>
+                        <textarea id="descricao_carga" name="descricao_carga" rows={3} value={formData.descricao_carga} onChange={handleChange} />
+                    </div>
 
-                        <input
-                            id="local_atual"
-                            name="local_atual"
-                            value={formData.local_atual}
-                            onChange={handleChange}
-                            required
-                        />
+                    <div className="linha-input">
+                        <label htmlFor="peso_kg">Peso da carga (kg)</label>
+                        <input id="peso_kg" name="peso_kg" type="number" min="0" step="any" value={formData.peso_kg} onChange={handleChange} />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="local_atual">Local atual</label>
+                        <input id="local_atual" name="local_atual" value={formData.local_atual} onChange={handleChange} required />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="data_prevista_saida">Saída prevista</label>
+                        <input id="data_prevista_saida" name="data_prevista_saida" type="datetime-local" value={formData.data_prevista_saida} onChange={handleChange} />
                     </div>
 
                     <div className="linha-input">
@@ -269,6 +299,11 @@ function EditarCarga() {
                             onChange={handleChange}
                             required
                         />
+                    </div>
+
+                    <div className="linha-input">
+                        <label htmlFor="previsao_entrega">Previsão de entrega</label>
+                        <input id="previsao_entrega" name="previsao_entrega" type="datetime-local" value={formData.previsao_entrega} onChange={handleChange} />
                     </div>
 
                     <div className="linha-input">

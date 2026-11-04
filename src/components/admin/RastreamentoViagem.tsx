@@ -88,10 +88,11 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada }: Props) {
         setLocalizacao("");
         setObservacao("");
 
-        await carregarLocalizacoes();
-        await onLocalizacaoRegistrada?.().catch(() => {
+        const recargaLocalizacoes = carregarLocalizacoes();
+        const recargaTimeline = onLocalizacaoRegistrada?.().catch(() => {
             notificar("aviso", "Localização registrada, mas não foi possível atualizar a timeline.");
         });
+        await Promise.allSettled([recargaLocalizacoes, recargaTimeline]);
     }
 
     useEffect(() => {

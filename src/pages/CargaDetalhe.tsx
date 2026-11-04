@@ -12,6 +12,10 @@ type Carga = {
     status: string;
     local_atual: string;
     destino: string;
+    descricao_carga?: string | null;
+    peso_kg?: number | null;
+    data_prevista_saida?: string | null;
+    previsao_entrega?: string | null;
     ultima_atualizacao: string;
     motorista_id: number | null;
     motorista: string;
@@ -701,6 +705,16 @@ function CargaDetalhe() {
                         </div>
 
                         <div className="resumo-item">
+                            <span>Descrição da carga</span>
+                            <strong>{carga?.descricao_carga || "-"}</strong>
+                        </div>
+
+                        <div className="resumo-item">
+                            <span>Peso</span>
+                            <strong>{carga?.peso_kg != null ? `${carga.peso_kg} kg` : "-"}</strong>
+                        </div>
+
+                        <div className="resumo-item">
                             <span>Status</span>
                             <strong>{carga?.status}</strong>
                         </div>
@@ -713,6 +727,16 @@ function CargaDetalhe() {
                         <div className="resumo-item">
                             <span>Destino</span>
                             <strong>{carga?.destino}</strong>
+                        </div>
+
+                        <div className="resumo-item">
+                            <span>Saída prevista</span>
+                            <strong>{carga?.data_prevista_saida || "-"}</strong>
+                        </div>
+
+                        <div className="resumo-item">
+                            <span>Previsão de entrega</span>
+                            <strong>{carga?.previsao_entrega || "-"}</strong>
                         </div>
 
                         <div className="resumo-item">
