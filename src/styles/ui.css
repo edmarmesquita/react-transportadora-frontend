@@ -5648,3 +5648,60 @@ textarea {
         visibility: visible;
     }
 }
+
+/* Home de acompanhamento do cliente */
+.cliente-home-page .cliente-home-conteudo { display: grid; gap: 22px; min-width: 0; }
+.cliente-home-page .cliente-home-destaque,
+.cliente-home-page .cliente-home-card,
+.cliente-home-page .cliente-home-resumo > div {
+    min-width: 0; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px;
+    background: #fff; box-sizing: border-box; overflow-wrap: anywhere;
+}
+.cliente-home-page .cliente-home-destaque { border-top: 5px solid #2563eb; }
+.cliente-home-page .cliente-home-cabecalho,
+.cliente-home-page .cliente-home-card-topo { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-width: 0; }
+.cliente-home-page .cliente-home-cabecalho > div { min-width: 0; }
+.cliente-home-page .cliente-home-sobretitulo { margin: 0 0 6px; color: #64748b; font-size: 13px; font-weight: 700; }
+.cliente-home-page h2 { margin: 0; }
+.cliente-home-page .cliente-home-destaque h2 { color: #1f2937; font-size: clamp(22px, 4vw, 30px); }
+.cliente-home-page .cliente-home-status { display: inline-block; max-width: 100%; padding: 8px 12px; border-radius: 999px; background: #eef2f7; color: #334155; font-size: 14px; font-weight: 800; overflow-wrap: anywhere; box-sizing: border-box; }
+.cliente-home-page .cliente-home-rota { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px; margin-top: 24px; min-width: 0; }
+.cliente-home-page .cliente-home-rota > div,
+.cliente-home-page .cliente-home-informacoes > div { min-width: 0; }
+.cliente-home-page .cliente-home-rota span:not(.cliente-home-seta),
+.cliente-home-page .cliente-home-informacoes span,
+.cliente-home-page .cliente-home-card p span { display: block; margin-bottom: 5px; color: #64748b; font-size: 12px; font-weight: 700; }
+.cliente-home-page .cliente-home-rota strong { display: block; font-size: clamp(16px, 2.4vw, 22px); }
+.cliente-home-page .cliente-home-seta { color: #2563eb; font-size: 25px; }
+.cliente-home-page .cliente-home-informacoes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 24px 0; }
+.cliente-home-page .cliente-home-informacoes strong,
+.cliente-home-page .cliente-home-card p strong { display: block; overflow-wrap: anywhere; }
+.cliente-home-page .cliente-home-acao,
+.cliente-home-page .cliente-home-card > a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 18px; border-radius: 10px; background: #1d4ed8; color: #fff; font-weight: 700; text-decoration: none; box-sizing: border-box; }
+.cliente-home-page .cliente-home-acao:focus-visible,
+.cliente-home-page .cliente-home-card > a:focus-visible,
+.cliente-home-page .cliente-home-todas:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.cliente-home-page .cliente-home-outras h2 { margin-bottom: 14px; font-size: 21px; }
+.cliente-home-page .cliente-home-outras-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+.cliente-home-page .cliente-home-card h3 { margin: 0; font-size: 16px; overflow-wrap: anywhere; }
+.cliente-home-page .cliente-home-card .cliente-home-rota { margin-top: 16px; }
+.cliente-home-page .cliente-home-card .cliente-home-rota strong { font-size: 15px; }
+.cliente-home-page .cliente-home-card p { margin: 16px 0; }
+.cliente-home-page .cliente-home-resumo { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.cliente-home-page .cliente-home-resumo > div { display: grid; gap: 7px; }
+.cliente-home-page .cliente-home-resumo strong { font-size: 27px; }
+.cliente-home-page .cliente-home-resumo span { color: #64748b; }
+.cliente-home-page .cliente-home-todas { justify-self: start; font-weight: 700; color: #1d4ed8; }
+@media (max-width: 800px) {
+    .cliente-home-page .cliente-home-resumo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .cliente-home-page .cliente-home-rota { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+    .cliente-home-page .cliente-home-seta { transform: rotate(90deg); justify-self: start; line-height: 1; }
+    .cliente-home-page .cliente-home-informacoes { grid-template-columns: minmax(0, 1fr); }
+    .cliente-home-page .cliente-home-acao,
+    .cliente-home-page .cliente-home-card > a { width: 100%; }
+}
+@media (max-width: 375px) {
+    .cliente-home-page .cliente-home-resumo { grid-template-columns: minmax(0, 1fr); }
+}

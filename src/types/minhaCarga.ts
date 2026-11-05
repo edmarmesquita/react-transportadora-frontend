@@ -3,9 +3,11 @@ export type MinhaCarga = {
     codigo: string;
     cliente: string;
     status: string;
+    origem?: string | null;
     local_atual: string;
     destino: string;
     ultima_atualizacao: string;
+    ultima_atualizacao_iso?: string | null;
     descricao_carga?: string | null;
     peso_kg?: number | null;
     data_prevista_saida?: string | null;
