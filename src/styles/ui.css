@@ -5545,3 +5545,106 @@ textarea {
         min-height: 52px;
     }
 }
+
+/* Menu operacional do motorista. Demais perfis mantêm a navegação administrativa. */
+.admin-sidebar.motorista-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.motorista-sidebar h2 {
+    flex: 0 0 auto;
+    margin-bottom: 26px;
+}
+
+.motorista-sidebar-nav {
+    flex: 0 0 auto;
+}
+
+.motorista-sidebar-grupo + .motorista-sidebar-grupo {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #363636;
+}
+
+.motorista-sidebar-grupo h3 {
+    margin: 0 6px 9px;
+    color: #b8c0cc;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.motorista-sidebar .motorista-sidebar-nav a {
+    min-height: 48px;
+    padding: 12px 9px;
+    box-sizing: border-box;
+}
+
+.motorista-sidebar .motorista-sidebar-nav a:focus-visible,
+.motorista-sidebar-rodape button:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+}
+
+.motorista-sidebar-rodape {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    min-width: 0;
+    margin-top: auto;
+    padding: 22px 6px 0;
+    border-top: 1px solid #363636;
+}
+
+.motorista-sidebar-rodape strong,
+.motorista-sidebar-rodape span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.motorista-sidebar-rodape strong {
+    color: #fff;
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.motorista-sidebar-rodape span {
+    margin-top: 4px;
+    color: #b8c0cc;
+    font-size: 13px;
+}
+
+.motorista-sidebar-rodape button {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 16px;
+    border: 1px solid #d92b2b;
+    border-radius: 10px;
+    background: #981b1b;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.motorista-sidebar-rodape button:hover {
+    background: #ba2020;
+}
+
+@media (max-width: 900px) {
+    .admin-sidebar.motorista-sidebar {
+        width: min(280px, calc(100vw - 48px));
+        padding: 24px 14px 18px;
+        visibility: hidden;
+    }
+
+    .admin-sidebar.motorista-sidebar.aberta {
+        visibility: visible;
+    }
+}

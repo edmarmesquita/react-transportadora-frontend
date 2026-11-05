@@ -1,18 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import {
-    buscarUsuarioLogado,
-    logout,
-} from "../../services/authService";
+import { buscarUsuarioLogado } from "../../services/authService";
+import { useSair } from "./useSair";
 
 function AdminTopbar() {
-    const navigate = useNavigate();
-
     const usuario = buscarUsuarioLogado();
-
-    function sair() {
-        logout();
-        navigate("/admin/login");
-    }
+    const sair = useSair();
 
     return (
         <header className="admin-topbar">
