@@ -301,8 +301,8 @@ function DetalheViagem() {
     }, [])
     /* eslint-enable react-hooks/exhaustive-deps */
     return (
-        <AdminLayout>
-            <div className="admin-page detalhe-viagem-page">
+        <AdminLayout className={ehMotorista ? "motorista-detalhe-layout" : undefined}>
+            <div className={`admin-page detalhe-viagem-page${ehMotorista ? " detalhe-viagem-motorista" : ""}`}>
                 {carregando && (
                     <p>Carregando detalhes da viagem...</p>
                 )}
@@ -490,7 +490,9 @@ function DetalheViagem() {
                                 <h2>Adicionar ocorrência</h2>
                             </div>
 
+                            {ehMotorista && <label htmlFor="motorista-descricao-ocorrencia">Descreva a ocorrência</label>}
                             <textarea
+                                id={ehMotorista ? "motorista-descricao-ocorrencia" : undefined}
                                 placeholder="Registrar ocorrência..."
                                 value={novaOcorrencia}
                                 onChange={(e) =>

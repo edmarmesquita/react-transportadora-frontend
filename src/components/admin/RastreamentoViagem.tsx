@@ -18,6 +18,7 @@ type Localizacao = {
 
 function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Props) {
     const usuario = buscarUsuarioLogado();
+    const ehMotorista = usuario?.perfil?.trim().toLowerCase() === "motorista";
     const { notificar } = useNotification();
 
     const [localizacoes, setLocalizacoes] = useState<Localizacao[]>([]);
@@ -110,7 +111,9 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Pr
             <h2>Rastreamento da Viagem</h2>
 
             <div className="admin-form detalhe-viagem-form">
+                {ehMotorista && <label htmlFor="motorista-localizacao-manual">Localização atual</label>}
                 <input
+                    id={ehMotorista ? "motorista-localizacao-manual" : undefined}
                     placeholder="Localização atual. Ex: Uberaba/MG"
                     value={localizacao}
                     onChange={(e) =>
@@ -118,7 +121,9 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Pr
                     }
                 />
 
+                {ehMotorista && <label htmlFor="motorista-observacao-localizacao">Observação (opcional)</label>}
                 <textarea
+                    id={ehMotorista ? "motorista-observacao-localizacao" : undefined}
                     placeholder="Observação"
                     value={observacao}
                     onChange={(e) =>

@@ -5,13 +5,14 @@ import AdminTopbar from "./AdminTopbar"
 
 type AdminLayoutProps = {
     children: ReactNode
+    className?: string
 }
 
-function AdminLayout({ children }: AdminLayoutProps) {
+function AdminLayout({ children, className }: AdminLayoutProps) {
     const [menuAberto, setMenuAberto] = useState(false)
 
     return (
-        <div className="admin-layout">
+        <div className={`admin-layout${className ? ` ${className}` : ""}`}>
             <AdminSidebar
                 aberto={menuAberto}
                 fecharMenu={() => setMenuAberto(false)}

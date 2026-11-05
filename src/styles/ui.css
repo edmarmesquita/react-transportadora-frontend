@@ -5287,3 +5287,261 @@ textarea {
         flex-direction: column-reverse;
     }
 }
+
+/* Detalhe da viagem do motorista: ajustes exclusivos para telas de operação. */
+@media (max-width: 900px) {
+    .motorista-detalhe-layout,
+    .motorista-detalhe-layout .admin-content,
+    .detalhe-viagem-motorista,
+    .detalhe-viagem-motorista .detalhe-viagem-container,
+    .detalhe-viagem-motorista .detalhe-viagem-container > * {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .detalhe-viagem-motorista {
+        padding: 24px clamp(12px, 3vw, 24px);
+    }
+
+    .detalhe-viagem-motorista .detalhe-viagem-container {
+        gap: 16px;
+    }
+
+    .detalhe-viagem-motorista .detalhe-viagem-header {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .detalhe-viagem-motorista .detalhe-viagem-header h1 {
+        font-size: clamp(24px, 4vw, 32px);
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional,
+    .detalhe-viagem-motorista .motorista-operacional-dados > span,
+    .detalhe-viagem-motorista .motorista-operacional-acoes > * {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        box-sizing: border-box;
+    }
+
+    .detalhe-viagem-motorista :is(.viagem-resumo-card, .detalhe-viagem-card) {
+        min-width: 0;
+        width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .detalhe-viagem-motorista .resumo-carga-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .detalhe-viagem-motorista .resumo-item {
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .detalhe-viagem-motorista .resumo-item strong,
+    .detalhe-viagem-motorista .comprovante-resumo-card,
+    .detalhe-viagem-motorista .arquivo-item,
+    .detalhe-viagem-motorista .timeline-item,
+    .detalhe-viagem-motorista .timeline-item > div:last-child {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .detalhe-viagem-motorista .rastreamento-viagem-card .admin-form,
+    .detalhe-viagem-motorista .finalizar-entrega-card .admin-form {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-width: none;
+        gap: 12px;
+    }
+
+    .detalhe-viagem-motorista :is(input, select, textarea, button) {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .detalhe-viagem-motorista .detalhe-viagem-form :is(input, select, textarea),
+    .detalhe-viagem-motorista .ocorrencia-box textarea {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .detalhe-viagem-motorista .rastreamento-viagem-card .timeline-rastreamento,
+    .detalhe-viagem-motorista .timeline-box {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .detalhe-viagem-motorista .timeline-item {
+        align-items: flex-start;
+        gap: 12px;
+        max-width: 100%;
+    }
+
+    .detalhe-viagem-motorista .timeline-item :is(h3, p, span, strong, small) {
+        overflow-wrap: anywhere;
+    }
+
+    .detalhe-viagem-motorista .lista-arquivos,
+    .detalhe-viagem-motorista .arquivo-item {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .detalhe-viagem-motorista .arquivo-item > div {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .detalhe-viagem-motorista input[type="file"] {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .detalhe-viagem-motorista :is(.detalhe-viagem-form .btn-primary, .ocorrencia-box .btn-nova-carga, .arquivo-item .btn-detalhes) {
+        min-height: 48px;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega {
+        padding: 12px;
+        overflow-y: auto;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega-conteudo {
+        min-width: 0;
+        max-width: 100%;
+        max-height: calc(100dvh - 24px);
+        overflow-y: auto;
+        box-sizing: border-box;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega-acoes button {
+        min-height: 48px;
+    }
+}
+
+@media (max-width: 600px) {
+    .motorista-detalhe-layout .admin-topbar {
+        min-width: 0;
+        gap: 10px;
+    }
+
+    .motorista-detalhe-layout .admin-topbar > div:first-child {
+        min-width: 0;
+    }
+
+    .motorista-detalhe-layout .admin-topbar > div:first-child p {
+        display: block;
+        margin: 2px 0 0;
+        font-size: 12px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .motorista-detalhe-layout .admin-user {
+        flex: 0 0 auto;
+    }
+
+    .detalhe-viagem-motorista {
+        padding: 16px 12px 28px;
+    }
+
+    .detalhe-viagem-motorista .resumo-carga-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detalhe-viagem-motorista .detalhe-viagem-card,
+    .detalhe-viagem-motorista .timeline-box.detalhe-viagem-card {
+        padding: 18px 16px;
+    }
+
+    .detalhe-viagem-motorista .timeline-box .timeline-item {
+        display: block;
+        margin-left: 7px;
+        padding-left: 18px;
+        padding-bottom: 22px;
+        border-left-width: 2px;
+    }
+
+    .detalhe-viagem-motorista .timeline-box .timeline-dot {
+        left: -9px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .detalhe-viagem-motorista .timeline-box .timeline-item:not(:last-child)::after {
+        display: none;
+    }
+
+    .detalhe-viagem-motorista .rastreamento-viagem-card .timeline-item {
+        display: flex;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: 0;
+    }
+
+    .detalhe-viagem-motorista .comprovantes-arquivos-card .arquivo-item {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .detalhe-viagem-motorista .comprovantes-arquivos-card .arquivo-item .btn-detalhes,
+    .detalhe-viagem-motorista :is(.rastreamento-viagem-card, .finalizar-entrega-card) .btn-primary,
+    .detalhe-viagem-motorista .ocorrencia-box .btn-nova-carga {
+        width: 100%;
+        align-self: stretch;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega-conteudo {
+        padding: 20px 16px;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega-acoes {
+        flex-direction: column-reverse;
+    }
+
+    .detalhe-viagem-motorista .confirmacao-entrega-acoes button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .detalhe-viagem-motorista .motorista-operacional-rota {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 7px;
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional-seta {
+        justify-self: start;
+        transform: rotate(90deg);
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional-rota strong {
+        font-size: clamp(20px, 6vw, 24px);
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional-dados {
+        display: grid;
+        gap: 10px;
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional-acoes {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detalhe-viagem-motorista .motorista-operacional-acoes > *,
+    .detalhe-viagem-motorista .motorista-operacional-proxima > button {
+        width: 100%;
+        min-height: 52px;
+    }
+}

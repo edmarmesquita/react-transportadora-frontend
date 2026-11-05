@@ -7,7 +7,7 @@ import { NotificationProvider } from "../src/components/ui/NotificationProvider"
 import { apiFetch } from "../src/services/api";
 
 vi.mock("../src/services/api", () => ({ apiFetch: vi.fn() }));
-vi.mock("../src/components/admin/AdminLayout", () => ({ default: ({ children }: { children: ReactNode }) => <main>{children}</main> }));
+vi.mock("../src/components/admin/AdminLayout", () => ({ default: ({ children, className }: { children: ReactNode; className?: string }) => <main className={className}>{children}</main> }));
 
 const api = vi.mocked(apiFetch);
 const viagemBase = { id: 7, codigo_carga: "TRK-TESTE", cliente: "Cliente", motorista: "Motorista", veiculo: "MNO5P67", origem: "São Paulo/SP", destino: "São José dos Campos/SP", status: "Em trânsito", data_criacao: "Hoje", data_saida: "10:00", previsao_entrega: "14:00" };
@@ -37,6 +37,36 @@ beforeEach(() => {
 afterEach(() => { cleanup(); sessionStorage.clear(); vi.clearAllMocks(); });
 
 describe("detalhe operacional do motorista", () => {
+    it("mantém toda a estrutura operacional móvel, comprovantes e timeline", async () => {
+        viagem = { ...viagem, status: "Saiu para entrega", destino: "Destino extenso para testar quebra de texto no painel operacional" };
+        api.mockImplementation(async (endpoint) => {
+            if (endpoint.endsWith("/localizacoes")) return resposta([{ id: 1, localizacao: "Localização extensa", observacao: "Observação longa", data_registro: "05/11/2026 10:00" }]);
+            if (endpoint.endsWith("/historico")) return resposta([{ id: 2, status: "LOCALIZAÇÃO", observacao: "Evento operacional extenso", data_evento: "05/11/2026 10:00" }]);
+            if (endpoint.endsWith("/comprovantes/arquivos")) return resposta([{ id: 3, nome_arquivo: "comprovante-de-entrega-com-nome-longo.pdf", data_upload: "05/11/2026", download_endpoint: "/api/arquivo/3" }]);
+            if (endpoint.endsWith("/comprovante")) return resposta({ recebedor: "Recebedor", data_entrega: "05/11/2026", observacao: "Entregue" });
+            if (endpoint.endsWith("/7")) return resposta(viagem);
+            throw new Error(`Endpoint inesperado: ${endpoint}`);
+        });
+        montar("motorista");
+        const painel = await screen.findByRole("region", { name: "Rota da viagem" });
+        expect(painel.classList.contains("motorista-operacional")).toBe(true);
+        expect(document.querySelector("main.motorista-detalhe-layout .detalhe-viagem-motorista")).toBeTruthy();
+        expect(within(painel).getByRole("link", { name: /Google Maps/ })).toBeTruthy();
+        expect(within(painel).getByRole("link", { name: /Waze/ })).toBeTruthy();
+        expect(screen.getByLabelText("Localização atual")).toBeTruthy();
+        expect(screen.getByLabelText("Observação (opcional)")).toBeTruthy();
+        expect(screen.getByLabelText("Descreva a ocorrência")).toBeTruthy();
+        expect(screen.getByText("comprovante-de-entrega-com-nome-longo.pdf")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Abrir" })).toBeTruthy();
+        expect(screen.getByLabelText("Arquivo do comprovante")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Finalizar Entrega" })).toBeTruthy();
+        expect(await screen.findByText("Localização extensa")).toBeTruthy();
+        expect(screen.getByRole("heading", { name: "Timeline da viagem" })).toBeTruthy();
+        expect(screen.getByText("Evento operacional extenso")).toBeTruthy();
+        expect(screen.getAllByText("05/11/2026 10:00").length).toBeGreaterThan(0);
+        expect(api.mock.calls.every(([, options]) => !options?.method)).toBe(true);
+    });
+
     it("mostra rota, status, placa, código e datas apenas ao motorista", async () => {
         montar("motorista");
         const painel = await screen.findByRole("region", { name: "Rota da viagem" });
