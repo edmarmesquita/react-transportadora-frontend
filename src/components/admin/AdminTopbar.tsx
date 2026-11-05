@@ -21,7 +21,9 @@ function AdminTopbar() {
                 <h1>ROTANZA</h1>
 
                 <p>
-                    Central administrativa de cargas, viagens e entregas
+                    {usuario?.perfil?.trim().toLowerCase() === "motorista"
+                        ? "Central operacional do motorista"
+                        : "Central administrativa de cargas, viagens e entregas"}
                 </p>
             </div>
 

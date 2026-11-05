@@ -3,8 +3,8 @@ export type MinhaViagem = {
     origem: string;
     destino: string;
     status: string;
-    data_saida: string;
-    previsao_entrega: string;
+    data_saida?: string | null;
+    previsao_entrega?: string | null;
     carga_codigo: string;
     veiculo: string;
 };

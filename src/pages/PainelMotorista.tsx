@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-
 import AdminLayout from "../components/admin/AdminLayout";
 import AdminHeader from "../components/layout/AdminHeader";
-import DataTable from "../components/ui/DataTable";
-
+import ViagemMotoristaCard from "../components/motorista/ViagemMotoristaCard";
 import { listarMinhasViagens } from "../services/motoristaService";
 import type { MinhaViagem } from "../types/minhaViagem";
 
+const estadosTerminais = new Set(["Entregue", "Finalizada", "Cancelada"]);
 
 function PainelMotorista() {
     const [viagens, setViagens] = useState<MinhaViagem[]>([]);
@@ -15,84 +13,44 @@ function PainelMotorista() {
     const [erro, setErro] = useState("");
 
     useEffect(() => {
-        carregarViagens();
+        async function carregarViagens() {
+            try {
+                const dados = await listarMinhasViagens();
+                setViagens(Array.isArray(dados) ? dados : []);
+            } catch (error) {
+                setErro(error instanceof Error ? error.message : "Não foi possível carregar suas viagens.");
+            } finally {
+                setCarregando(false);
+            }
+        }
+        void carregarViagens();
     }, []);
 
-    async function carregarViagens() {
-        try {
-            setErro("");
-
-            const dados = await listarMinhasViagens();
-            setViagens(dados);
-        } catch (error) {
-            if (error instanceof Error) {
-                setErro(error.message);
-            } else {
-                setErro("Não foi possível carregar suas viagens.");
-            }
-        } finally {
-            setCarregando(false);
-        }
-    }
+    const ativas = viagens.filter((viagem) => !estadosTerminais.has(viagem.status));
+    const historico = viagens.filter((viagem) => estadosTerminais.has(viagem.status));
 
     return (
         <AdminLayout>
             <div className="admin-page portal-page portal-motorista-page portal-motorista-viagens-page">
-                <AdminHeader
-                    title="Minhas Viagens"
-                    subtitle="Acompanhe somente as viagens vinculadas ao seu cadastro."
-                />
-
-                {carregando && <p>Carregando suas viagens...</p>}
-
-                {!carregando && erro && (
-                    <p className="mensagem-erro">{erro}</p>
+                <AdminHeader title="Minhas Viagens" subtitle="Acompanhe suas viagens e encontre a próxima ação com facilidade." />
+                {carregando && <p role="status">Carregando suas viagens...</p>}
+                {!carregando && erro && <p className="mensagem-erro" role="alert">{erro}</p>}
+                {!carregando && !erro && viagens.length === 0 && <p className="motorista-estado-vazio">Nenhuma viagem vinculada a este motorista.</p>}
+                {!carregando && !erro && ativas.length > 0 && (
+                    <section className="motorista-secao" aria-labelledby="motorista-ativas-titulo">
+                        <div className="motorista-secao-cabecalho"><h2 id="motorista-ativas-titulo">Viagens em andamento</h2><span>{ativas.length}</span></div>
+                        <div className="motorista-cards motorista-cards-ativas">
+                            {ativas.map((viagem) => <ViagemMotoristaCard key={viagem.id} viagem={viagem} />)}
+                        </div>
+                    </section>
                 )}
-
-                {!carregando && !erro && (
-                    <DataTable<MinhaViagem>
-                        columns={[
-                            "Carga",
-                            "Origem",
-                            "Destino",
-                            "Status",
-                            "Veículo",
-                            "Saída",
-                            "Previsão",
-                            "Ações",
-                        ]}
-                        data={viagens}
-                        searchable
-                        searchPlaceholder="Pesquisar minhas viagens..."
-                        searchFields={[
-                            "carga_codigo",
-                            "origem",
-                            "destino",
-                            "status",
-                            "veiculo",
-                        ]}
-                        emptyMessage="Nenhuma viagem vinculada a este motorista."
-                        renderRow={(viagem) => (
-                            <>
-                                <td>{viagem.carga_codigo || "-"}</td>
-                                <td>{viagem.origem}</td>
-                                <td>{viagem.destino}</td>
-                                <td><span className="status-badge">{viagem.status}</span></td>
-                                <td>{viagem.veiculo || "-"}</td>
-                                <td>{viagem.data_saida || "-"}</td>
-                                <td>{viagem.previsao_entrega || "-"}</td>
-
-                                <td className="admin-table-actions">
-                                    <Link
-                                        to={`/portal/motorista/minhas-viagens/${viagem.id}`}
-                                        className="btn-small btn-edit"
-                                    >
-                                        Detalhes
-                                    </Link>
-                                </td>
-                            </>
-                        )}
-                    />
+                {!carregando && !erro && historico.length > 0 && (
+                    <section className="motorista-secao" aria-labelledby="motorista-historico-titulo">
+                        <div className="motorista-secao-cabecalho"><h2 id="motorista-historico-titulo">Histórico de viagens</h2><span>{historico.length}</span></div>
+                        <div className="motorista-cards motorista-cards-historico">
+                            {historico.map((viagem) => <ViagemMotoristaCard key={viagem.id} viagem={viagem} historico />)}
+                        </div>
+                    </section>
                 )}
             </div>
         </AdminLayout>
