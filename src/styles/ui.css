@@ -3626,6 +3626,46 @@ textarea {
 }
 
 /* Portais Cliente e Motorista */
+.motorista-operacional {
+    width: min(100%, 920px);
+    min-width: 0;
+    padding: clamp(18px, 3vw, 28px);
+    border-radius: 20px;
+    background: #112b50;
+    color: #fff;
+    box-sizing: border-box;
+}
+.motorista-operacional-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.motorista-operacional-sobretitulo { color: #bfdbfe; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.motorista-operacional h2 { margin: 4px 0 0; color: #fff; font-size: 20px; }
+.motorista-operacional-status { padding: 8px 12px; border-radius: 999px; background: #dbeafe; color: #172554; font-weight: 800; }
+.motorista-operacional-rota { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 18px; margin: 24px 0; }
+.motorista-operacional-rota > div { min-width: 0; }
+.motorista-operacional-rota > div > span { display: block; margin-bottom: 5px; color: #bfdbfe; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+.motorista-operacional-rota strong { display: block; color: #fff; font-size: clamp(20px, 4vw, 31px); line-height: 1.18; overflow-wrap: anywhere; }
+.motorista-operacional-seta { color: #93c5fd; font-size: 28px; font-weight: 800; }
+.motorista-operacional-dados { display: flex; gap: 9px 24px; flex-wrap: wrap; padding-top: 17px; border-top: 1px solid #456080; color: #bfdbfe; font-size: 13px; }
+.motorista-operacional-dados strong { margin-left: 5px; color: #fff; overflow-wrap: anywhere; }
+.motorista-operacional-acoes { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 22px; }
+.motorista-operacional-acoes a, .motorista-operacional-acoes button, .motorista-operacional-acoes > span { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 11px; background: #fff; color: #112b50; font: inherit; font-weight: 800; text-align: center; text-decoration: none; box-sizing: border-box; cursor: pointer; }
+.motorista-operacional-acoes > span { background: #dbe3ed; color: #475569; cursor: default; }
+.motorista-operacional-acoes a:hover, .motorista-operacional-acoes button:hover { background: #dbeafe; color: #112b50; }
+.motorista-operacional :is(a, button):focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
+.motorista-operacional-proxima { margin-top: 24px; padding-top: 19px; border-top: 1px solid #456080; }
+.motorista-operacional-proxima p { margin: 0 0 10px; color: #bfdbfe; font-weight: 800; }
+.motorista-operacional-proxima > button { min-height: 52px; padding: 12px 22px; border: 0; border-radius: 11px; background: #fbbf24; color: #172033; font: inherit; font-weight: 800; cursor: pointer; }
+.motorista-operacional-proxima > button:hover { background: #fcd34d; }
+#motorista-localizacao:focus, #motorista-ocorrencia:focus { outline: 3px solid #2563eb; outline-offset: 4px; }
+@media (max-width: 600px) {
+    .motorista-operacional-rota { gap: 8px; }
+    .motorista-operacional-rota strong { font-size: 19px; }
+    .motorista-operacional-seta { font-size: 20px; }
+    .motorista-operacional-proxima > button { width: 100%; }
+}
+@media (max-width: 360px) {
+    .motorista-operacional-acoes { grid-template-columns: minmax(0,1fr); }
+}
+
 .portal-motorista-viagens-page .motorista-secao {
     margin-top: 28px;
 }

@@ -436,10 +436,9 @@ describe("transições de status operacionais", () => {
                 ? resposta([])
                 : endpoint.endsWith("/comprovante") ? resposta({}) : resposta([]));
         montar(<DetalheViagem />, "/portal/motorista/minhas-viagens/7");
-        await screen.findByText("Atualizar status");
-        const opcoesMotorista = Array.from((document.querySelector(".status-box select") as HTMLSelectElement).options).map((opcao) => opcao.textContent);
-        expect(opcoesMotorista).toContain("Saiu para entrega");
-        expect(opcoesMotorista).not.toContain("Cancelada");
+        expect(await screen.findByRole("button", { name: "Marcar como saiu para entrega" })).toBeTruthy();
+        expect(screen.queryByRole("button", { name: /cancelada/i })).toBeNull();
+        expect(document.querySelector(".status-box select")).toBeNull();
         cleanup();
 
         montar(<DetalheCargaCliente />, "/portal/cliente/minhas-cargas/5");

@@ -6,6 +6,7 @@ import { useNotification } from "../ui/NotificationProvider";
 type Props = {
     viagemId: number;
     onLocalizacaoRegistrada?: () => Promise<void>;
+    sectionId?: string;
 };
 
 type Localizacao = {
@@ -15,7 +16,7 @@ type Localizacao = {
     data_registro: string;
 };
 
-function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada }: Props) {
+function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Props) {
     const usuario = buscarUsuarioLogado();
     const { notificar } = useNotification();
 
@@ -105,7 +106,7 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada }: Props) {
     }, [viagemId]);
 
     return (
-        <div className="grafico-card detalhe-viagem-card rastreamento-viagem-card">
+        <div className="grafico-card detalhe-viagem-card rastreamento-viagem-card" id={sectionId} tabIndex={sectionId ? -1 : undefined}>
             <h2>Rastreamento da Viagem</h2>
 
             <div className="admin-form detalhe-viagem-form">

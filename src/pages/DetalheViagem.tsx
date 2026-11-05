@@ -7,6 +7,7 @@ import ListaComprovantes, {
     type ArquivoComprovante,
 } from "../components/admin/ListaComprovantes"
 import RastreamentoViagem from "../components/admin/RastreamentoViagem"
+import PainelOperacionalMotorista from "../components/motorista/PainelOperacionalMotorista"
 import { buscarUsuarioLogado } from "../services/authService";
 import { useNotification } from "../components/ui/NotificationProvider";
 import { transicoesViagem } from "../constants/estadosOperacionais";
@@ -55,9 +56,11 @@ function DetalheViagem() {
     const [carregando, setCarregando] = useState(true)
     const [erroCarregamento, setErroCarregamento] = useState("")
     const usuario = buscarUsuarioLogado();
+    const ehMotorista = usuario?.perfil?.trim().toLowerCase() === "motorista";
 
-    async function atualizarStatus() {
-        if (!novoStatus) return;
+    async function atualizarStatus(statusSolicitado = novoStatus): Promise<boolean> {
+        if (!statusSolicitado) return false;
+        if (ehMotorista && (!viagem || viagem.status === "Saiu para entrega" || statusSolicitado === "Cancelada" || !(transicoesViagem[viagem.status] ?? []).includes(statusSolicitado))) return false;
 
         const endpoint =
             usuario?.perfil?.toLowerCase() === "motorista"
@@ -72,7 +75,7 @@ function DetalheViagem() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    status: novoStatus,
+                    status: statusSolicitado,
                 }),
             }
         );
@@ -86,7 +89,7 @@ function DetalheViagem() {
                 dados?.msg ||
                 "Não foi possível atualizar o status."
             );
-            return;
+            return false;
         }
 
         setNovoStatus("");
@@ -100,6 +103,7 @@ function DetalheViagem() {
             "sucesso",
             dados?.mensagem || "Status atualizado com sucesso."
         )
+        return true;
     }
 
     async function carregarHistorico(): Promise<boolean> {
@@ -334,10 +338,14 @@ function DetalheViagem() {
                                 <p>Timeline operacional da viagem</p>
                             </div>
 
-                            <div className="carga-codigo-badge">
+                            {!ehMotorista && <div className="carga-codigo-badge">
                                 {viagem.codigo_carga}
-                            </div>
+                            </div>}
                         </div>
+
+                        {ehMotorista && (
+                            <PainelOperacionalMotorista viagem={viagem} onAtualizarStatus={atualizarStatus} />
+                        )}
 
                         <section className="resumo-carga-card viagem-resumo-card">
                             <div className="resumo-carga-topo">
@@ -348,69 +356,69 @@ function DetalheViagem() {
                                     <h2>Resumo da viagem</h2>
                                 </div>
 
-                                <span
+                                {!ehMotorista && <span
                                     className={`status status-${viagem.status
                                         .toLowerCase()
                                         .replaceAll(" ", "-")}`}
                                 >
                                     {viagem.status}
-                                </span>
+                                </span>}
                             </div>
 
                             <div className="resumo-carga-grid">
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Código</span>
                                     <strong>{viagem.codigo_carga}</strong>
-                                </div>
+                                </div>}
 
                                 <div className="resumo-item">
                                     <span>Cliente</span>
                                     <strong>{viagem.cliente}</strong>
                                 </div>
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Status</span>
                                     <strong>{viagem.status}</strong>
-                                </div>
+                                </div>}
 
                                 <div className="resumo-item">
                                     <span>Motorista</span>
                                     <strong>{viagem.motorista || "Não definido"}</strong>
                                 </div>
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Veículo</span>
                                     <strong>{viagem.veiculo || "Não definido"}</strong>
-                                </div>
+                                </div>}
 
                                 <div className="resumo-item">
                                     <span>Criada em</span>
                                     <strong>{viagem.data_criacao}</strong>
                                 </div>
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Saída real</span>
                                     <strong>{viagem.data_saida || "Não informada"}</strong>
-                                </div>
+                                </div>}
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Previsão de entrega</span>
                                     <strong>{viagem.previsao_entrega || "Não informada"}</strong>
-                                </div>
+                                </div>}
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Origem</span>
                                     <strong>{viagem.origem}</strong>
-                                </div>
+                                </div>}
 
-                                <div className="resumo-item">
+                                {!ehMotorista && <div className="resumo-item">
                                     <span>Destino</span>
                                     <strong>{viagem.destino}</strong>
-                                </div>
+                                </div>}
                             </div>
                         </section>
 
-                        <section className="detalhe-viagem-card status-viagem-card">
+                        {!ehMotorista && <section className="detalhe-viagem-card status-viagem-card">
                             <div>
                                 <span className="operacao-label">Situação operacional</span>
                                 <h2>Atualizar status</h2>
@@ -438,12 +446,12 @@ function DetalheViagem() {
 
                                 <button
                                     className="btn-nova-carga"
-                                    onClick={atualizarStatus}
+                                    onClick={() => void atualizarStatus()}
                                 >
                                     Atualizar
                                 </button>
                             </div>
-                        </section>
+                        </section>}
 
                         {comprovante && (
                             <div className="grafico-card detalhe-viagem-card comprovante-resumo-card">
@@ -472,10 +480,11 @@ function DetalheViagem() {
 
                         <RastreamentoViagem
                             viagemId={Number(id)}
+                            sectionId={ehMotorista ? "motorista-localizacao" : undefined}
                             onLocalizacaoRegistrada={atualizarTimelineAposLocalizacao}
                         />
 
-                        <div className="ocorrencia-box detalhe-viagem-card">
+                        <div className="ocorrencia-box detalhe-viagem-card" id={ehMotorista ? "motorista-ocorrencia" : undefined} tabIndex={ehMotorista ? -1 : undefined}>
                             <div>
                                 <span className="operacao-label">Registro operacional</span>
                                 <h2>Adicionar ocorrência</h2>
