@@ -5705,3 +5705,40 @@ textarea {
 @media (max-width: 375px) {
     .cliente-home-page .cliente-home-resumo { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Minhas Cargas do cliente */
+.cliente-lista-page { color: #1f2937; }
+.cliente-lista-page .cliente-lista-pesquisa { display: grid; gap: 8px; margin: 22px 0 28px; max-width: 560px; }
+.cliente-lista-page .cliente-lista-pesquisa label { color: #334155; font-weight: 700; }
+.cliente-lista-page .cliente-lista-pesquisa input { width: 100%; min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid #94a3b8; border-radius: 10px; background: #fff; color: #1f2937; font: inherit; box-sizing: border-box; }
+.cliente-lista-page .cliente-lista-secao { min-width: 0; margin: 0 0 32px; }
+.cliente-lista-page .cliente-lista-secao h2 { margin: 0 0 16px; color: #1f2937; font-size: 22px; }
+.cliente-lista-page .cliente-lista-secao h2 span { color: #64748b; }
+.cliente-lista-page .cliente-lista-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.cliente-lista-page .cliente-lista-card,
+.cliente-lista-page .cliente-lista-vazio { min-width: 0; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; color: #1f2937; box-sizing: border-box; overflow-wrap: anywhere; }
+.cliente-lista-page .cliente-lista-card-andamento { border-top: 4px solid #2563eb; }
+.cliente-lista-page .cliente-lista-card-topo { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; min-width: 0; }
+.cliente-lista-page .cliente-lista-card-topo > div { min-width: 0; }
+.cliente-lista-page .cliente-lista-card-topo span:not(.cliente-lista-status),
+.cliente-lista-page .cliente-lista-rota div span,
+.cliente-lista-page .cliente-lista-dados span { display: block; margin-bottom: 5px; color: #64748b; font-size: 12px; font-weight: 700; }
+.cliente-lista-page .cliente-lista-card h3 { margin: 0; color: #1f2937; font-size: 18px; overflow-wrap: anywhere; }
+.cliente-lista-page .cliente-lista-status { max-width: 100%; padding: 8px 12px; border-radius: 999px; background: #eef2f7; color: #334155; font-size: 13px; font-weight: 800; overflow-wrap: anywhere; box-sizing: border-box; }
+.cliente-lista-page .cliente-lista-rota { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 20px 0; min-width: 0; }
+.cliente-lista-page .cliente-lista-rota > div { min-width: 0; }
+.cliente-lista-page .cliente-lista-rota strong { display: block; color: #1f2937; font-size: 17px; overflow-wrap: anywhere; }
+.cliente-lista-page .cliente-lista-seta { color: #2563eb; font-size: 22px; line-height: 1; transform: rotate(90deg); justify-self: start; }
+.cliente-lista-page .cliente-lista-dados { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; margin-bottom: 20px; }
+.cliente-lista-page .cliente-lista-dados strong { display: block; color: #334155; overflow-wrap: anywhere; }
+.cliente-lista-page .cliente-lista-acao { display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; padding: 10px 16px; border-radius: 10px; background: #1d4ed8; color: #fff; text-decoration: none; font-weight: 700; box-sizing: border-box; }
+.cliente-lista-page .cliente-lista-mais { min-height: 44px; margin-top: 16px; padding: 9px 16px; border: 1px solid #1d4ed8; border-radius: 10px; background: #fff; color: #1d4ed8; font: inherit; font-weight: 700; cursor: pointer; }
+.cliente-lista-page .cliente-lista-vazio h2 { margin: 0 0 8px; color: #1f2937; }
+.cliente-lista-page .cliente-lista-vazio p { margin: 0; color: #475569; }
+.cliente-lista-page :is(.cliente-lista-pesquisa input, .cliente-lista-acao, .cliente-lista-mais):focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (min-width: 700px) {
+    .cliente-lista-page .cliente-lista-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cliente-lista-page .cliente-lista-rota { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; }
+    .cliente-lista-page .cliente-lista-seta { transform: none; }
+    .cliente-lista-page .cliente-lista-acao { width: auto; }
+}
