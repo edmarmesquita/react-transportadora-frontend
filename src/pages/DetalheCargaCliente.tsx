@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-    MapPin,
-    Navigation,
     Clock3,
     Package,
     TriangleAlert,
@@ -70,12 +68,10 @@ function DetalheCargaCliente() {
         useState(false);
 
     const [erro, setErro] = useState("");
+    const [erroOcorrencias, setErroOcorrencias] = useState("");
+    const [erroComprovantes, setErroComprovantes] = useState("");
     const [mensagemOcorrencia, setMensagemOcorrencia] =
         useState("");
-
-    useEffect(() => {
-        carregarPagina();
-    }, [id]);
 
     function obterCargaId(): number {
         const cargaId = Number(id);
@@ -87,37 +83,54 @@ function DetalheCargaCliente() {
         return cargaId;
     }
 
-    async function carregarPagina() {
+    useEffect(() => {
+        let ativo = true;
+        async function carregarPagina() {
+        setCarregando(true);
+        setErro("");
+        setErroOcorrencias("");
+        setErroComprovantes("");
+        setCarga(null);
+        setOcorrencias([]);
+        setComprovantes([]);
+        setArquivosComprovante([]);
         try {
-            setCarregando(true);
-            setErro("");
+            const cargaId = Number(id);
+            if (!cargaId) throw new Error("Identificador da carga inválido.");
 
-            const cargaId = obterCargaId();
-
-            const [
-                dadosCarga,
-                dadosOcorrencias,
-                dadosComprovantes,
-            ] = await Promise.all([
+            const [detalhe, ocorrenciasResultado, comprovantesResultado] = await Promise.allSettled([
                 buscarDetalheCarga(cargaId),
                 listarOcorrenciasCarga(cargaId),
                 listarComprovantesCarga(cargaId),
             ]);
-
-            setCarga(dadosCarga);
-            setOcorrencias(dadosOcorrencias);
-            setComprovantes(dadosComprovantes.comprovantes);
-            setArquivosComprovante(dadosComprovantes.arquivos);
+            if (!ativo) return;
+            if (detalhe.status === "rejected") throw detalhe.reason;
+            setCarga(detalhe.value);
+            if (ocorrenciasResultado.status === "fulfilled") {
+                setOcorrencias(ocorrenciasResultado.value);
+            } else {
+                setErroOcorrencias(ocorrenciasResultado.reason instanceof Error ? ocorrenciasResultado.reason.message : "Não foi possível carregar as ocorrências.");
+            }
+            if (comprovantesResultado.status === "fulfilled") {
+                setComprovantes(comprovantesResultado.value.comprovantes);
+                setArquivosComprovante(comprovantesResultado.value.arquivos);
+            } else {
+                setErroComprovantes(comprovantesResultado.reason instanceof Error ? comprovantesResultado.reason.message : "Não foi possível carregar os comprovantes.");
+            }
         } catch (error) {
+            if (!ativo) return;
             if (error instanceof Error) {
                 setErro(error.message);
             } else {
                 setErro("Não foi possível carregar a carga.");
             }
         } finally {
-            setCarregando(false);
+            if (ativo) setCarregando(false);
         }
-    }
+        }
+        void carregarPagina();
+        return () => { ativo = false; };
+    }, [id]);
 
     async function handleCriarOcorrencia(
         event: React.FormEvent<HTMLFormElement>
@@ -155,6 +168,7 @@ function DetalheCargaCliente() {
                 novaOcorrencia,
                 ...ocorrenciasAtuais,
             ]);
+            setErroOcorrencias("");
 
             setTituloOcorrencia("");
             setDescricaoOcorrencia("");
@@ -203,145 +217,64 @@ function DetalheCargaCliente() {
                     }
                     subtitle="Acompanhe as informações da sua carga."
                 >
-                    <Link to="/portal/cliente">
-                        Voltar
+                    <Link to="/portal/cliente/minhas-cargas" className="cliente-detalhe-voltar">
+                        Voltar para Minhas Cargas
                     </Link>
                 </AdminHeader>
 
-                {carga && (
-                    <div className="cliente-progresso-carga">
-                        {etapas.map((etapa, index) => {
-                            const concluida =
-                                indiceAtual >= 0 &&
-                                index <= indiceAtual;
-
-                            const atual =
-                                index === indiceAtual;
-
-                            return (
-                                <div
-                                    key={etapa}
-                                    className={`cliente-progresso-etapa ${concluida ? "concluida" : ""
-                                        } ${atual ? "atual" : ""
-                                        }`}
-                                >
-                                    <div className="cliente-progresso-ponto">
-                                        {concluida ? "✓" : index + 1}
-                                    </div>
-
-                                    <span>{etapa}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-
-                {carregando && <p>Carregando carga...</p>}
+                {carregando && <p role="status">Carregando carga...</p>}
 
                 {!carregando && erro && (
-                    <p className="mensagem-erro">{erro}</p>
+                    <p role="alert" className="mensagem-erro">{erro}</p>
                 )}
 
                 {!carregando && !erro && carga && (
                     <div className="admin-card detalhe-carga-cliente">
-                        <div className="carga-resumo">
-                            <div className="carga-resumo-topo">
+                        <section className="cliente-detalhe-painel" aria-labelledby="cliente-detalhe-painel-titulo">
+                            <div className="cliente-detalhe-painel-topo">
                                 <div>
-                                    <span className="carga-codigo-label">
-                                        Código da carga
-                                    </span>
-
-                                    <h2 className="carga-codigo">
-                                        <Package size={24} />
-                                        {carga.codigo}
-                                    </h2>
+                                    <p>Acompanhamento da carga</p>
+                                    <h2 id="cliente-detalhe-painel-titulo">{carga.codigo}</h2>
                                 </div>
-
-                                <span
-                                    className={`carga-status carga-status-${carga.status
-                                        .toLowerCase()
-                                        .replaceAll(" ", "-")
-                                        .replaceAll("í", "i")
-                                        .replaceAll("ã", "a")}`}
-                                >
-                                    {carga.status}
-                                </span>
+                                <strong className="cliente-detalhe-status">{carga.status}</strong>
                             </div>
+                            <div className="cliente-detalhe-rota">
+                                <div><span>Origem</span><strong>{carga.origem?.trim() || "Origem não informada"}</strong></div>
+                                <span className="cliente-detalhe-seta" aria-hidden="true">→</span>
+                                <div><span>Destino</span><strong>{carga.destino?.trim() || "Destino não informado"}</strong></div>
+                            </div>
+                            <div className="cliente-detalhe-indicadores">
+                                <div><span>Previsão de entrega</span><strong>{carga.previsao_entrega?.trim() || "Não informada"}</strong></div>
+                                <div><span>Localização informada</span><strong>{carga.local_atual?.trim() || "Não informada"}</strong></div>
+                                <div><span>Última atualização</span><strong>{carga.ultima_atualizacao?.trim() || "Não informada"}</strong></div>
+                            </div>
+                        </section>
 
+                        {indiceAtual >= 0 && <section className="cliente-detalhe-progresso" aria-label="Progresso da entrega">
+                            <h2>Progresso da entrega</h2>
+                            <div className="cliente-progresso-carga">
+                                {etapas.map((etapa, index) => {
+                                    const concluida = index <= indiceAtual;
+                                    const atual = index === indiceAtual;
+                                    return <div key={etapa} className={`cliente-progresso-etapa ${concluida ? "concluida" : ""} ${atual ? "atual" : ""}`}>
+                                        <div className="cliente-progresso-ponto">{concluida ? "✓" : index + 1}</div>
+                                        <span>{etapa}</span>
+                                    </div>;
+                                })}
+                            </div>
+                        </section>}
+
+                        <section className="detalhe-carga-secao cliente-detalhe-informacoes">
+                            <h2>Informações da carga</h2>
                             <div className="carga-informacoes-grid">
-                                <div className="carga-informacao-card">
-                                    <MapPin size={22} />
-
-                                    <div>
-                                        <span>Local atual</span>
-                                        <strong>
-                                            {carga.local_atual || "-"}
-                                        </strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Navigation size={22} />
-
-                                    <div>
-                                        <span>Destino</span>
-                                        <strong>
-                                            {carga.destino || "-"}
-                                        </strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Package size={22} />
-                                    <div>
-                                        <span>Descrição da carga</span>
-                                        <strong>{carga.descricao_carga || "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Package size={22} />
-                                    <div>
-                                        <span>Peso</span>
-                                        <strong>{carga.peso_kg != null ? `${carga.peso_kg} kg` : "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Clock3 size={22} />
-                                    <div>
-                                        <span>Saída prevista</span>
-                                        <strong>{carga.data_prevista_saida || "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Clock3 size={22} />
-                                    <div>
-                                        <span>Previsão de entrega</span>
-                                        <strong>{carga.previsao_entrega || "-"}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="carga-informacao-card">
-                                    <Clock3 size={22} />
-
-                                    <div>
-                                        <span>
-                                            Última atualização
-                                        </span>
-
-                                        <strong>
-                                            {carga.ultima_atualizacao ||
-                                                "-"}
-                                        </strong>
-                                    </div>
-                                </div>
+                                <div className="carga-informacao-card"><Package size={22} /><div><span>Descrição da carga</span><strong>{carga.descricao_carga?.trim() || "Não informada"}</strong></div></div>
+                                <div className="carga-informacao-card"><Package size={22} /><div><span>Peso</span><strong>{carga.peso_kg != null ? `${new Intl.NumberFormat("pt-BR").format(carga.peso_kg)} kg` : "Não informado"}</strong></div></div>
+                                <div className="carga-informacao-card"><Clock3 size={22} /><div><span>Saída prevista</span><strong>{carga.data_prevista_saida?.trim() || "Não informada"}</strong></div></div>
                             </div>
-                        </div>
+                        </section>
 
                         <section className="detalhe-carga-secao">
-                            <h2>Timeline logística</h2>
+                            <h2>Histórico de movimentações</h2>
 
                             <TimelineRastreamento
                                 historico={carga.historico}
@@ -351,7 +284,7 @@ function DetalheCargaCliente() {
                         <section className="detalhe-carga-secao">
                             <div className="comprovantes-titulo">
                                 <div>
-                                    <h2>Documentos e comprovantes</h2>
+                                    <h2>Comprovantes de entrega</h2>
 
                                     <p>
                                         Consulte as informações registradas na entrega
@@ -362,8 +295,9 @@ function DetalheCargaCliente() {
                                 <FileCheck2 size={26} />
                             </div>
 
-                            <div className="comprovantes-lista">
-                                {comprovantes.length === 0 ? (
+                            {erroComprovantes && <p role="alert" className="mensagem-erro">{erroComprovantes}</p>}
+                            {!erroComprovantes && <div className="comprovantes-lista">
+                                {comprovantes.length === 0 && arquivosComprovante.length === 0 ? (
                                     <p className="comprovantes-vazio">
                                         Nenhum comprovante disponível até o momento.
                                     </p>
@@ -411,14 +345,14 @@ function DetalheCargaCliente() {
                                         </article>
                                     ))
                                 )}
-                            </div>
+                            </div>}
 
-                            {arquivosComprovante.length > 0 && (
+                            {!erroComprovantes && arquivosComprovante.length > 0 && (
                                 <div className="lista-arquivos">
                                     <h3>Arquivos do comprovante</h3>
 
                                     {erroDownload && (
-                                        <p className="mensagem-erro">{erroDownload}</p>
+                                        <p role="alert" className="mensagem-erro">{erroDownload}</p>
                                     )}
 
                                     {arquivosComprovante.map((arquivo) => (
@@ -443,7 +377,7 @@ function DetalheCargaCliente() {
                                                 )}
                                                 className="btn-detalhes"
                                             >
-                                                Abrir
+                                                Abrir {arquivo.nome_arquivo}
                                             </button>
                                         </div>
                                     ))}
@@ -455,10 +389,7 @@ function DetalheCargaCliente() {
                                 <div>
                                     <h2>Ocorrências</h2>
 
-                                    <p>
-                                        Registre problemas ou dúvidas
-                                        relacionados a esta carga.
-                                    </p>
+                                    <p>Comunique problemas ou dúvidas relacionados a esta carga.</p>
                                 </div>
 
                                 <TriangleAlert size={25} />
@@ -469,11 +400,12 @@ function DetalheCargaCliente() {
                                 onSubmit={handleCriarOcorrencia}
                             >
                                 <div className="linha-input">
-                                    <label>
+                                    <label htmlFor="cliente-titulo-ocorrencia">
                                         Tipo ou título da ocorrência
                                     </label>
 
                                     <select
+                                        id="cliente-titulo-ocorrencia"
                                         value={tituloOcorrencia}
                                         onChange={(event) =>
                                             setTituloOcorrencia(
@@ -509,9 +441,10 @@ function DetalheCargaCliente() {
                                 </div>
 
                                 <div className="linha-input">
-                                    <label>Descrição</label>
+                                    <label htmlFor="cliente-descricao-ocorrencia">Descrição</label>
 
                                     <textarea
+                                        id="cliente-descricao-ocorrencia"
                                         value={descricaoOcorrencia}
                                         onChange={(event) =>
                                             setDescricaoOcorrencia(
@@ -542,7 +475,7 @@ function DetalheCargaCliente() {
                             </form>
 
                             <div className="ocorrencias-lista">
-                                {ocorrencias.length === 0 ? (
+                                {erroOcorrencias ? <p role="alert" className="mensagem-erro">{erroOcorrencias}</p> : ocorrencias.length === 0 ? (
                                     <p className="ocorrencias-vazia">
                                         Nenhuma ocorrência registrada
                                         para esta carga.

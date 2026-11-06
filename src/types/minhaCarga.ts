@@ -19,6 +19,7 @@ export type DetalheMinhaCarga = {
     codigo: string;
     cliente: string;
     status: string;
+    origem?: string | null;
     local_atual: string;
     destino: string;
     ultima_atualizacao: string;

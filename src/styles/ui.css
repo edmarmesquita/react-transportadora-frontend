@@ -5742,3 +5742,50 @@ textarea {
     .cliente-lista-page .cliente-lista-seta { transform: none; }
     .cliente-lista-page .cliente-lista-acao { width: auto; }
 }
+
+/* Detalhe de acompanhamento do cliente */
+.portal-cliente-detalhe-page .cliente-detalhe-voltar { display: inline-flex; align-items: center; min-height: 44px; color: #1d4ed8; font-weight: 700; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel,
+.portal-cliente-detalhe-page .cliente-detalhe-progresso { min-width: 0; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; background: #fff; color: #1f2937; box-sizing: border-box; overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel { border-top: 5px solid #2563eb; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel-topo { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 14px; min-width: 0; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel-topo > div { min-width: 0; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel-topo p { margin: 0 0 6px; color: #64748b; font-size: 13px; font-weight: 700; }
+.portal-cliente-detalhe-page .cliente-detalhe-painel h2 { margin: 0; color: #1f2937; font-size: clamp(22px, 4vw, 30px); overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .cliente-detalhe-status { display: inline-block; max-width: 100%; padding: 9px 14px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-size: 14px; overflow-wrap: anywhere; box-sizing: border-box; }
+.portal-cliente-detalhe-page .cliente-detalhe-rota { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 24px 0; min-width: 0; }
+.portal-cliente-detalhe-page .cliente-detalhe-rota > div,
+.portal-cliente-detalhe-page .cliente-detalhe-indicadores > div { min-width: 0; }
+.portal-cliente-detalhe-page .cliente-detalhe-rota span:not(.cliente-detalhe-seta),
+.portal-cliente-detalhe-page .cliente-detalhe-indicadores span { display: block; margin-bottom: 5px; color: #64748b; font-size: 12px; font-weight: 700; }
+.portal-cliente-detalhe-page .cliente-detalhe-rota strong { display: block; color: #1f2937; font-size: clamp(17px, 3vw, 22px); overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .cliente-detalhe-seta { color: #2563eb; font-size: 24px; line-height: 1; transform: rotate(90deg); justify-self: start; }
+.portal-cliente-detalhe-page .cliente-detalhe-indicadores { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.portal-cliente-detalhe-page .cliente-detalhe-indicadores strong { display: block; color: #334155; overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .cliente-detalhe-progresso { margin-top: 20px; }
+.portal-cliente-detalhe-page .cliente-detalhe-progresso h2,
+.portal-cliente-detalhe-page .detalhe-carga-secao h2,
+.portal-cliente-detalhe-page .lista-arquivos h3 { color: #1f2937; }
+.portal-cliente-detalhe-page .cliente-detalhe-progresso .cliente-progresso-carga { margin-bottom: 0; }
+.portal-cliente-detalhe-page .carga-informacoes-grid { margin-top: 0; }
+.portal-cliente-detalhe-page .carga-informacao-card { min-width: 0; overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .carga-informacao-card > div { min-width: 0; }
+.portal-cliente-detalhe-page .timeline-conteudo,
+.portal-cliente-detalhe-page .comprovante-card,
+.portal-cliente-detalhe-page .ocorrencia-card,
+.portal-cliente-detalhe-page .arquivo-item { color: #1f2937; overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .ocorrencia-card p,
+.portal-cliente-detalhe-page .comprovante-observacao p,
+.portal-cliente-detalhe-page .comprovante-sem-observacao,
+.portal-cliente-detalhe-page .comprovantes-titulo p,
+.portal-cliente-detalhe-page .ocorrencias-titulo p { color: #475569; }
+.portal-cliente-detalhe-page .arquivo-item > div { min-width: 0; }
+.portal-cliente-detalhe-page .arquivo-item strong { overflow-wrap: anywhere; }
+.portal-cliente-detalhe-page .cliente-detalhe-voltar:focus-visible,
+.portal-cliente-detalhe-page .arquivo-item button:focus-visible,
+.portal-cliente-detalhe-page .ocorrencia-form :is(select, textarea, button):focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+@media (min-width: 700px) {
+    .portal-cliente-detalhe-page .cliente-detalhe-rota { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px; }
+    .portal-cliente-detalhe-page .cliente-detalhe-seta { transform: none; }
+    .portal-cliente-detalhe-page .cliente-detalhe-indicadores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
