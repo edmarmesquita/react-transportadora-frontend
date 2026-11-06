@@ -15,12 +15,18 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
 
     const perfil = usuarioLogado?.perfil?.toLowerCase() ?? "";
     const ehMotorista = perfil === "motorista";
+    const ehCliente = perfil === "cliente";
     const sair = useSair();
     const primeiroLinkMotorista = useRef<HTMLAnchorElement>(null);
+    const primeiroLinkCliente = useRef<HTMLAnchorElement>(null);
 
     useEffect(() => {
         if (ehMotorista && aberto) primeiroLinkMotorista.current?.focus();
     }, [ehMotorista, aberto]);
+
+    useEffect(() => {
+        if (ehCliente && aberto) primeiroLinkCliente.current?.focus();
+    }, [ehCliente, aberto]);
 
     const menuPermitido = adminMenu.filter((item) =>
         item.perfis.includes(perfil)
@@ -29,7 +35,7 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
     return (
         <aside
             id="admin-sidebar-navigation"
-            className={`admin-sidebar${ehMotorista ? " motorista-sidebar" : ""}${aberto ? " aberta" : ""}`}
+            className={`admin-sidebar${ehMotorista ? " motorista-sidebar" : ""}${ehCliente ? " cliente-sidebar" : ""}${aberto ? " aberta" : ""}`}
         >
             <h2>ROTANZA</h2>
 
@@ -61,12 +67,13 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
                         <button type="button" onClick={sair}>Sair</button>
                     </div>
                 </>
-            ) : <nav>
+            ) : <><nav aria-label={ehCliente ? "Menu do cliente" : undefined}>
                 {menuPermitido.map((item) => {
                     const Icone = item.icone;
 
                     return (
                         <NavLink
+                            ref={ehCliente && item.rota === "/portal/cliente" ? primeiroLinkCliente : undefined}
                             key={item.rota}
                             to={item.rota}
                             end={item.end}
@@ -77,7 +84,13 @@ function AdminSidebar({ aberto, fecharMenu }: AdminSidebarProps) {
                         </NavLink>
                     );
                 })}
-            </nav>}
+            </nav>
+                {ehCliente && <div className="cliente-sidebar-rodape">
+                    <strong>{usuarioLogado?.nome?.trim() || usuarioLogado?.usuario?.trim() || "Usuário"}</strong>
+                    <span>Cliente</span>
+                    <button type="button" onClick={sair}>Sair</button>
+                </div>}
+            </>}
         </aside>
     );
 }

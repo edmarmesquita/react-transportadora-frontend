@@ -12,11 +12,13 @@ type AdminLayoutProps = {
 function AdminLayout({ children, className }: AdminLayoutProps) {
     const [menuAberto, setMenuAberto] = useState(false)
     const alternadorMenu = useRef<HTMLButtonElement>(null)
-    const ehMotorista = buscarUsuarioLogado()?.perfil?.trim().toLowerCase() === "motorista"
-    const nomeMenu = ehMotorista ? "menu do motorista" : "menu administrativo"
+    const perfil = buscarUsuarioLogado()?.perfil?.trim().toLowerCase()
+    const ehMotorista = perfil === "motorista"
+    const ehCliente = perfil === "cliente"
+    const nomeMenu = ehMotorista ? "menu do motorista" : ehCliente ? "menu do cliente" : "menu administrativo"
 
     return (
-        <div className={`admin-layout${className ? ` ${className}` : ""}`}>
+        <div className={`admin-layout${ehCliente ? " cliente-layout" : ""}${className ? ` ${className}` : ""}`}>
             <AdminSidebar
                 aberto={menuAberto}
                 fecharMenu={() => {

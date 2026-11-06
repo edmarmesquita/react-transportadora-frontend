@@ -100,6 +100,13 @@ export const adminMenu: MenuItem[] = [
     },
 
     {
+        titulo: "Minhas Cargas",
+        rota: "/portal/cliente/minhas-cargas",
+        icone: Package,
+        perfis: ["cliente"],
+    },
+
+    {
         titulo: "Meu Perfil",
         rota: "/portal/cliente/perfil",
         icone: UserRound,

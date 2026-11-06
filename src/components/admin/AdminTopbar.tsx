@@ -4,16 +4,19 @@ import { useSair } from "./useSair";
 function AdminTopbar() {
     const usuario = buscarUsuarioLogado();
     const sair = useSair();
+    const perfil = usuario?.perfil?.trim().toLowerCase();
 
     return (
         <header className="admin-topbar">
 
             <div>
-                <h1>ROTANZA</h1>
+                <h1>{perfil === "cliente" ? "Portal do Cliente" : "ROTANZA"}</h1>
 
                 <p>
-                    {usuario?.perfil?.trim().toLowerCase() === "motorista"
+                    {perfil === "motorista"
                         ? "Central operacional do motorista"
+                        : perfil === "cliente"
+                            ? "Acompanhe suas cargas e entregas"
                         : "Central administrativa de cargas, viagens e entregas"}
                 </p>
             </div>
@@ -24,7 +27,7 @@ function AdminTopbar() {
 
                     <strong>{usuario?.nome}</strong>
 
-                    <p>{usuario?.perfil}</p>
+                    <p>{perfil === "cliente" ? "Cliente" : usuario?.perfil}</p>
 
                 </div>
 
