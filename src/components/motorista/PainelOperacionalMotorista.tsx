@@ -101,7 +101,7 @@ export default function PainelOperacionalMotorista({ viagem, onAtualizarStatus }
             <div className="motorista-operacional-acoes" aria-label="Ações rápidas da viagem">
                 {maps ? <a href={maps} target="_blank" rel="noopener noreferrer" aria-label="Abrir destino no Google Maps (abre em nova aba)">Google Maps</a> : <span aria-disabled="true" title="Destino indisponível">Google Maps indisponível</span>}
                 {waze ? <a href={waze} target="_blank" rel="noopener noreferrer" aria-label="Abrir destino no Waze (abre em nova aba)">Waze</a> : <span aria-disabled="true" title="Destino indisponível">Waze indisponível</span>}
-                <button type="button" onClick={() => focarSecao("motorista-localizacao")}>Atualizar localização</button>
+                <button type="button" onClick={() => focarSecao("motorista-localizacao")}>Informar localização manualmente</button>
                 <button type="button" onClick={() => focarSecao("motorista-ocorrencia")}>Registrar ocorrência</button>
             </div>
             {proximaAcao && (

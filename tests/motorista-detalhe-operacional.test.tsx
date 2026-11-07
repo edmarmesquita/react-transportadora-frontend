@@ -27,6 +27,7 @@ beforeEach(() => {
             viagem = { ...viagem, status: JSON.parse(String(options.body)).status };
             return resposta({ mensagem: "Atualizado" });
         }
+        if (endpoint.endsWith("/localizacoes/gps")) return resposta({ mensagem: "Localização atualizada.", data_registro: "2026-11-05T18:53:50Z" });
         if (endpoint.endsWith("/localizacoes")) return resposta([]);
         if (endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
         if (endpoint.endsWith("/comprovante")) return resposta({});
@@ -37,6 +38,64 @@ beforeEach(() => {
 afterEach(() => { cleanup(); sessionStorage.clear(); vi.clearAllMocks(); });
 
 describe("detalhe operacional do motorista", () => {
+    it("captures GPS only after an explicit action and prevents duplicate submits", async () => {
+        let success!: PositionCallback;
+        const getCurrentPosition = vi.fn((callback: PositionCallback) => { success = callback; });
+        Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition } });
+        montar("motorista");
+        const button = await screen.findByRole("button", { name: "Atualizar localiza\u00e7\u00e3o por GPS" });
+        expect(screen.getByRole("heading", { name: "Histórico de localizações manuais" })).toBeTruthy();
+        expect(await screen.findByText("Nenhuma localização manual registrada até o momento.")).toBeTruthy();
+        expect(getCurrentPosition).not.toHaveBeenCalled();
+        fireEvent.click(button);
+        expect(getCurrentPosition).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 });
+        expect(screen.getByRole("status").textContent).toContain("Obtendo localiza\u00e7\u00e3o...");
+        expect(button.hasAttribute("disabled")).toBe(true);
+        success({ coords: { latitude: -23.55052, longitude: -46.633308, accuracy: 12.4 } as GeolocationCoordinates, timestamp: Date.parse("2026-11-05T18:53:50Z") } as GeolocationPosition);
+        await waitFor(() => expect(api).toHaveBeenCalledWith("/api/motorista/minhas-viagens/7/localizacoes/gps", expect.objectContaining({ method: "POST", body: JSON.stringify({ latitude: -23.55052, longitude: -46.633308, accuracy_m: 12.4, captured_at: "2026-11-05T18:53:50.000Z" }) })));
+        expect((await screen.findByRole("status")).textContent).toContain("Localiza\u00e7\u00e3o atualizada.");
+        expect(screen.getByText("Nenhuma localização manual registrada até o momento.")).toBeTruthy();
+        expect(screen.queryByText("Nenhuma localização registrada até o momento.")).toBeNull();
+        expect(screen.getByText(/Precis\u00e3o do GPS: 12 m/)).toBeTruthy();
+        expect(screen.queryByText(/latitude|longitude|-23\.55052/i)).toBeNull();
+    });
+
+    it.each([
+        [1, "Permita o acesso"],
+        [2, "localiza\u00e7\u00e3o est\u00e1 indispon\u00edvel"],
+        [3, "demorou demais"],
+    ])("shows a clear geolocation error for code %i", async (code, expected) => {
+        let failure!: PositionErrorCallback;
+        const getCurrentPosition = vi.fn((_success: PositionCallback, callback: PositionErrorCallback) => { failure = callback; });
+        Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition } });
+        montar("motorista");
+        fireEvent.click(await screen.findByRole("button", { name: "Atualizar localiza\u00e7\u00e3o por GPS" }));
+        failure({ code, message: "mock", PERMISSION_DENIED: 1, POSITION_UNAVAILABLE: 2, TIMEOUT: 3 } as GeolocationPositionError);
+        expect((await screen.findByRole("status")).textContent).toContain(expected);
+    });
+
+    it("handles unsupported geolocation and backend failures", async () => {
+        Reflect.deleteProperty(navigator, "geolocation");
+        montar("motorista");
+        fireEvent.click(await screen.findByRole("button", { name: "Atualizar localiza\u00e7\u00e3o por GPS" }));
+        expect((await screen.findByRole("status")).textContent).toContain("n\u00e3o oferece suporte");
+        expect(api.mock.calls.some(([endpoint]) => endpoint.endsWith("/localizacoes/gps"))).toBe(false);
+        cleanup();
+        sessionStorage.clear();
+        vi.clearAllMocks();
+        const getCurrentPosition = vi.fn((success: PositionCallback) => success({ coords: { latitude: 1, longitude: 2, accuracy: 5 } as GeolocationCoordinates, timestamp: Date.parse("2026-11-05T18:53:50Z") } as GeolocationPosition));
+        Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition } });
+        api.mockImplementation(async (endpoint) => endpoint.endsWith("/localizacoes/gps")
+            ? new Response(JSON.stringify({ erro: "Falha GPS simulada" }), { status: 500 })
+            : endpoint.endsWith("/localizacoes") ? resposta([])
+                : endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos") ? resposta([])
+                    : endpoint.endsWith("/comprovante") ? resposta({})
+                        : endpoint.endsWith("/7") ? resposta(viagem) : resposta({}));
+        montar("motorista");
+        fireEvent.click(await screen.findByRole("button", { name: "Atualizar localiza\u00e7\u00e3o por GPS" }));
+        expect((await screen.findByRole("status")).textContent).toContain("Falha GPS simulada");
+    });
+
     it("mantém toda a estrutura operacional móvel, comprovantes e timeline", async () => {
         viagem = { ...viagem, status: "Saiu para entrega", destino: "Destino extenso para testar quebra de texto no painel operacional" };
         api.mockImplementation(async (endpoint) => {
@@ -53,7 +112,9 @@ describe("detalhe operacional do motorista", () => {
         expect(document.querySelector("main.motorista-detalhe-layout .detalhe-viagem-motorista")).toBeTruthy();
         expect(within(painel).getByRole("link", { name: /Google Maps/ })).toBeTruthy();
         expect(within(painel).getByRole("link", { name: /Waze/ })).toBeTruthy();
-        expect(screen.getByLabelText("Localização atual")).toBeTruthy();
+        expect(screen.getByLabelText("Localização atual (manual)")).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Registrar localização manual" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: "Atualizar localização por GPS" })).toBeTruthy();
         expect(screen.getByLabelText("Observação (opcional)")).toBeTruthy();
         expect(screen.getByLabelText("Descreva a ocorrência")).toBeTruthy();
         expect(screen.getByText("comprovante-de-entrega-com-nome-longo.pdf")).toBeTruthy();
@@ -78,6 +139,7 @@ describe("detalhe operacional do motorista", () => {
         montar(perfil);
         expect(await screen.findByText("Atualizar status")).toBeTruthy();
         expect(screen.getByRole("combobox")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Atualizar localização por GPS" })).toBeNull();
         expect(screen.queryByRole("region", { name: "Rota da viagem" })).toBeNull();
     });
 
@@ -112,8 +174,11 @@ describe("detalhe operacional do motorista", () => {
 
     it("leva com foco às seções existentes de localização e ocorrência", async () => {
         montar("motorista");
-        fireEvent.click(await screen.findByRole("button", { name: "Atualizar localização" }));
+        const geolocalizacao = vi.fn();
+        Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition: geolocalizacao } });
+        fireEvent.click(await screen.findByRole("button", { name: "Informar localização manualmente" }));
         expect(document.activeElement?.id).toBe("motorista-localizacao");
+        expect(geolocalizacao).not.toHaveBeenCalled();
         fireEvent.click(screen.getByRole("button", { name: "Registrar ocorrência" }));
         expect(document.activeElement?.id).toBe("motorista-ocorrencia");
         expect(document.querySelectorAll("#motorista-localizacao")).toHaveLength(1);

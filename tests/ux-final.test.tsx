@@ -384,7 +384,7 @@ it("atualiza a timeline da viagem do motorista após registrar localização", a
     montarRota("/portal/motorista/minhas-viagens/7", <DetalheViagem />);
     const campo = await screen.findByPlaceholderText("Localização atual. Ex: Uberaba/MG");
     fireEvent.change(campo, { target: { value: "Campinas/SP" } });
-    fireEvent.click(screen.getByRole("button", { name: "Registrar Localização" }));
+    fireEvent.click(screen.getByRole("button", { name: "Registrar localização manual" }));
 
     expect(await screen.findByText("Localização registrada com sucesso!")).toBeTruthy();
     expect(await screen.findByText("Localização Campinas/SP")).toBeTruthy();
