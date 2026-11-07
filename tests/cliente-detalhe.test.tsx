@@ -40,6 +40,32 @@ beforeEach(() => {
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 
 describe("Detalhe do Cliente 2.0", () => {
+    it("aceita timeline pública vazia sem reconstruir eventos legados", async () => {
+        montar({ ...base, status: "Saiu para entrega", historico: [] });
+        expect(await screen.findByText("Nenhuma atualização registrada até o momento.")).toBeTruthy();
+        expect(screen.getByRole("region", { name: "Progresso da entrega" })).toBeTruthy();
+    });
+
+    it("mostra somente o aviso comercial público recebido, sem dados operacionais", async () => {
+        montar({ ...base, status: "Saiu para entrega", historico: [{ id: 91, status: "Saiu para entrega", local: "São Paulo/SP", observacao: "O motorista avisou que está chegando.", data_evento: "07/11/2026 10:32" }] });
+        expect(await screen.findByText("O motorista avisou que está chegando.")).toBeTruthy();
+        const eventos = document.querySelectorAll(".timeline-evento");
+        expect(eventos).toHaveLength(1);
+        expect(eventos[0].textContent).toContain("07/11/2026 10:32");
+        expect(eventos[0].textContent).not.toMatch(/91|latitude|longitude|placa|observação interna/i);
+        expect(screen.getByRole("region", { name: "Progresso da entrega" })).toBeTruthy();
+    });
+
+    it("preserva a ordem de vários eventos públicos recebidos", async () => {
+        montar({ ...base, historico: [
+            { id: 1, status: "Em trânsito", local: "São Paulo/SP", observacao: "Carga em trânsito.", data_evento: "07/11/2026 09:00" },
+            { id: 2, status: "Saiu para entrega", local: "São Paulo/SP", observacao: "O motorista avisou que está chegando.", data_evento: "07/11/2026 10:32" },
+        ] });
+        expect(await screen.findByText("O motorista avisou que está chegando.")).toBeTruthy();
+        const eventos = document.querySelectorAll(".timeline-evento");
+        expect(eventos[0].textContent).toContain("Carga em trânsito.");
+        expect(eventos[1].textContent).toContain("O motorista avisou que está chegando.");
+    });
     it("mostra status, rota, previsão, localização informada e atualização", async () => {
         montar();
         const painel = await screen.findByRole("region", { name: "TRK-5" });

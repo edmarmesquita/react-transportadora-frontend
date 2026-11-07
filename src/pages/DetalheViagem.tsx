@@ -31,6 +31,8 @@ type ViagemDetalhe = {
     data_criacao: string
     data_saida?: string | null
     previsao_entrega?: string | null
+    estou_chegando?: boolean
+    data_aviso_chegada?: string | null
 }
 
 type ComprovanteEntrega = {
@@ -54,9 +56,32 @@ function DetalheViagem() {
         useState<ArquivoComprovante[]>([])
     const arquivosRequisicao = useRef(0)
     const [carregando, setCarregando] = useState(true)
+    const [enviandoAviso, setEnviandoAviso] = useState(false)
+    const [erroAviso, setErroAviso] = useState("")
+    const avisoEmAndamento = useRef(false)
     const [erroCarregamento, setErroCarregamento] = useState("")
     const usuario = buscarUsuarioLogado();
     const ehMotorista = usuario?.perfil?.trim().toLowerCase() === "motorista";
+
+    async function avisarChegada() {
+        if (!ehMotorista || !viagem || viagem.status !== "Saiu para entrega" || viagem.estou_chegando || avisoEmAndamento.current) return;
+        avisoEmAndamento.current = true;
+        setEnviandoAviso(true);
+        setErroAviso("");
+        try {
+            const resposta = await apiFetch(`/api/motorista/minhas-viagens/${viagem.id}/estou-chegando`, { method: "POST" });
+            const dados = await resposta.json().catch(() => null);
+            if (!resposta.ok) throw new Error(dados?.erro || "Não foi possível avisar o cliente. Tente novamente.");
+            setViagem((atual) => atual && atual.id === viagem.id
+                ? { ...atual, estou_chegando: true, data_aviso_chegada: dados?.data_aviso ?? atual.data_aviso_chegada }
+                : atual);
+        } catch (erro) {
+            setErroAviso(erro instanceof Error ? erro.message : "Não foi possível avisar o cliente. Tente novamente.");
+        } finally {
+            avisoEmAndamento.current = false;
+            setEnviandoAviso(false);
+        }
+    }
 
     async function atualizarStatus(statusSolicitado = novoStatus): Promise<boolean> {
         if (!statusSolicitado) return false;
@@ -344,7 +369,7 @@ function DetalheViagem() {
                         </div>
 
                         {ehMotorista && (
-                            <PainelOperacionalMotorista viagem={viagem} onAtualizarStatus={atualizarStatus} />
+                            <PainelOperacionalMotorista viagem={viagem} onAtualizarStatus={atualizarStatus} onAvisarChegada={avisarChegada} enviandoAviso={enviandoAviso} erroAviso={erroAviso} />
                         )}
 
                         <section className="resumo-carga-card viagem-resumo-card">

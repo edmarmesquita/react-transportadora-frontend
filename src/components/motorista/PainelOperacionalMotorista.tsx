@@ -9,11 +9,16 @@ type ViagemOperacional = {
     veiculo?: string | null;
     data_saida?: string | null;
     previsao_entrega?: string | null;
+    estou_chegando?: boolean;
+    data_aviso_chegada?: string | null;
 };
 
 type Props = {
     viagem: ViagemOperacional;
     onAtualizarStatus: (status: string) => Promise<boolean>;
+    onAvisarChegada: () => Promise<void>;
+    enviandoAviso: boolean;
+    erroAviso: string;
 };
 
 function valor(texto?: string | null) {
@@ -26,7 +31,7 @@ function focarSecao(id: string) {
     secao?.focus({ preventScroll: true });
 }
 
-export default function PainelOperacionalMotorista({ viagem, onAtualizarStatus }: Props) {
+export default function PainelOperacionalMotorista({ viagem, onAtualizarStatus, onAvisarChegada, enviandoAviso, erroAviso }: Props) {
     const [confirmacaoAberta, setConfirmacaoAberta] = useState(false);
     const [enviando, setEnviando] = useState(false);
     const abrirRef = useRef<HTMLButtonElement>(null);
@@ -39,6 +44,9 @@ export default function PainelOperacionalMotorista({ viagem, onAtualizarStatus }
     const proximaAcao = viagem.status === "Saiu para entrega"
         ? null
         : (transicoesViagem[viagem.status] ?? []).find((status) => status !== "Cancelada") ?? null;
+    const horarioAviso = viagem.data_aviso_chegada && !Number.isNaN(Date.parse(viagem.data_aviso_chegada))
+        ? new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", hour: "2-digit", minute: "2-digit" }).format(new Date(viagem.data_aviso_chegada))
+        : null;
 
     useEffect(() => {
         if (!confirmacaoAberta) return;
@@ -104,6 +112,18 @@ export default function PainelOperacionalMotorista({ viagem, onAtualizarStatus }
                 <button type="button" onClick={() => focarSecao("motorista-localizacao")}>Informar localização manualmente</button>
                 <button type="button" onClick={() => focarSecao("motorista-ocorrencia")}>Registrar ocorrência</button>
             </div>
+            {viagem.status === "Saiu para entrega" && (
+                <div className="motorista-aviso-chegada" aria-live="polite">
+                    {viagem.estou_chegando ? (
+                        <p className="motorista-aviso-chegada-enviado">✓ Cliente avisado{horarioAviso ? ` às ${horarioAviso}` : ""}</p>
+                    ) : (
+                        <button type="button" onClick={() => void onAvisarChegada()} disabled={enviandoAviso}>
+                            {enviandoAviso ? "Enviando aviso..." : "Estou chegando"}
+                        </button>
+                    )}
+                    {erroAviso && !viagem.estou_chegando && <p role="alert">{erroAviso}</p>}
+                </div>
+            )}
             {proximaAcao && (
                 <div className="motorista-operacional-proxima">
                     <p>Próxima ação operacional</p>

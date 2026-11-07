@@ -3650,6 +3650,12 @@ textarea {
 .motorista-operacional-acoes a, .motorista-operacional-acoes button, .motorista-operacional-acoes > span { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 11px; background: #fff; color: #112b50; font: inherit; font-weight: 800; text-align: center; text-decoration: none; box-sizing: border-box; cursor: pointer; }
 .motorista-operacional-acoes > span { background: #dbe3ed; color: #475569; cursor: default; }
 .motorista-operacional-acoes a:hover, .motorista-operacional-acoes button:hover { background: #dbeafe; color: #112b50; }
+.motorista-aviso-chegada { margin-top: 22px; padding: 18px; border: 1px solid #93c5fd; border-radius: 12px; background: #173b68; }
+.motorista-aviso-chegada > button { display: block; width: 100%; min-height: 56px; padding: 12px 16px; border: 0; border-radius: 10px; background: #dbeafe; color: #112b50; font: inherit; font-weight: 800; cursor: pointer; }
+.motorista-aviso-chegada > button:disabled { opacity: .7; cursor: wait; }
+.motorista-aviso-chegada p { margin: 0; color: #fff; overflow-wrap: anywhere; }
+.motorista-aviso-chegada p[role="alert"] { margin-top: 10px; }
+.motorista-aviso-chegada-enviado { font-weight: 800; }
 .motorista-operacional :is(a, button):focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
 .motorista-operacional-proxima { margin-top: 24px; padding-top: 19px; border-top: 1px solid #456080; }
 .motorista-operacional-proxima p { margin: 0 0 10px; color: #bfdbfe; font-weight: 800; }

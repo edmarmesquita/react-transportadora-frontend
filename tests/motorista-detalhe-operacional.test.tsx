@@ -10,7 +10,7 @@ vi.mock("../src/services/api", () => ({ apiFetch: vi.fn() }));
 vi.mock("../src/components/admin/AdminLayout", () => ({ default: ({ children, className }: { children: ReactNode; className?: string }) => <main className={className}>{children}</main> }));
 
 const api = vi.mocked(apiFetch);
-const viagemBase = { id: 7, codigo_carga: "TRK-TESTE", cliente: "Cliente", motorista: "Motorista", veiculo: "MNO5P67", origem: "São Paulo/SP", destino: "São José dos Campos/SP", status: "Em trânsito", data_criacao: "Hoje", data_saida: "10:00", previsao_entrega: "14:00" };
+const viagemBase = { id: 7, codigo_carga: "TRK-TESTE", cliente: "Cliente", motorista: "Motorista", veiculo: "MNO5P67", origem: "São Paulo/SP", destino: "São José dos Campos/SP", status: "Em trânsito", data_criacao: "Hoje", data_saida: "10:00", previsao_entrega: "14:00", estou_chegando: false, data_aviso_chegada: null as string | null };
 let viagem = { ...viagemBase };
 
 function resposta(dados: unknown) { return new Response(JSON.stringify(dados), { status: 200, headers: { "Content-Type": "application/json" } }); }
@@ -23,6 +23,7 @@ function montar(perfil: string) {
 beforeEach(() => {
     viagem = { ...viagemBase };
     api.mockImplementation(async (endpoint, options) => {
+        if (endpoint.endsWith("/estou-chegando") && options?.method === "POST") return resposta({ ja_enviado: false, data_aviso: "2026-11-07T13:32:00Z" });
         if (endpoint.endsWith("/status") && options?.method === "POST") {
             viagem = { ...viagem, status: JSON.parse(String(options.body)).status };
             return resposta({ mensagem: "Atualizado" });
@@ -38,6 +39,69 @@ beforeEach(() => {
 afterEach(() => { cleanup(); sessionStorage.clear(); vi.clearAllMocks(); });
 
 describe("detalhe operacional do motorista", () => {
+    it.each(["Em trânsito", "Entregue"])("não oferece aviso em %s", async (status) => {
+        viagem = { ...viagem, status };
+        montar("motorista");
+        await screen.findByRole("region", { name: "Rota da viagem" });
+        expect(screen.queryByRole("button", { name: "Estou chegando" })).toBeNull();
+    });
+
+    it("mantém o aviso enviado após carregar o detalhe novamente", async () => {
+        viagem = { ...viagem, status: "Saiu para entrega", estou_chegando: true, data_aviso_chegada: "2026-11-07T13:32:00Z" };
+        const tela = montar("motorista");
+        expect(await screen.findByText("✓ Cliente avisado às 10:32")).toBeTruthy();
+        expect(screen.queryByRole("button", { name: "Estou chegando" })).toBeNull();
+        tela.unmount();
+        montar("motorista");
+        expect(await screen.findByText("✓ Cliente avisado às 10:32")).toBeTruthy();
+    });
+
+    it.each([false, true])("envia aviso e aceita resposta idempotente=%s sem GPS nem mudar status", async (ja_enviado) => {
+        viagem = { ...viagem, status: "Saiu para entrega" };
+        let concluir!: (value: Response) => void;
+        api.mockImplementation(async (endpoint, options) => {
+            if (endpoint.endsWith("/estou-chegando") && options?.method === "POST") return new Promise<Response>((resolve) => { concluir = resolve; });
+            if (endpoint.endsWith("/localizacoes") || endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            if (endpoint.endsWith("/7")) return resposta(viagem);
+            throw new Error(endpoint);
+        });
+        const gps = vi.fn();
+        Object.defineProperty(navigator, "geolocation", { configurable: true, value: { getCurrentPosition: gps } });
+        montar("motorista");
+        const botao = await screen.findByRole("button", { name: "Estou chegando" });
+        fireEvent.click(botao);
+        expect(screen.getByRole("button", { name: "Enviando aviso..." }).hasAttribute("disabled")).toBe(true);
+        fireEvent.click(screen.getByRole("button", { name: "Enviando aviso..." }));
+        expect(api.mock.calls.filter(([endpoint]) => endpoint.endsWith("/estou-chegando"))).toHaveLength(1);
+        concluir(resposta({ ja_enviado, data_aviso: "2026-11-07T13:32:00Z" }));
+        expect(await screen.findByText("✓ Cliente avisado às 10:32")).toBeTruthy();
+        expect(screen.getByText("Status atual: Saiu para entrega")).toBeTruthy();
+        expect(api).toHaveBeenCalledWith("/api/motorista/minhas-viagens/7/estou-chegando", { method: "POST" });
+        expect(gps).not.toHaveBeenCalled();
+        expect(api.mock.calls.some(([endpoint]) => endpoint.endsWith("/status") || endpoint.endsWith("/finalizar"))).toBe(false);
+    });
+
+    it("mostra erro e permite tentar o aviso novamente", async () => {
+        viagem = { ...viagem, status: "Saiu para entrega" };
+        let tentativas = 0;
+        api.mockImplementation(async (endpoint, options) => {
+            if (endpoint.endsWith("/estou-chegando") && options?.method === "POST") {
+                tentativas++;
+                return tentativas === 1 ? new Response(JSON.stringify({ erro: "Aviso indisponível" }), { status: 500 }) : resposta({ data_aviso: "2026-11-07T13:32:00Z" });
+            }
+            if (endpoint.endsWith("/localizacoes") || endpoint.endsWith("/historico") || endpoint.endsWith("/comprovantes/arquivos")) return resposta([]);
+            if (endpoint.endsWith("/comprovante")) return resposta({});
+            if (endpoint.endsWith("/7")) return resposta(viagem);
+            throw new Error(endpoint);
+        });
+        montar("motorista");
+        fireEvent.click(await screen.findByRole("button", { name: "Estou chegando" }));
+        expect((await screen.findByRole("alert")).textContent).toContain("Aviso indisponível");
+        fireEvent.click(screen.getByRole("button", { name: "Estou chegando" }));
+        expect(await screen.findByText("✓ Cliente avisado às 10:32")).toBeTruthy();
+        expect(tentativas).toBe(2);
+    });
     it("captures GPS only after an explicit action and prevents duplicate submits", async () => {
         let success!: PositionCallback;
         const getCurrentPosition = vi.fn((callback: PositionCallback) => { success = callback; });
