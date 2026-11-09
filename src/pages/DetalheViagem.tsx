@@ -41,6 +41,26 @@ type ComprovanteEntrega = {
     data_entrega: string
 }
 
+type FotoSelecionada = { id: number; arquivo: File; url: string }
+type FotoPersistida = { id: number; nome_original: string; url: string }
+type OcorrenciaVisual = { id: number; descricao: string; data: string; data_iso?: string; fotos: FotoPersistida[] }
+
+function formatarInstanteSaoPaulo(valor: string | undefined, fallback: string) {
+    if (!valor) return fallback
+    const data = new Date(valor)
+    if (Number.isNaN(data.getTime())) return fallback
+    return new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    }).format(data)
+}
+const LIMITE_FOTO = 10 * 1024 * 1024
+
 function DetalheViagem() {
     const { id } = useParams()
     const { notificar } = useNotification()
@@ -50,6 +70,17 @@ function DetalheViagem() {
     const [novoStatus, setNovoStatus] = useState("")
     const [novaOcorrencia, setNovaOcorrencia] = useState("")
     const [registrandoOcorrencia, setRegistrandoOcorrencia] = useState(false)
+    const registroOcorrenciaEmAndamento = useRef(false)
+    const [fotosOcorrencia, setFotosOcorrencia] = useState<FotoSelecionada[]>([])
+    const fotosRef = useRef<FotoSelecionada[]>([])
+    const proximoFotoId = useRef(0)
+    const inputFotos = useRef<HTMLInputElement>(null)
+    const [ocorrenciaPendenteId, setOcorrenciaPendenteId] = useState<number | null>(null)
+    const [etapaOcorrencia, setEtapaOcorrencia] = useState<"registrando" | "fotos" | null>(null)
+    const [mensagemFotos, setMensagemFotos] = useState("")
+    const [erroFotos, setErroFotos] = useState("")
+    const [ocorrenciasVisuais, setOcorrenciasVisuais] = useState<OcorrenciaVisual[]>([])
+    const urlsOcorrenciasRef = useRef<string[]>([])
     const [comprovante, setComprovante] =
         useState<ComprovanteEntrega | null>(null)
     const [arquivosComprovante, setArquivosComprovante] =
@@ -246,6 +277,42 @@ function DetalheViagem() {
         }
     }
 
+    async function carregarFotosOcorrencias() {
+        if (!ehMotorista) return
+        const resposta = await apiFetch(`/api/motorista/minhas-viagens/${id}/ocorrencias`, { cache: "no-store" })
+        const ocorrencias = await resposta.json().catch(() => null)
+        if (!resposta.ok || !Array.isArray(ocorrencias)) return
+        for (const url of urlsOcorrenciasRef.current) URL.revokeObjectURL(url)
+        urlsOcorrenciasRef.current = []
+        const visuais: OcorrenciaVisual[] = []
+        for (const ocorrencia of ocorrencias) {
+            const fotosResposta = await apiFetch(`/api/motorista/minhas-viagens/${id}/ocorrencias/${ocorrencia.id}/fotos`, { cache: "no-store" })
+            const fotos = await fotosResposta.json().catch(() => null)
+            const persistidas: FotoPersistida[] = []
+            if (fotosResposta.ok && Array.isArray(fotos)) {
+                for (const foto of fotos) {
+                    try {
+                        const download = await apiFetch(foto.download_endpoint)
+                        if (!download.ok) continue
+                        const url = URL.createObjectURL(await download.blob())
+                        urlsOcorrenciasRef.current.push(url)
+                        persistidas.push({ id: foto.id, nome_original: foto.nome_original, url })
+                    } catch {
+                        // Uma foto indisponível não deve interromper a Timeline.
+                    }
+                }
+            }
+            visuais.push({
+                id: ocorrencia.id,
+                descricao: ocorrencia.descricao,
+                data: formatarInstanteSaoPaulo(ocorrencia.data_iso, ocorrencia.data),
+                data_iso: ocorrencia.data_iso,
+                fotos: persistidas,
+            })
+        }
+        setOcorrenciasVisuais(visuais)
+    }
+
     async function carregarDados() {
         try {
             await Promise.all([
@@ -254,6 +321,7 @@ function DetalheViagem() {
                 carregarComprovante(),
             ])
             await carregarArquivosComprovante()
+            await carregarFotosOcorrencias()
         } catch (error) {
             setViagem(null)
             setErroCarregamento(
@@ -266,8 +334,82 @@ function DetalheViagem() {
         }
     }
 
+    function limparFotos() {
+        for (const foto of fotosRef.current) URL.revokeObjectURL(foto.url);
+        fotosRef.current = [];
+        setFotosOcorrencia([]);
+        if (inputFotos.current) inputFotos.current.value = "";
+    }
+
+    function selecionarFotos(arquivos: FileList | null) {
+        if (!arquivos || registroOcorrenciaEmAndamento.current) return;
+        const selecionadas = Array.from(arquivos);
+        if (fotosRef.current.length + selecionadas.length > 5) {
+            setErroFotos("Selecione no máximo 5 fotos por ocorrência.");
+        } else {
+            const invalida = selecionadas.find((arquivo) =>
+                !["image/jpeg", "image/png"].includes(arquivo.type)
+                || !/\.(jpe?g|png)$/i.test(arquivo.name)
+                || arquivo.size === 0
+                || arquivo.size > LIMITE_FOTO);
+            if (invalida) {
+                setErroFotos(`Foto inválida: ${invalida.name}. Use JPEG ou PNG de até 10 MiB.`);
+            } else {
+                const novas = selecionadas.map((arquivo) => ({
+                    id: ++proximoFotoId.current, arquivo, url: URL.createObjectURL(arquivo),
+                }));
+                fotosRef.current = [...fotosRef.current, ...novas];
+                setFotosOcorrencia(fotosRef.current);
+                setErroFotos("");
+            }
+        }
+        if (inputFotos.current) inputFotos.current.value = "";
+    }
+
+    function removerFoto(fotoId: number) {
+        if (registroOcorrenciaEmAndamento.current) return;
+        const foto = fotosRef.current.find((item) => item.id === fotoId);
+        if (foto) URL.revokeObjectURL(foto.url);
+        fotosRef.current = fotosRef.current.filter((item) => item.id !== fotoId);
+        setFotosOcorrencia(fotosRef.current);
+        setErroFotos("");
+    }
+
+    async function enviarFotosOcorrencia(ocorrenciaId: number, fotos: FotoSelecionada[]) {
+        setEtapaOcorrencia("fotos");
+        const corpo = new FormData();
+        for (const foto of fotos) corpo.append("fotos", foto.arquivo);
+        const resposta = await apiFetch(
+            `/api/motorista/minhas-viagens/${id}/ocorrencias/${ocorrenciaId}/fotos`,
+            { method: "POST", body: corpo }
+        );
+        const dados = await resposta.json().catch(() => null);
+        if (!resposta.ok) throw new Error(dados?.erro || "Não foi possível enviar as fotos.");
+        return dados;
+    }
+
+    async function tentarEnviarFotosNovamente() {
+        if (ocorrenciaPendenteId === null || registroOcorrenciaEmAndamento.current || fotosRef.current.length === 0) return;
+        registroOcorrenciaEmAndamento.current = true;
+        setRegistrandoOcorrencia(true);
+        setErroFotos("");
+        try {
+            await enviarFotosOcorrencia(ocorrenciaPendenteId, fotosRef.current);
+            setOcorrenciaPendenteId(null);
+            setMensagemFotos("Ocorrência registrada. Fotos anexadas.");
+            notificar("sucesso", "Ocorrência registrada com sucesso. Fotos anexadas.");
+            limparFotos();
+        } catch (erro) {
+            setErroFotos(erro instanceof Error ? `Ocorrência registrada, mas as fotos ainda não foram enviadas. ${erro.message}` : "Ocorrência registrada, mas as fotos ainda não foram enviadas.");
+        } finally {
+            registroOcorrenciaEmAndamento.current = false;
+            setRegistrandoOcorrencia(false);
+            setEtapaOcorrencia(null);
+        }
+    }
+
     async function registrarOcorrencia() {
-        if (registrandoOcorrencia) return;
+        if (registroOcorrenciaEmAndamento.current || ocorrenciaPendenteId !== null) return;
         if (!novaOcorrencia.trim()) {
             notificar("aviso", "Descreva a ocorrência.");
             return;
@@ -278,8 +420,12 @@ function DetalheViagem() {
                 ? `/api/motorista/minhas-viagens/${id}/ocorrencias`
                 : `/api/admin/viagens/${id}/ocorrencias`;
 
+        registroOcorrenciaEmAndamento.current = true;
+        setErroFotos("");
+        setMensagemFotos("");
         try {
             setRegistrandoOcorrencia(true);
+            setEtapaOcorrencia("registrando");
             const resposta = await apiFetch(
                 endpoint,
                 {
@@ -305,8 +451,27 @@ function DetalheViagem() {
                 return;
             }
 
+            const fotosParaEnviar = [...fotosRef.current];
             setNovaOcorrencia("");
-            notificar("sucesso", "Ocorrência registrada com sucesso!");
+            if (ehMotorista && fotosParaEnviar.length > 0) {
+                const ocorrenciaId = Number(dados?.ocorrencia_id);
+                if (!Number.isSafeInteger(ocorrenciaId) || ocorrenciaId <= 0) {
+                    setErroFotos("Ocorrência registrada, mas o servidor não informou o ID para anexar as fotos.");
+                    return;
+                }
+                setOcorrenciaPendenteId(ocorrenciaId);
+                try {
+                    await enviarFotosOcorrencia(ocorrenciaId, fotosParaEnviar);
+                    setOcorrenciaPendenteId(null);
+                    setMensagemFotos("Ocorrência registrada. Fotos anexadas.");
+                    notificar("sucesso", "Ocorrência registrada com sucesso. Fotos anexadas.");
+                    limparFotos();
+                } catch (erro) {
+                    setErroFotos(erro instanceof Error ? `Ocorrência registrada, mas não foi possível enviar as fotos. ${erro.message}` : "Ocorrência registrada, mas não foi possível enviar as fotos.");
+                }
+            } else {
+                notificar("sucesso", "Ocorrência registrada com sucesso!");
+            }
 
             await carregarHistorico().catch(() => {
                 notificar("aviso", "Ocorrência salva, mas não foi possível atualizar a timeline.");
@@ -314,9 +479,18 @@ function DetalheViagem() {
         } catch {
             notificar("erro", "Erro ao conectar com o servidor.");
         } finally {
+            registroOcorrenciaEmAndamento.current = false;
             setRegistrandoOcorrencia(false);
+            setEtapaOcorrencia(null);
         }
     }
+
+    useEffect(() => () => {
+        for (const foto of fotosRef.current) URL.revokeObjectURL(foto.url);
+        fotosRef.current = [];
+        for (const url of urlsOcorrenciasRef.current) URL.revokeObjectURL(url);
+        urlsOcorrenciasRef.current = [];
+    }, []);
 
     /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => {
@@ -509,6 +683,25 @@ function DetalheViagem() {
                             onLocalizacaoRegistrada={atualizarTimelineAposLocalizacao}
                         />
 
+                        {ehMotorista && ocorrenciasVisuais.some((ocorrencia) => ocorrencia.fotos.length > 0) && (
+                            <section className="ocorrencias-fotos-persistidas detalhe-viagem-card" aria-labelledby="fotos-ocorrencias-titulo">
+                                <h2 id="fotos-ocorrencias-titulo">Fotos da ocorrência</h2>
+                                {ocorrenciasVisuais.filter((ocorrencia) => ocorrencia.fotos.length > 0).map((ocorrencia) => (
+                                    <article key={ocorrencia.id} className="ocorrencia-fotos-item">
+                                        <p><strong>{ocorrencia.descricao}</strong></p>
+                                        <small>{ocorrencia.data}</small>
+                                        <div className="ocorrencia-fotos-grade">
+                                            {ocorrencia.fotos.map((foto) => (
+                                                <a key={foto.id} href={foto.url} target="_blank" rel="noopener noreferrer">
+                                                    <img src={foto.url} alt={`Foto da ocorrência: ${foto.nome_original}`} />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </article>
+                                ))}
+                            </section>
+                        )}
+
                         <div className="ocorrencia-box detalhe-viagem-card" id={ehMotorista ? "motorista-ocorrencia" : undefined} tabIndex={ehMotorista ? -1 : undefined}>
                             <div>
                                 <span className="operacao-label">Registro operacional</span>
@@ -525,14 +718,51 @@ function DetalheViagem() {
                                         e.target.value
                                     )
                                 }
+                                disabled={registrandoOcorrencia || ocorrenciaPendenteId !== null}
                             />
+
+                            {ehMotorista && viagem && ["Em trânsito", "Saiu para entrega"].includes(viagem.status) && (
+                                <div className="motorista-fotos-ocorrencia">
+                                    <h3>Fotos da ocorrência (opcional)</h3>
+                                    <label htmlFor="motorista-fotos-ocorrencia" className="motorista-fotos-adicionar">Adicionar fotos</label>
+                                    <input
+                                        id="motorista-fotos-ocorrencia"
+                                        ref={inputFotos}
+                                        type="file"
+                                        accept="image/jpeg,image/png"
+                                        multiple
+                                        onChange={(evento) => selecionarFotos(evento.target.files)}
+                                        disabled={registrandoOcorrencia || fotosOcorrencia.length >= 5}
+                                    />
+                                    <p>{fotosOcorrencia.length} de 5 fotos</p>
+                                    {fotosOcorrencia.length > 0 && (
+                                        <ul className="motorista-fotos-lista">
+                                            {fotosOcorrencia.map((foto) => (
+                                                <li key={foto.id}>
+                                                    <img src={foto.url} alt={`Prévia de ${foto.arquivo.name}`} />
+                                                    <span>{foto.arquivo.name}</span>
+                                                    <button type="button" onClick={() => removerFoto(foto.id)} disabled={registrandoOcorrencia} aria-label={`Remover foto ${foto.arquivo.name}`}>Remover</button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {erroFotos && <p role="alert">{erroFotos}</p>}
+                                    {mensagemFotos && <p role="status">{mensagemFotos}</p>}
+                                    {ocorrenciaPendenteId !== null && !registrandoOcorrencia && (
+                                        <div className="motorista-fotos-recuperacao">
+                                            {fotosOcorrencia.length > 0 && <button type="button" onClick={() => void tentarEnviarFotosNovamente()}>Tentar enviar fotos novamente</button>}
+                                            <button type="button" onClick={() => { limparFotos(); setOcorrenciaPendenteId(null); setErroFotos(""); setMensagemFotos("Ocorrência registrada sem fotos."); }}>Concluir sem fotos</button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <button
                                 className="btn-nova-carga"
                                 onClick={registrarOcorrencia}
-                                disabled={registrandoOcorrencia}
+                                disabled={registrandoOcorrencia || ocorrenciaPendenteId !== null}
                             >
-                                {registrandoOcorrencia ? "Registrando..." : "Registrar Ocorrência"}
+                                {etapaOcorrencia === "registrando" ? "Registrando ocorrência..." : etapaOcorrencia === "fotos" ? "Enviando fotos..." : "Registrar Ocorrência"}
                             </button>
                         </div>
 

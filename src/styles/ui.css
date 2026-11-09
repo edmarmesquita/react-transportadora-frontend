@@ -3656,6 +3656,25 @@ textarea {
 .motorista-aviso-chegada p { margin: 0; color: #fff; overflow-wrap: anywhere; }
 .motorista-aviso-chegada p[role="alert"] { margin-top: 10px; }
 .motorista-aviso-chegada-enviado { font-weight: 800; }
+.motorista-fotos-ocorrencia { min-width: 0; margin: 18px 0; padding: 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
+.motorista-fotos-ocorrencia h3 { margin: 0 0 12px; font-size: 17px; }
+.motorista-fotos-adicionar { display: block; font-weight: 700; margin-bottom: 8px; }
+.ocorrencias-fotos-persistidas { min-width: 0; margin: 18px 0; padding: 16px; border: 1px solid #cbd5e1; border-radius: 12px; }
+.ocorrencias-fotos-persistidas h2 { margin: 0 0 14px; font-size: 18px; }
+.ocorrencia-fotos-item { min-width: 0; padding: 12px 0; border-top: 1px solid #e2e8f0; }
+.ocorrencia-fotos-item:first-of-type { border-top: 0; padding-top: 0; }
+.ocorrencia-fotos-item p { margin: 0 0 10px; overflow-wrap: anywhere; }
+.ocorrencia-fotos-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; max-width: 100%; }
+.ocorrencia-fotos-grade a { display: block; width: 72px; max-width: 100%; border-radius: 8px; overflow: hidden; background: #f1f5f9; }
+.ocorrencia-fotos-grade img { display: block; width: 72px; height: 72px; max-width: 100%; object-fit: cover; }
+.motorista-fotos-ocorrencia input[type="file"] { display: block; width: 100%; max-width: 100%; box-sizing: border-box; }
+.motorista-fotos-ocorrencia p { overflow-wrap: anywhere; }
+.motorista-fotos-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 10px; margin: 12px 0; padding: 0; list-style: none; }
+.motorista-fotos-lista li { min-width: 0; padding: 8px; border: 1px solid #cbd5e1; border-radius: 10px; display: grid; gap: 8px; }
+.motorista-fotos-lista img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; }
+.motorista-fotos-lista span { overflow-wrap: anywhere; }
+.motorista-fotos-lista button, .motorista-fotos-recuperacao button { min-height: 44px; font: inherit; cursor: pointer; }
+.motorista-fotos-recuperacao { display: grid; gap: 8px; }
 .motorista-operacional :is(a, button):focus-visible { outline: 3px solid #fbbf24; outline-offset: 3px; }
 .motorista-operacional-proxima { margin-top: 24px; padding-top: 19px; border-top: 1px solid #456080; }
 .motorista-operacional-proxima p { margin: 0 0 10px; color: #bfdbfe; font-weight: 800; }
