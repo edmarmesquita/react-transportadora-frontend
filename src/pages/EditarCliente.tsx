@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 function EditarCliente() {
     const { id } = useParams()
@@ -24,28 +24,27 @@ function EditarCliente() {
     const [estado, setEstado] = useState("")
     const [ativo, setAtivo] = useState(true)
 
-    async function carregarCliente() {
-        const resposta = await apiFetch(
-            `/api/admin/clientes/${id}`
-        )
-
-        const dados = await resposta.json()
-
-        setRazaoSocial(dados.razao_social || "")
-        setNomeFantasia(dados.nome_fantasia || "")
-        setDocumento(dados.documento || "")
-        setResponsavel(dados.responsavel || "")
-        setEmail(dados.email || "")
-        setTelefone(dados.telefone || "")
-        setCidade(dados.cidade || "")
-        setEstado(dados.estado || "")
-        setAtivo(dados.ativo ?? true)
-    }
-
     useEffect(() => {
-        carregarCliente()
-        
-    }, [])
+        async function carregarCliente() {
+            const resposta = await apiFetch(
+                `/api/admin/clientes/${id}`
+            )
+
+            const dados = await resposta.json()
+
+            setRazaoSocial(dados.razao_social || "")
+            setNomeFantasia(dados.nome_fantasia || "")
+            setDocumento(dados.documento || "")
+            setResponsavel(dados.responsavel || "")
+            setEmail(dados.email || "")
+            setTelefone(dados.telefone || "")
+            setCidade(dados.cidade || "")
+            setEstado(dados.estado || "")
+            setAtivo(dados.ativo ?? true)
+        }
+
+        void carregarCliente()
+    }, [id])
 
     async function salvarCliente() {
         await apiFetch(

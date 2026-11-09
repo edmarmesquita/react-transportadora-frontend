@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 import { apiFetch } from "../services/api"
 
 type Carga = {
@@ -72,10 +72,6 @@ function NovaViagem() {
             previsao_entrega: "",
         })
 
-    useEffect(() => {
-        carregarDados()
-    }, [])
-
     async function carregarDados() {
         try {
             setCarregando(true)
@@ -113,6 +109,11 @@ function NovaViagem() {
             setCarregando(false)
         }
     }
+
+
+    useEffect(() => {
+        carregarDados()
+    }, [])
 
     function handleChange(
         event:

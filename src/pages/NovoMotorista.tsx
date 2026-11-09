@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
 import { apiFetch } from "../services/api";
 import { buscarUsuarioLogado } from "../services/authService";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 
 function NovoMotorista() {
     const navigate = useNavigate();

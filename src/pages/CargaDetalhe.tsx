@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 import { apiFetch } from "../services/api";
 import { transicoesCarga } from "../constants/estadosOperacionais";
 import "../styles/ui.css";
@@ -69,7 +69,7 @@ function CargaDetalhe() {
         statusTerminal(carga?.status) || statusTerminal(viagemStatus)
     );
 
-    async function carregarCarga() {
+    const carregarCarga = useCallback(async () => {
         try {
             const resposta = await apiFetch(
                 `/api/admin/cargas/${id}`
@@ -117,7 +117,7 @@ function CargaDetalhe() {
 
             setLoading(false);
         }
-    }
+    }, [id]);
 
     async function carregarMotoristas() {
         try {
@@ -134,7 +134,7 @@ function CargaDetalhe() {
             const dados = await resposta.json();
 
             setMotoristas(dados);
-        } catch (erro) {
+        } catch {
             setMensagemMotorista("Não foi possível carregar os motoristas.");
         }
     }
@@ -299,7 +299,7 @@ function CargaDetalhe() {
         carregarCarga();
         carregarMotoristas();
         carregarVeiculos();
-    }, [id]);
+    }, [id, carregarCarga]);
 
     async function atribuirMotorista() {
         if (!motoristaId) {

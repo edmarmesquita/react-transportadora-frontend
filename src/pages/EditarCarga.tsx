@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 import { apiFetch } from "../services/api"
 
 type FormCarga = {
@@ -46,81 +46,6 @@ function EditarCarga() {
     const [loading, setLoading] = useState(true)
     const [salvando, setSalvando] = useState(false)
     const [clientes, setClientes] = useState<ClienteOpcao[]>([])
-
-    async function carregarClientes() {
-        const resposta = await apiFetch("/api/admin/clientes")
-        const dados = await resposta.json()
-
-        if (!resposta.ok) {
-            throw new Error(
-                dados.erro || "Erro ao carregar clientes."
-            )
-        }
-
-        setClientes(
-            (dados as ClienteOpcao[]).filter(
-                (cliente) => cliente.ativo
-            )
-        )
-    }
-
-    async function carregarCarga() {
-        const resposta = await apiFetch(
-            `/api/admin/cargas/${id}`
-        )
-
-        const dados = await resposta.json()
-
-        if (!resposta.ok) {
-            throw new Error(
-                dados.erro ||
-                dados.msg ||
-                "Erro ao carregar carga."
-            )
-        }
-
-        setFormData({
-            codigo: dados.codigo || "",
-            cliente_id: dados.cliente_id
-                ? String(dados.cliente_id)
-                : "",
-            descricao_carga: dados.descricao_carga || "",
-            peso_kg: dados.peso_kg !== null && dados.peso_kg !== undefined
-                ? String(dados.peso_kg)
-                : "",
-            local_atual: dados.local_atual || "",
-            destino: dados.destino || "",
-            data_prevista_saida: dados.data_prevista_saida_local || formatarDataPlanejadaParaInput(dados.data_prevista_saida),
-            previsao_entrega: dados.previsao_entrega_local || formatarDataPlanejadaParaInput(dados.previsao_entrega),
-            valor_frete: dados.valor_frete !== null &&
-                dados.valor_frete !== undefined
-                ? String(dados.valor_frete)
-                : "",
-            status_pagamento:
-                dados.status_pagamento || "Pendente",
-        })
-    }
-
-    async function carregarPagina() {
-        try {
-            setLoading(true)
-            await Promise.all([
-                carregarClientes(),
-                carregarCarga(),
-            ])
-        } catch (error) {
-            if (error instanceof Error) {
-                notificar("erro", error.message)
-            } else {
-                notificar(
-                    "erro",
-                    "Não foi possível carregar os dados."
-                )
-            }
-        } finally {
-            setLoading(false)
-        }
-    }
 
     function handleChange(
         event:
@@ -195,8 +120,83 @@ function EditarCarga() {
     }
 
     useEffect(() => {
-        carregarPagina()
-    }, [id])
+        async function carregarClientes() {
+            const resposta = await apiFetch("/api/admin/clientes")
+            const dados = await resposta.json()
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados.erro || "Erro ao carregar clientes."
+                )
+            }
+
+            setClientes(
+                (dados as ClienteOpcao[]).filter(
+                    (cliente) => cliente.ativo
+                )
+            )
+        }
+
+        async function carregarCarga() {
+            const resposta = await apiFetch(
+                `/api/admin/cargas/${id}`
+            )
+
+            const dados = await resposta.json()
+
+            if (!resposta.ok) {
+                throw new Error(
+                    dados.erro ||
+                    dados.msg ||
+                    "Erro ao carregar carga."
+                )
+            }
+
+            setFormData({
+                codigo: dados.codigo || "",
+                cliente_id: dados.cliente_id
+                    ? String(dados.cliente_id)
+                    : "",
+                descricao_carga: dados.descricao_carga || "",
+                peso_kg: dados.peso_kg !== null && dados.peso_kg !== undefined
+                    ? String(dados.peso_kg)
+                    : "",
+                local_atual: dados.local_atual || "",
+                destino: dados.destino || "",
+                data_prevista_saida: dados.data_prevista_saida_local || formatarDataPlanejadaParaInput(dados.data_prevista_saida),
+                previsao_entrega: dados.previsao_entrega_local || formatarDataPlanejadaParaInput(dados.previsao_entrega),
+                valor_frete: dados.valor_frete !== null &&
+                    dados.valor_frete !== undefined
+                    ? String(dados.valor_frete)
+                    : "",
+                status_pagamento:
+                    dados.status_pagamento || "Pendente",
+            })
+        }
+
+        async function carregarPagina() {
+            try {
+                setLoading(true)
+                await Promise.all([
+                    carregarClientes(),
+                    carregarCarga(),
+                ])
+            } catch (error) {
+                if (error instanceof Error) {
+                    notificar("erro", error.message)
+                } else {
+                    notificar(
+                        "erro",
+                        "Não foi possível carregar os dados."
+                    )
+                }
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        void carregarPagina()
+    }, [id, notificar])
 
     if (loading) {
         return (

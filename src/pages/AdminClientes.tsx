@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import AdminHeader from "../components/layout/AdminHeader"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 type Cliente = {
     id: number

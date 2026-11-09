@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 type ClienteOpcao = {
     id: number;

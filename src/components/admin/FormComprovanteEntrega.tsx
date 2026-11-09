@@ -2,7 +2,7 @@ import { useRef, useState } from "react"
 
 import { apiFetch } from "../../services/api"
 import { buscarUsuarioLogado } from "../../services/authService";
-import { useNotification } from "../ui/NotificationProvider";
+import { useNotification } from "../ui/NotificationContext";
 
 type Props = {
     viagemId: number

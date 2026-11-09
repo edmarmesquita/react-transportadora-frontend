@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import AdminLayout from "../components/admin/AdminLayout";
@@ -6,7 +6,7 @@ import AdminHeader from "../components/layout/AdminHeader";
 
 import { apiFetch } from "../services/api";
 import { buscarUsuarioLogado } from "../services/authService";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 
 type Motorista = {
     id: number;
@@ -37,11 +37,7 @@ function AdminMotoristas() {
     const [processandoId, setProcessandoId] =
         useState<number | null>(null);
 
-    useEffect(() => {
-        carregarMotoristas();
-    }, []);
-
-    async function carregarMotoristas() {
+    const carregarMotoristas = useCallback(async () => {
         try {
             setCarregando(true);
 
@@ -75,7 +71,11 @@ function AdminMotoristas() {
         } finally {
             setCarregando(false);
         }
-    }
+    }, [notificar]);
+
+    useEffect(() => {
+        carregarMotoristas();
+    }, [carregarMotoristas]);
 
     async function alterarStatusMotorista(
         motorista: Motorista

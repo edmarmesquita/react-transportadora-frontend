@@ -5,7 +5,7 @@ import {
     EVENTO_SESSAO_NAO_AUTORIZADA,
 } from "../../services/api";
 import { logout } from "../../services/authService";
-import { useNotification } from "../ui/NotificationProvider";
+import { useNotification } from "../ui/NotificationContext";
 
 function SessaoGuard() {
     const navigate = useNavigate();

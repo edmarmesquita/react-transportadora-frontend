@@ -1,30 +1,17 @@
 import {
-    createContext,
     useCallback,
-    useContext,
     useEffect,
     useRef,
     useState,
     type ReactNode,
 } from "react";
-
-export type NotificationType = "sucesso" | "erro" | "aviso" | "informacao";
+import { NotificationContext, type NotificationType } from "./NotificationContext";
 
 type Notification = {
     id: number;
     tipo: NotificationType;
     mensagem: string;
 };
-
-type NotificationContextValue = {
-    notificar: (
-        tipo: NotificationType,
-        mensagem: string,
-        duracao?: number
-    ) => void;
-};
-
-const NotificationContext = createContext<NotificationContextValue | null>(null);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
     const [notificacoes, setNotificacoes] = useState<Notification[]>([]);
@@ -91,14 +78,4 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             </div>
         </NotificationContext.Provider>
     );
-}
-
-export function useNotification() {
-    const contexto = useContext(NotificationContext);
-
-    if (!contexto) {
-        throw new Error("useNotification deve ser usado dentro de NotificationProvider.");
-    }
-
-    return contexto;
 }

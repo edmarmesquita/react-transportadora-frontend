@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 function EditarMotorista() {
     const { id } = useParams()
@@ -22,43 +22,43 @@ function EditarMotorista() {
     const [email, setEmail] = useState("")
     const [status, setStatus] = useState("Ativo")
 
-    async function carregarMotorista() {
-        try {
-            setMensagemErro("")
+    useEffect(() => {
+        async function carregarMotorista() {
+            try {
+                setMensagemErro("")
 
-            const resposta = await apiFetch(
-                `/api/admin/motoristas/${id}`
-            )
+                const resposta = await apiFetch(
+                    `/api/admin/motoristas/${id}`
+                )
 
-            const dados = await resposta.json().catch(() => null)
+                const dados = await resposta.json().catch(() => null)
 
-            if (!resposta.ok) {
-                throw new Error(
-                    dados?.erro ||
-                    dados?.msg ||
-                    "Não foi possível carregar o motorista."
+                if (!resposta.ok) {
+                    throw new Error(
+                        dados?.erro ||
+                        dados?.msg ||
+                        "Não foi possível carregar o motorista."
+                    )
+                }
+
+                setNome(dados.nome || "")
+                setCpf(dados.cpf || "")
+                setCnh(dados.cnh || "")
+                setCategoriaCnh(dados.categoria_cnh || "")
+                setTelefone(dados.telefone || "")
+                setEmail(dados.email || "")
+                setStatus(dados.status || "Ativo")
+            } catch (erro) {
+                setMensagemErro(
+                    erro instanceof Error
+                        ? erro.message
+                        : "Não foi possível carregar o motorista."
                 )
             }
-
-            setNome(dados.nome || "")
-            setCpf(dados.cpf || "")
-            setCnh(dados.cnh || "")
-            setCategoriaCnh(dados.categoria_cnh || "")
-            setTelefone(dados.telefone || "")
-            setEmail(dados.email || "")
-            setStatus(dados.status || "Ativo")
-        } catch (erro) {
-            setMensagemErro(
-                erro instanceof Error
-                    ? erro.message
-                    : "Não foi possível carregar o motorista."
-            )
         }
-    }
 
-    useEffect(() => {
-        carregarMotorista()
-    }, [])
+        void carregarMotorista()
+    }, [id])
 
     async function salvarMotorista() {
         try {

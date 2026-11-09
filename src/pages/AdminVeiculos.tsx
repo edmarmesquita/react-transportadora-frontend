@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { apiFetch } from "../services/api"
 import AdminHeader from "../components/layout/AdminHeader"
 import { buscarUsuarioLogado } from "../services/authService"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 type Veiculo = {
     id: number

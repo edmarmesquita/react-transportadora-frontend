@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import AdminLayout from "../components/admin/AdminLayout"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 import { apiFetch } from "../services/api"
 
 type RelatorioResumo = {

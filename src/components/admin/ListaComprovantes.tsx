@@ -1,5 +1,5 @@
 import { abrirArquivoAutenticado } from "../../services/arquivosService";
-import { useNotification } from "../ui/NotificationProvider";
+import { useNotification } from "../ui/NotificationContext";
 
 type Props = {
     arquivos: ArquivoComprovante[]

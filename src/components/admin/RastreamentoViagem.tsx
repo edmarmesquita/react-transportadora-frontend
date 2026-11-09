@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "../../services/api";
 import { buscarUsuarioLogado } from "../../services/authService";
-import { useNotification } from "../ui/NotificationProvider";
+import { useNotification } from "../ui/NotificationContext";
 
 function GpsLocalizacaoViagem({ viagemId }: { viagemId: number }) {
     const [capturando, setCapturando] = useState(false);
@@ -125,7 +125,7 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Pr
     const [localizacao, setLocalizacao] = useState("");
     const [observacao, setObservacao] = useState("");
 
-    async function carregarLocalizacoes() {
+    const carregarLocalizacoes = useCallback(async () => {
         const endpoint =
             usuario?.perfil?.toLowerCase() === "motorista"
                 ? `/api/motorista/minhas-viagens/${viagemId}/localizacoes`
@@ -146,7 +146,7 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Pr
         setLocalizacoes(
             Array.isArray(dados) ? dados : []
         );
-    }
+    }, [usuario, viagemId]);
 
     async function salvarLocalizacao() {
         if (!localizacao.trim()) {
@@ -204,7 +204,7 @@ function RastreamentoViagem({ viagemId, onLocalizacaoRegistrada, sectionId }: Pr
                 erro
             );
         });
-    }, [viagemId]);
+    }, [carregarLocalizacoes]);
 
     return (
         <div className="grafico-card detalhe-viagem-card rastreamento-viagem-card" id={sectionId} tabIndex={sectionId ? -1 : undefined}>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
 import { buscarUsuarioLogado } from "../services/authService"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 function EditarVeiculo() {
     const { id } = useParams()
@@ -26,27 +26,27 @@ function EditarVeiculo() {
     const veiculoInativo = statusOriginal.trim().toLowerCase() === "inativo"
     const podeEditarStatus = administrador || (operador && !veiculoInativo)
 
-    async function carregarVeiculo() {
-        const resposta = await apiFetch(
-            `/api/admin/veiculos/${id}`
-        )
-
-        const dados = await resposta.json()
-
-        setPlaca(dados.placa || "")
-        setModelo(dados.modelo || "")
-        setMarca(dados.marca || "")
-        setTipo(dados.tipo || "")
-        setAno(dados.ano || "")
-        setCapacidade(dados.capacidade || "")
-        const statusCarregado = dados.status || "Disponível"
-        setStatus(statusCarregado)
-        setStatusOriginal(statusCarregado)
-    }
-
     useEffect(() => {
-        carregarVeiculo()
-    }, [])
+        async function carregarVeiculo() {
+            const resposta = await apiFetch(
+                `/api/admin/veiculos/${id}`
+            )
+
+            const dados = await resposta.json()
+
+            setPlaca(dados.placa || "")
+            setModelo(dados.modelo || "")
+            setMarca(dados.marca || "")
+            setTipo(dados.tipo || "")
+            setAno(dados.ano || "")
+            setCapacidade(dados.capacidade || "")
+            const statusCarregado = dados.status || "Disponível"
+            setStatus(statusCarregado)
+            setStatusOriginal(statusCarregado)
+        }
+
+        void carregarVeiculo()
+    }, [id])
 
     async function salvarVeiculo() {
         await apiFetch(

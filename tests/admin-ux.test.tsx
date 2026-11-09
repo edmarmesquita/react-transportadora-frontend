@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { NotificationProvider, useNotification } from "../src/components/ui/NotificationProvider";
+import { NotificationProvider } from "../src/components/ui/NotificationProvider";
+import { useNotification } from "../src/components/ui/NotificationContext";
 import { apiFetch } from "../src/services/api";
 import { abrirArquivoAutenticado } from "../src/services/arquivosService";
 import NovoCliente from "../src/pages/NovoCliente";
@@ -18,9 +19,8 @@ import AdminVeiculos from "../src/pages/AdminVeiculos";
 import AdminCargas from "../src/pages/AdminCargas";
 import AdminViagens from "../src/pages/AdminViagens";
 import DetalheViagem from "../src/pages/DetalheViagem";
-import CargaDetalhe from "../src/pages/CargaDetalhe";
 import DetalheCargaCliente from "../src/pages/DetalheCargaCliente";
-import { transicoesCarga, transicoesViagem } from "../src/constants/estadosOperacionais";
+import { transicoesViagem } from "../src/constants/estadosOperacionais";
 import { buscarDetalheCarga, listarComprovantesCarga, listarOcorrenciasCarga } from "../src/services/clienteService";
 import ListaComprovantes from "../src/components/admin/ListaComprovantes";
 
@@ -325,19 +325,6 @@ describe("Viagem e comprovantes", () => {
 });
 
 describe("transições de status operacionais", () => {
-    async function opcoesCarga(status: string) {
-        api.mockImplementation(async (endpoint) => endpoint === "/api/admin/cargas/5"
-            ? resposta({ ...carga, status, local_atual: "Origem", ultima_atualizacao: "Agora", motorista_id: null, motorista: "", veiculo_id: null, veiculo: "", viagem_id: null })
-            : endpoint === "/api/admin/motoristas" || endpoint === "/api/admin/veiculos"
-                ? resposta([])
-                : leitura(endpoint));
-        montar(<CargaDetalhe />, "/admin/cargas/5");
-        await screen.findByText("Atualizar status");
-        const seletor = document.querySelector<HTMLSelectElement>("#status-carga");
-        expect(seletor).not.toBeNull();
-        return Array.from((seletor as HTMLSelectElement).options).map((opcao) => opcao.textContent);
-    }
-
     it("apresenta as transiÃ§Ãµes operacionais e os estados terminais", () => {
         expect(transicoesViagem.Planejada).toEqual(["Em trânsito", "Cancelada"]);
         expect(transicoesViagem["Em andamento"]).toContain("Cancelada");

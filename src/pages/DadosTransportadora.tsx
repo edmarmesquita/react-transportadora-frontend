@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
 import AdminLayout from "../components/admin/AdminLayout";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 import { apiFetch } from "../services/api";
 
 type Dados = {

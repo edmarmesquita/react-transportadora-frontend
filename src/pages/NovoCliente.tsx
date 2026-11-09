@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { apiFetch } from "../services/api"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 function NovoCliente() {
     const navigate = useNavigate()

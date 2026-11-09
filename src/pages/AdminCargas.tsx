@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import AdminLayout from "../components/admin/AdminLayout"
 import AdminHeader from "../components/layout/AdminHeader"
 import { apiFetch } from "../services/api"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 type Carga = {
     id: number

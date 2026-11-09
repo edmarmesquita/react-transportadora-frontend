@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 import { apiFetch } from "../services/api";
 
 type ClienteOpcao = {
@@ -50,11 +50,6 @@ function EditarUsuario() {
         ativo === usuarioOriginal.ativo &&
         clienteId === usuarioOriginal.clienteId;
 
-    useEffect(() => {
-        carregarUsuario();
-        carregarClientes();
-    }, [id]);
-
     async function carregarClientes() {
         try {
             const resposta = await apiFetch("/api/admin/clientes");
@@ -72,42 +67,47 @@ function EditarUsuario() {
         }
     }
 
-    async function carregarUsuario() {
-        try {
-            const resposta = await apiFetch(
-                `/api/admin/usuarios/${id}`
-            );
+    useEffect(() => {
+        async function carregarUsuario() {
+            try {
+                const resposta = await apiFetch(
+                    `/api/admin/usuarios/${id}`
+                );
 
-            if (!resposta.ok) {
-                throw new Error("Erro ao carregar usuário.");
+                if (!resposta.ok) {
+                    throw new Error("Erro ao carregar usuário.");
+                }
+
+                const dados = await resposta.json();
+
+                const valoresCarregados = {
+                    nome: dados.nome,
+                    usuario: dados.usuario,
+                    email: dados.email || "",
+                    perfil: dados.perfil,
+                    ativo: dados.ativo,
+                    clienteId:
+                        dados.cliente_id != null
+                            ? String(dados.cliente_id)
+                            : "",
+                };
+
+                setNome(valoresCarregados.nome);
+                setUsuario(valoresCarregados.usuario);
+                setEmail(valoresCarregados.email);
+                setPerfil(valoresCarregados.perfil);
+                setAtivo(valoresCarregados.ativo);
+                setClienteId(valoresCarregados.clienteId);
+                setUsuarioOriginal(valoresCarregados);
+            } catch (erro) {
+                console.error("Erro ao carregar usuário:", erro);
+                notificar("erro", "Não foi possível carregar o usuário.");
             }
-
-            const dados = await resposta.json();
-
-            const valoresCarregados = {
-                nome: dados.nome,
-                usuario: dados.usuario,
-                email: dados.email || "",
-                perfil: dados.perfil,
-                ativo: dados.ativo,
-                clienteId:
-                    dados.cliente_id != null
-                        ? String(dados.cliente_id)
-                        : "",
-            };
-
-            setNome(valoresCarregados.nome);
-            setUsuario(valoresCarregados.usuario);
-            setEmail(valoresCarregados.email);
-            setPerfil(valoresCarregados.perfil);
-            setAtivo(valoresCarregados.ativo);
-            setClienteId(valoresCarregados.clienteId);
-            setUsuarioOriginal(valoresCarregados);
-        } catch (erro) {
-            console.error("Erro ao carregar usuário:", erro);
-            notificar("erro", "Não foi possível carregar o usuário.");
         }
-    }
+
+        void carregarUsuario();
+        carregarClientes();
+    }, [id, notificar]);
 
     async function salvarAlteracoes(event: React.FormEvent) {
         event.preventDefault();

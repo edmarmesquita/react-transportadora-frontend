@@ -113,7 +113,7 @@ function QuoteForm() {
                 setTimeout(() => {
                     setSucesso("")
                 }, 4000)
-            } catch (erro) {
+            } catch {
                 setErro("Erro ao conectar com o servidor.")
 
                 setLoading(false)

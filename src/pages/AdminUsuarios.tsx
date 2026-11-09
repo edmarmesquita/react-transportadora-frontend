@@ -1,12 +1,12 @@
 import type { Usuario } from "../types/usuario";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "../components/admin/AdminLayout";
 import StatusBadge from "../components/ui/StatusBadge";
 import PerfilBadge from "../components/ui/PerfilBadge";
 import AdminHeader from "../components/layout/AdminHeader";
 import DataTable from "../components/ui/DataTable";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 import { apiFetch } from "../services/api";
 import {
     listarUsuarios,
@@ -18,11 +18,7 @@ function AdminUsuarios() {
     const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [carregando, setCarregando] = useState(true);
 
-    useEffect(() => {
-        carregarUsuarios();
-    }, []);
-
-    async function carregarUsuarios() {
+    const carregarUsuarios = useCallback(async () => {
         try {
             const dados = await listarUsuarios();
 
@@ -39,7 +35,11 @@ function AdminUsuarios() {
             setCarregando(false);
 
         }
-    }
+    }, [notificar]);
+
+    useEffect(() => {
+        carregarUsuarios();
+    }, [carregarUsuarios]);
 
     async function alterarStatusUsuario(usuario: Usuario) {
         const ativar = !usuario.ativo;

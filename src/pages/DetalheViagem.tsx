@@ -9,7 +9,7 @@ import ListaComprovantes, {
 import RastreamentoViagem from "../components/admin/RastreamentoViagem"
 import PainelOperacionalMotorista from "../components/motorista/PainelOperacionalMotorista"
 import { buscarUsuarioLogado } from "../services/authService";
-import { useNotification } from "../components/ui/NotificationProvider";
+import { useNotification } from "../components/ui/NotificationContext";
 import { transicoesViagem } from "../constants/estadosOperacionais";
 
 type Historico = {

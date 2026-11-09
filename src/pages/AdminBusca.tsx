@@ -3,9 +3,18 @@ import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
 import { apiFetch } from "../services/api"
 
+type ResultadoCarga = { id: number; codigo: string; cliente: string; status: string }
+type ResultadoMotorista = { id: number; nome: string }
+type ResultadoVeiculo = { id: number; placa: string; modelo: string }
+type ResultadoBusca = {
+    cargas: ResultadoCarga[]
+    motoristas: ResultadoMotorista[]
+    veiculos: ResultadoVeiculo[]
+}
+
 function AdminBusca() {
     const [termo, setTermo] = useState("")
-    const [resultado, setResultado] = useState<any>(null)
+    const [resultado, setResultado] = useState<ResultadoBusca | null>(null)
 
     async function buscar() {
         const resposta = await apiFetch(
@@ -43,7 +52,7 @@ function AdminBusca() {
                         <h2>Resultados</h2>
 
                         <h3>Cargas</h3>
-                        {resultado.cargas.map((carga: any) => (
+                        {resultado.cargas.map((carga) => (
                             <Link
                                 key={carga.id}
                                 to={`/admin/cargas/${carga.id}`}
@@ -54,7 +63,7 @@ function AdminBusca() {
                         ))}
 
                         <h3>Motoristas</h3>
-                        {resultado.motoristas.map((motorista: any) => (
+                        {resultado.motoristas.map((motorista) => (
                             <Link
                                 key={motorista.id}
                                 to={`/admin/motorista/${motorista.id}`}
@@ -64,7 +73,7 @@ function AdminBusca() {
                             </Link>
                         ))}
                         <h3>Veículos</h3>
-                        {resultado.veiculos.map((veiculo: any) => (
+                        {resultado.veiculos.map((veiculo) => (
                             <Link
                                 key={veiculo.id}
                                 to={`/admin/veiculo/${veiculo.id}`}

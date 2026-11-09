@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import AdminLayout from "../components/admin/AdminLayout"
 import { Link } from "react-router-dom"
 import { Eye } from "lucide-react"
 import AdminHeader from "../components/layout/AdminHeader"
 import { apiFetch } from "../services/api"
-import { useNotification } from "../components/ui/NotificationProvider"
+import { useNotification } from "../components/ui/NotificationContext"
 
 type Viagem = {
     id: number
@@ -26,7 +26,7 @@ function AdminViagens() {
     const [busca, setBusca] = useState("")
     const [filtroStatus, setFiltroStatus] = useState("Todos")
 
-    async function carregarViagens() {
+    const carregarViagens = useCallback(async () => {
         try {
             const resposta = await apiFetch(
                 "/api/admin/viagens"
@@ -48,11 +48,11 @@ function AdminViagens() {
         } catch {
             notificar("erro", "Não foi possível carregar as viagens.")
         }
-    }
+    }, [notificar])
 
     useEffect(() => {
         carregarViagens()
-    }, [])
+    }, [carregarViagens])
 
     const viagensFiltradas = viagens.filter((viagem) => {
         const textoBusca = busca.toLowerCase()
